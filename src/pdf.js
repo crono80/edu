@@ -39,7 +39,7 @@ const fmtPct = (x) => `${Math.round(x * 100)}%`;
 export async function exportPdf({ appName, pack, weeks, materias, info, top, cmp, aluno }) {
   const [{ jsPDF }, { autoTable }] = await Promise.all([import("jspdf"), import("jspdf-autotable")]);
   const nome = (aluno ?? "").trim();
-  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  const doc = new jsPDF({ unit: "mm", format: "a4", compress: true });
   const W = doc.internal.pageSize.getWidth();
   const H = doc.internal.pageSize.getHeight();
   const M = 14;
@@ -268,5 +268,6 @@ export async function exportPdf({ appName, pack, weeks, materias, info, top, cmp
     doc.text(footer, M, H - 8);
     doc.text(`Página ${i} de ${pages}`, W - M, H - 8, { align: "right" });
   }
-  doc.save(`cronograma${nome ? `-${slugify(nome)}` : ""}-${info.todayISO}.pdf`);
+  // the caller starts the download: saving here would lose the click on iOS (it runs after async work)
+  return { blob: doc.output("blob"), filename: `cronograma${nome ? `-${slugify(nome)}` : ""}-${info.todayISO}.pdf` };
 }

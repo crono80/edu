@@ -1560,7 +1560,32 @@ function ProgressPanel({ info, onReorganize }) {
   );
 }
 
-function ExportBar({ aluno, setAluno, onPdf, onIcs, busy, error, summary }) {
+function FileLinks({ f, label }) {
+  if (!f) return null;
+  const canShare = typeof navigator !== "undefined" && navigator.canShare && navigator.canShare({ files: [new File([f.blob], f.filename, { type: f.blob.type })] });
+  return (
+    <span className="inline-flex flex-wrap items-center gap-x-3 gap-y-1">
+      <span className="font-semibold cg-ink">{label} pronto:</span>
+      <a href={f.url} download={f.filename} className="cg-link font-semibold">
+        baixar
+      </a>
+      <a href={f.url} target="_blank" rel="noopener noreferrer" className="cg-link font-semibold">
+        abrir
+      </a>
+      {canShare ? (
+        <button
+          type="button"
+          className="cg-link font-semibold"
+          onClick={() => navigator.share({ files: [new File([f.blob], f.filename, { type: f.blob.type })], title: f.filename }).catch(() => {})}
+        >
+          compartilhar / salvar
+        </button>
+      ) : null}
+    </span>
+  );
+}
+
+function ExportBar({ aluno, setAluno, onPdf, onIcs, busy, error, summary, files }) {
   return (
     <div className="cg-surface flex flex-wrap items-end gap-3 rounded-xl border cg-line p-3">
       <div className="flex min-w-0 flex-1 flex-col gap-1.5" style={{ minWidth: 200 }}>
@@ -1582,6 +1607,21 @@ function ExportBar({ aluno, setAluno, onPdf, onIcs, busy, error, summary }) {
         </div>
         <p className="text-xs cg-muted">{error ? <span className="cg-error">{error}</span> : summary}</p>
       </div>
+      {files.pdf || files.ics ? (
+        <div className="flex w-full flex-col gap-1 border-t cg-line pt-2 text-xs cg-ink2">
+          <FileLinks f={files.pdf} label="PDF" />
+          {files.ics ? (
+            <>
+              <FileLinks f={files.ics} label={`Agenda (.ics, ${files.ics.eventos} eventos de hoje em diante)`} />
+              <span className="cg-muted">
+                Google Agenda (no computador): Configurações › Adicionar agenda › Criar nova agenda; depois Importar e exportar › Importar, escolhendo a agenda nova. No
+                celular, abrir o arquivo adiciona os eventos à agenda do aparelho.
+              </span>
+            </>
+          ) : null}
+          <span className="cg-muted">Se o download não começou, use os links acima ou abra o site no Safari ou no Chrome (navegadores dentro de apps costumam bloquear downloads).</span>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -1640,6 +1680,12 @@ export default function App() {
   const [week, setWeekState] = useState(null); // null = the week that contains today
   const [busy, setBusy] = useState(false);
   const [exportError, setExportError] = useState(null);
+  const [files, setFiles] = useState({}); // last generated files, kept as links in case the automatic download is blocked
+  const setFile = (kind, f) =>
+    setFiles((old) => {
+      if (old[kind]?.url) URL.revokeObjectURL(old[kind].url);
+      return { ...old, [kind]: f };
+    });
   const quizRef = useRef(null);
 
   useEffect(() => {
@@ -1839,7 +1885,7 @@ export default function App() {
     setExportError(null);
     try {
       const { exportPdf: run } = await import("./pdf.js");
-      await run({
+      const { blob, filename } = await run({
         appName: APP_NAME,
         pack,
         weeks,
@@ -1849,6 +1895,7 @@ export default function App() {
         cmp: nums,
         aluno: state.aluno,
       });
+      setFile("pdf", { url: plan.downloadBlob(filename, blob), filename, blob });
     } catch (err) {
       console.error(err);
       setExportError("Não foi possível gerar o PDF. Tente novamente.");
@@ -1858,8 +1905,21 @@ export default function App() {
   };
   const exportIcs = () => {
     if (!weeks.length) return;
-    const ics = plan.toICS({ weeks, pack, materias: MAT_NAMES, appName: APP_NAME });
-    plan.download(`cronograma-${pack.concurso.id}.ics`, ics, "text/calendar");
+    const site = typeof window === "undefined" ? "" : `${window.location.origin}${window.location.pathname}?concurso=${pack.concurso.id}`;
+    const { text, eventos } = plan.toICS({
+      weeks,
+      pack,
+      materias: MAT_NAMES,
+      appName: APP_NAME,
+      from: TODAY,
+      isDone: (d, b, i) => isDone(plan.blockKey(d.data, b, i)),
+      planStart: start,
+      siteUrl: site,
+      unidade: U,
+    });
+    const filename = `cronograma-${pack.concurso.id}-${TODAY}.ics`;
+    const blob = new Blob([text], { type: "text/calendar;charset=utf-8" });
+    setFile("ics", { url: plan.downloadBlob(filename, blob), filename, blob, eventos });
   };
 
   const nav = [
@@ -2014,7 +2074,8 @@ export default function App() {
                 onIcs={exportIcs}
                 busy={busy}
                 error={exportError}
-                summary={`${weeks.length} semanas · ${totalBlocks} blocos · .ics: Google Agenda › Configurações › Importar e exportar`}
+                files={files}
+                summary={`${weeks.length} semanas · ${totalBlocks} blocos · o .ics leva só o que falta, de hoje em diante`}
               />
             }
           />

@@ -10,7 +10,8 @@
     "test:engine": "node --test app/tests/engine.test.js",
     "report:engine": "node app/scripts/report.js",
     "test:builder": "node --test tools/pack-builder/test/builder.test.js",
-    "test": "node --test app/tests/engine.test.js tools/pack-builder/test/builder.test.js"
+    "test": "npm run test:engine && npm run test:builder && npm run test:app",
+    "test:app": "TZ=America/Sao_Paulo node --test src/plan.test.js"
   },
   "dependencies": {
     "jspdf": "4.2.1",

@@ -391,57 +391,111 @@ export const ACTIVITY_LABEL = { videoaula: "Videoaula", leitura: "Leitura", exer
 /* ---------------- ICS (Google Agenda / Apple / Outlook) ---------------- */
 
 const icsEscape = (s) => String(s ?? "").replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
-const icsLocal = (iso, minOfDay) => {
-  const day = addDaysISO(iso, Math.floor(minOfDay / 1440)).replace(/-/g, "");
-  const m = ((minOfDay % 1440) + 1440) % 1440;
-  return `${day}T${pad(Math.floor(m / 60))}${pad(m % 60)}00`;
+
+/** Local wall-clock time in the viewer's time zone -> UTC "YYYYMMDDTHHMMSSZ" (DST-safe, no TZID needed). */
+export function icsUtc(iso, minOfDay) {
+  const [y, m, d] = iso.split("-").map(Number);
+  const t = new Date(y, m - 1, d, 0, minOfDay, 0); // Date normalizes minutes past midnight
+  return t.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+}
+
+/** RFC 5545 line folding: at most 75 octets per line, never splitting a UTF-8 character. */
+export function foldLine(line) {
+  const enc = new TextEncoder();
+  const out = [];
+  let cur = "";
+  let bytes = 0;
+  for (const ch of line) {
+    const b = enc.encode(ch).length;
+    const limit = out.length === 0 ? 75 : 74; // continuation lines start with one space
+    if (bytes + b > limit) {
+      out.push(cur);
+      cur = "";
+      bytes = 0;
+    }
+    cur += ch;
+    bytes += b;
+  }
+  out.push(cur);
+  return out.join("\r\n ");
+}
+
+const hash = (str) => {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i++) h = Math.imul(h ^ str.charCodeAt(i), 16777619);
+  return (h >>> 0).toString(36);
 };
 
-export function toICS({ weeks, pack, materias, appName }) {
+/**
+ * toICS({ weeks, pack, materias, appName, from, isDone, planStart, siteUrl, unidade }) -> iCalendar text.
+ * Only blocks from `from` (today) on and not marked as studied. UIDs are stable for one plan version
+ * (planStart), so re-importing the same plan does not duplicate events.
+ */
+export function toICS({ weeks, pack, materias, appName, from = null, isDone = () => false, planStart = "", siteUrl = "", unidade = "questões" }) {
   const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
-  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", `PRODID:-//${appName}//PT`, "CALSCALE:GREGORIAN", `X-WR-CALNAME:${icsEscape(`${appName} · ${pack.concurso.nome}`)}`];
+  const tz = (() => {
+    try {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+    } catch {
+      return "";
+    }
+  })();
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    `PRODID:-//${appName}//PT-BR`,
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    `X-WR-CALNAME:${icsEscape(`Cronograma · ${pack.concurso.nome}`)}`,
+    `X-WR-CALDESC:${icsEscape(`${appName}. Gerado em ${new Date().toLocaleDateString("pt-BR")}.`)}`,
+    ...(tz ? [`X-WR-TIMEZONE:${tz}`] : []),
+  ];
+  let n = 0;
   for (const w of weeks) {
     for (const d of w.dias) {
+      if (from && d.data < from) continue;
       d.blocks.forEach((b, i) => {
-        const title = b.assunto ? b.assunto.nome : ACTIVITY_LABEL.simulado;
-        const desc = [b.materia_id ? materias[b.materia_id] : "", b.video ? `Aula: ${b.video.url}` : "", b.motivo ?? ""].filter(Boolean).join("\n");
+        if (isDone(d, b, i)) return;
+        const title = b.assunto ? b.assunto.nome : `Simulado completo (${pack.estrutura_prova.total_questoes} ${unidade})`;
+        const desc = [
+          b.materia_id ? materias[b.materia_id] : "Prova completa no tempo real",
+          b.video ? `${b.video.tipo === "video" ? "Aula" : "Buscar aula"}: ${b.video.url}` : "",
+          b.motivo ?? "",
+          siteUrl ? `Marque como estudado em ${siteUrl}` : "",
+        ]
+          .filter(Boolean)
+          .join("\n");
         lines.push(
           "BEGIN:VEVENT",
-          `UID:${pack.concurso.id}-${d.data}-${i}@cronograma-personalizado`,
+          `UID:${pack.concurso.id}-${planStart || "plano"}-${d.data}-${hash(`${b.atividade}|${b.assunto?.id ?? "simulado"}|${i}`)}@cronograma-personalizado`,
           `DTSTAMP:${stamp}`,
-          `DTSTART:${icsLocal(d.data, b.start)}`,
-          `DTEND:${icsLocal(d.data, b.end)}`,
+          `DTSTART:${icsUtc(d.data, b.start)}`,
+          `DTEND:${icsUtc(d.data, b.end)}`,
           `SUMMARY:${icsEscape(`[${ACTIVITY_LABEL[b.atividade]}] ${title}`)}`,
           `DESCRIPTION:${icsEscape(desc)}`,
+          `CATEGORIES:${icsEscape(ACTIVITY_LABEL[b.atividade])}`,
           ...(b.video ? [`URL:${b.video.url}`] : []),
+          "STATUS:CONFIRMED",
+          "TRANSP:OPAQUE",
           "END:VEVENT"
         );
+        n += 1;
       });
     }
   }
   lines.push("END:VCALENDAR");
-  return lines
-    .map((l) => {
-      const parts = [];
-      let s = l;
-      while (s.length > 60) {
-        parts.push(s.slice(0, 60));
-        s = " " + s.slice(60);
-      }
-      parts.push(s);
-      return parts.join("\r\n");
-    })
-    .join("\r\n");
+  return { text: lines.map(foldLine).join("\r\n") + "\r\n", eventos: n };
 }
 
-export function download(filename, text, mime) {
-  const blob = new Blob([text], { type: `${mime};charset=utf-8` });
+/** Starts a download for a Blob. Returns the object URL (kept alive so a visible link can retry). */
+export function downloadBlob(filename, blob) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
   a.download = filename;
+  a.rel = "noopener";
   document.body.append(a);
   a.click();
   a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  return url;
 }
