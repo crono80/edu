@@ -514,6 +514,10 @@ function ResultHero({ examISO, simulated, daysLeft, contentH, weekly, modeLabel,
   const qG = Math.round(nums.genAt * TOTAL_Q);
   const gain = qP - qG;
   const saved = nums.gen80 ? Math.max(0, nums.gen80 - nums.pers80) : 0;
+  // content hours per week in this plan: turns saved hours into weeks
+  const perWeek = daysLeft > 0 ? contentH / (daysLeft / 7) : 0;
+  const weeksSaved = perWeek > 0 ? Math.round(saved / perWeek) : 0;
+  const both = gain < 3; // both plans already reach (nearly) everything by the exam: lead with time
   return (
     <div id="resultado" className="cg-anchor cg-surface rounded-2xl border cg-line p-4 md:p-6">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -539,6 +543,31 @@ function ResultHero({ examISO, simulated, daysLeft, contentH, weekly, modeLabel,
       </p>
       <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-5">
         <div className="flex min-w-0 flex-col gap-4 lg:col-span-2">
+          {both ? (
+            <>
+          <CompareBars
+            title="Horas para dominar 80% da prova"
+            hint="Menor é melhor."
+            max={Math.max(nums.gen80 ?? 0, nums.pers80)}
+            fmt={(v) => fmtHr(v)}
+            rows={[
+              { label: "Seu cronograma", value: nums.pers80, mine: true },
+              { label: "Genérico", value: nums.gen80 ?? 0 },
+            ]}
+          />
+          <CompareBars
+            title={`${UCAP} no seu alcance até a prova`}
+            hint={`De ${TOTAL_Q}. Maior é melhor.`}
+            max={TOTAL_Q}
+            fmt={(v) => `${v}`}
+            rows={[
+              { label: "Seu cronograma", value: qP, mine: true },
+              { label: "Genérico", value: qG },
+            ]}
+          />
+            </>
+          ) : (
+            <>
           <CompareBars
             title={`${UCAP} no seu alcance até a prova`}
             hint={`De ${TOTAL_Q}. Maior é melhor.`}
@@ -559,10 +588,21 @@ function ResultHero({ examISO, simulated, daysLeft, contentH, weekly, modeLabel,
               { label: "Genérico", value: nums.gen80 ?? 0 },
             ]}
           />
+            </>
+          )}
           <div className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border cg-line cg-hairlines">
             <div className="cg-surface p-3">
-              <p className="text-xl font-extrabold cg-num md:text-2xl">{gain > 0 ? `+${gain}` : "0"}</p>
-              <p className="text-xs cg-ink2">{U} a mais até a prova</p>
+              {both ? (
+                <>
+                  <p className="text-xl font-extrabold cg-num md:text-2xl">−{weeksSaved} sem.</p>
+                  <p className="text-xs cg-ink2">para chegar a 80% no seu ritmo</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-xl font-extrabold cg-num md:text-2xl">{gain > 0 ? `+${gain}` : "0"}</p>
+                  <p className="text-xs cg-ink2">{U} a mais até a prova</p>
+                </>
+              )}
             </div>
             <div className="cg-surface p-3">
               <p className="text-xl font-extrabold cg-num md:text-2xl">−{fmtHr(saved)}</p>
@@ -1417,7 +1457,7 @@ function SchedulePanel({ weeks, week, setWeek, result, examISO, dates, onSimTop,
   return (
     <section id="cronograma" className="cg-anchor flex flex-col gap-4">
       <SectionHead
-        step="1 · Mão na massa"
+        step="2 · Mão na massa"
         title="Sua agenda, semana a semana"
         desc="Videoaula, leitura e exercícios por assunto, já com horário. Marque ✓ no que estudar; − e + mudam o tempo do dia."
         right={
@@ -1556,7 +1596,7 @@ function ComparePanel() {
   ];
   return (
     <section id="comparativo" className="cg-anchor flex flex-col gap-4">
-      <SectionHead step="Como funciona" title="Por que o seu cronograma rende mais" desc="As mesmas horas, em outra ordem e outra dosagem." />
+      <SectionHead step="Como funciona" title="Por que o seu cronograma rende mais" desc="As mesmas horas que um cronograma comum, em outra ordem e outra dosagem. Informe seu tempo e seu nível; a agenda se ajusta." />
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
         {reasons.map(({ Icon, title, text }, i) => (
           <Card key={title}>
@@ -1823,12 +1863,13 @@ export default function App() {
   };
 
   const nav = [
+    ["#comparativo", "Como funciona"],
     ["#resultado", "Vantagem"],
+    ["#prazo", "Seu tempo"],
     ["#cronograma", "Agenda"],
     ["#nivelamento", "Nível"],
-    ["#prazo", "Carga"],
-    ["#dossie", "Dossiê"],
     ["#top80", "Top 80%"],
+    ["#dossie", "Dossiê"],
   ];
   const daysLeft = plan.diffDaysISO(TODAY, examISO);
   const totalBlocks = weeks.reduce((s, w) => s + w.dias.reduce((t, d) => t + d.blocks.length, 0), 0);
@@ -1873,6 +1914,9 @@ export default function App() {
       </header>
 
       <main className="cg-gutter cg-wrap flex flex-col gap-10 py-5 md:py-6">
+        <ComparePanel />
+
+
         <div className="flex flex-col gap-3">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div className="min-w-0">
@@ -1896,6 +1940,29 @@ export default function App() {
             cmp={cmp}
           />
         </div>
+
+        <section id="prazo" className="cg-anchor flex flex-col gap-4">
+          <SectionHead
+            step="1 · Seu tempo"
+            title={suggestion ? "Carga sugerida e seus ajustes" : "Seu tempo até a prova"}
+            desc="Partimos da carga que cobre o top 80% até a prova. Mude as horas de cada dia ou a data: a cobertura do top 80% e a agenda se recalculam na hora."
+          />
+          <TimePanel
+            state={{ ...state, mode }}
+            set={set}
+            setHour={setHour}
+            hours={hours}
+            weekly={weekly}
+            cap={cap}
+            need={need}
+            cov={{ ...cov, examPct: state.scope === "top80" ? Math.min(cov.examPct, par.topPts / par.total) : cov.examPct }}
+            covHard={covHard}
+            dates={dates}
+            topCount={par.topCount}
+            suggestion={suggestion}
+            coverageBar={<CoverageBar {...coverageProps} />}
+          />
+        </section>
 
         {result.ok && weeks.length ? (
           <SchedulePanel
@@ -1963,7 +2030,7 @@ export default function App() {
 
         <section id="nivelamento" className="cg-anchor flex flex-col gap-4" ref={quizRef}>
           <SectionHead
-            step="2 · Seu nível"
+            step="3 · Seu nível"
             title="Seu ponto de partida"
             desc="Marque cada matéria (opcional) e faça o simulado. Matéria fraca recebe mais horas; forte, menos. Sem marcação, vale o peso da prova."
             right={
@@ -1991,35 +2058,6 @@ export default function App() {
           <ApplyBar applied={Boolean(state.applied)} pending={pending} marked={Object.keys(state.applied?.strengths ?? {}).length} quizDone={Boolean(state.applied?.q)} onApply={applyLevel} />
         </section>
 
-        <section id="prazo" className="cg-anchor flex flex-col gap-4">
-          <SectionHead
-            step="3 · Carga horária"
-            title={suggestion ? "Carga sugerida e seus ajustes" : "Seu tempo até a prova"}
-            desc="Partimos da carga que cobre o top 80% até a prova. Mude as horas de cada dia ou a data: a cobertura do top 80% e a agenda se recalculam na hora."
-          />
-          <TimePanel
-            state={{ ...state, mode }}
-            set={set}
-            setHour={setHour}
-            hours={hours}
-            weekly={weekly}
-            cap={cap}
-            need={need}
-            cov={{ ...cov, examPct: state.scope === "top80" ? Math.min(cov.examPct, par.topPts / par.total) : cov.examPct }}
-            covHard={covHard}
-            dates={dates}
-            topCount={par.topCount}
-            suggestion={suggestion}
-            coverageBar={<CoverageBar {...coverageProps} />}
-          />
-        </section>
-
-        <section id="dossie" className="cg-anchor flex flex-col gap-4">
-          <SectionHead step="4 · Dossiê" title="O que mais cai nesta prova" desc={META.dossieDesc} />
-          <DossierCards />
-          <DossierTable topSet={par.top} expanded={expanded} onToggle={toggleExpand} />
-        </section>
-
         <section id="top80" className="cg-anchor flex flex-col gap-4">
           <SectionHead
             step="Painel"
@@ -2035,7 +2073,11 @@ export default function App() {
           <TopPanel par={par} />
         </section>
 
-        <ComparePanel />
+        <section id="dossie" className="cg-anchor flex flex-col gap-4">
+          <SectionHead step="Dossiê" title="O que mais cai nesta prova" desc={META.dossieDesc} />
+          <DossierCards />
+          <DossierTable topSet={par.top} expanded={expanded} onToggle={toggleExpand} />
+        </section>
 
         <MethodNotes />
       </main>
