@@ -34,6 +34,7 @@ import { CATALOG, selectEntry } from "./packs.js";
 import { CSS, EXTRA_CSS } from "./theme.js";
 import * as plan from "./plan.js";
 import { GOOGLE_CLIENT_ID, GOOGLE_SYNC_DAYS } from "./config.js";
+import * as gcal from "./gcal.js";
 
 /* ───────────────────────────── Dados fixos ───────────────────────────── */
 
@@ -1914,12 +1915,12 @@ export default function App() {
   };
   const [gsync, setGsync] = useState(null); // { fase, feitos, total, msg }
   useEffect(() => {
-    if (GOOGLE_CLIENT_ID) import("./gcal.js").then((g) => g.prepare(GOOGLE_CLIENT_ID));
+    if (GOOGLE_CLIENT_ID) gcal.prepare(GOOGLE_CLIENT_ID);
   }, []);
   const syncGoogle = async () => {
     if (!GOOGLE_CLIENT_ID || gsync?.fase === "rodando") return;
-    const g = await import("./gcal.js");
-    const tokenP = g.requestToken(); // inside the click: Google's popup needs the gesture
+    const g = gcal;
+    const tokenP = g.requestToken(); // first thing in the click, no await before it: Google's popup needs the gesture
     setGsync({ fase: "rodando", feitos: 0, total: 0, msg: "Aguardando o login do Google…" });
     try {
       const token = await tokenP;
