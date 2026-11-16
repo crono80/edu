@@ -30,13 +30,22 @@ import {
   Target,
   TriangleAlert,
 } from "lucide-react";
-import pack from "../app/packs/pmsc-2026-soldado.json";
+import { CATALOG, selectEntry } from "./packs.js";
 import { CSS, EXTRA_CSS } from "./theme.js";
 import * as plan from "./plan.js";
 
 /* ───────────────────────────── Dados fixos ───────────────────────────── */
 
 const APP_NAME = "Cronograma Personalizado para Você";
+const ENTRY = selectEntry();
+const pack = ENTRY.pack;
+const META = ENTRY.meta;
+const U = META.unidade; // "questões" | "itens"
+const UCAP = U.charAt(0).toUpperCase() + U.slice(1);
+const CERTO_ERRADO = pack.estrutura_prova.tipo === "certo_errado";
+const PENALTY = Boolean(pack.estrutura_prova.penalidade_erro);
+const LETTERS = CERTO_ERRADO ? ["C", "E"] : ["A", "B", "C", "D", "E"];
+const EXAM_ESTIMATED = Boolean(pack.concurso.data_prova_estimada);
 const STORE_KEY = `cpv:${pack.concurso.id}:v1`;
 const TODAY = plan.todayISO();
 const EXAM_OFFICIAL = pack.concurso.data_prova;
@@ -45,28 +54,22 @@ const N_ASSUNTOS = pack.assuntos.length;
 const QUIZ_N = 40;
 const HARD_WEEKLY = plan.weeklyOf(plan.MODES.hard.hours);
 
-const SHORT = {
-  dconst: "D. Constitucional",
-  dpenal: "D. Penal",
-  dpp: "Proc. Penal",
-  dpm: "Penal Militar",
-  legesp: "Leg. Especial",
-  transito: "Trânsito",
-  inst: "Leg. Institucional",
-  port: "Português",
-  info: "Informática",
-};
-// Validated categorical order (light). Dark steps live in theme.js (--s1…--s9).
 const HEX = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#6250d6", "#e34948", "#0e93a8"];
-const MAT = Object.fromEntries(
-  pack.estrutura_prova.materias.map((m, i) => [m.id, { ...m, curto: SHORT[m.id] ?? m.nome, cor: `var(--s${i + 1})`, hex: HEX[i] }])
-);
+// Up to 9 matérias: one validated hue each. Beyond that (INSS: 6 básicas + 5 específicas), shape encodes the block
+// (circle = conhecimentos básicos, square = específicos) and hues restart inside each block.
+const ESPECIFICAS = new Set(META.especificas ?? []);
+const MAT = (() => {
+  const out = {};
+  let iBas = 0;
+  let iEsp = 0;
+  for (const m of pack.estrutura_prova.materias) {
+    const esp = ESPECIFICAS.has(m.id);
+    const i = esp ? iEsp++ : iBas++;
+    out[m.id] = { ...m, curto: META.curto[m.id] ?? m.nome, cor: `var(--s${(i % 9) + 1})`, hex: HEX[i % 9], shape: esp ? "square" : "circle" };
+  }
+  return out;
+})();
 const MAT_NAMES = Object.fromEntries(pack.estrutura_prova.materias.map((m) => [m.id, m.nome]));
-
-const FONTES = {
-  cargo: { nome: "PMSC 2023 · Soldado", banca: "Cebraspe", questoes: pack.provas_historico[0]?.total_questoes, url: pack.provas_historico[0]?.fonte },
-  banca: { nome: "PM-PE 2024 · Soldado", banca: "Instituto AOCP", questoes: pack.provas_banca?.[0]?.total_questoes, url: pack.provas_banca?.[0]?.fonte },
-};
 
 // Student-independent view of the exam (no leveling): dossiê and top 80%.
 const BASE_SCORES = plan.score({ pack });
@@ -110,9 +113,7 @@ const weekdayOf = (iso) => ["dom", "seg", "ter", "qua", "qui", "sex", "sab"][new
 
 function itemSource(it) {
   if (it.origem === "gerada_ia") return { label: "Gerada por IA", ia: true };
-  const n = /q(\d+)$/.exec(it.id)?.[1];
-  if (it.id.startsWith("pmsc")) return { label: `Prova PMSC ${it.ano ?? ""} · Cebraspe${n ? ` · Q${n}` : ""}` };
-  return { label: `Prova PM-PE ${it.ano ?? ""} · AOCP${n ? ` · Q${n}` : ""}` };
+  return { label: META.fonteItem(it) };
 }
 
 function loadState() {
@@ -159,9 +160,11 @@ const APP_CSS = `
 .cg-progress > span { background: var(--accent); }
 `;
 
-function Dot({ color, size = "h-2.5 w-2.5" }) {
-  return <span aria-hidden="true" className={`${size} inline-block shrink-0 rounded-full`} style={{ background: color }} />;
+function Dot({ color, size = "h-2.5 w-2.5", shape = "circle" }) {
+  return <span aria-hidden="true" className={`${size} inline-block shrink-0 ${shape === "square" ? "rounded-[2px]" : "rounded-full"}`} style={{ background: color }} />;
 }
+
+const MatDot = ({ id, size }) => <Dot color={MAT[id].cor} shape={MAT[id].shape} size={size} />;
 
 function Bubbles({ value, label = "Prioridade" }) {
   return (
@@ -516,13 +519,17 @@ function ResultHero({ examISO, simulated, daysLeft, contentH, weekly, modeLabel,
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <p className="cg-eyebrow">Sua vantagem · genérico × personalizado</p>
         <p className="text-xs cg-ink2 cg-num">
-          Prova em <b className="cg-ink">{fmtDMY(examISO)}</b> ({simulated ? "simulada" : "edital"}) · faltam {daysLeft} dias · {fmtH(weekly)}/semana ({modeLabel})
+          Prova em <b className="cg-ink">{fmtDMY(examISO)}</b> ({simulated ? "simulada" : EXAM_ESTIMATED ? "estimada, sem edital" : "edital"}) · faltam {daysLeft} dias · {fmtH(weekly)}/semana ({modeLabel})
         </p>
       </div>
       <p className="mt-2 max-w-3xl text-lg font-extrabold leading-snug tracking-tight md:text-xl">
         {gain >= 3 ? (
           <>
-            Com as mesmas {fmtHr(contentH)} de estudo até a prova, seu cronograma alcança <span className="cg-accent-ink">{qP} questões</span>. O genérico, {qG}.
+            Com as mesmas {fmtHr(contentH)} de estudo até a prova, seu cronograma alcança{" "}
+            <span className="cg-accent-ink">
+              {qP} {U}
+            </span>
+            . O genérico, {qG}.
           </>
         ) : (
           <>
@@ -533,7 +540,7 @@ function ResultHero({ examISO, simulated, daysLeft, contentH, weekly, modeLabel,
       <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-5">
         <div className="flex min-w-0 flex-col gap-4 lg:col-span-2">
           <CompareBars
-            title="Questões no seu alcance até a prova"
+            title={`${UCAP} no seu alcance até a prova`}
             hint={`De ${TOTAL_Q}. Maior é melhor.`}
             max={TOTAL_Q}
             fmt={(v) => `${v}`}
@@ -555,7 +562,7 @@ function ResultHero({ examISO, simulated, daysLeft, contentH, weekly, modeLabel,
           <div className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border cg-line cg-hairlines">
             <div className="cg-surface p-3">
               <p className="text-xl font-extrabold cg-num md:text-2xl">{gain > 0 ? `+${gain}` : "0"}</p>
-              <p className="text-xs cg-ink2">questões a mais até a prova</p>
+              <p className="text-xs cg-ink2">{U} a mais até a prova</p>
             </div>
             <div className="cg-surface p-3">
               <p className="text-xl font-extrabold cg-num md:text-2xl">−{fmtHr(saved)}</p>
@@ -568,7 +575,7 @@ function ResultHero({ examISO, simulated, daysLeft, contentH, weekly, modeLabel,
           </div>
         </div>
         <div className="min-w-0 lg:col-span-3">
-          <p className="text-sm font-bold">Questões no alcance a cada hora de estudo</p>
+          <p className="text-sm font-bold">{UCAP} no alcance a cada hora de estudo</p>
           <p className="mb-2 text-xs cg-muted">Passe o mouse ou o dedo na curva. A linha vertical marca as suas horas de conteúdo novo até a prova.</p>
           <CompareChart cmp={cmp} contentH={contentH} />
         </div>
@@ -588,59 +595,41 @@ function ResultHero({ examISO, simulated, daysLeft, contentH, weekly, modeLabel,
 
 /* ───────────────────────────── 1 · Dossiê ───────────────────────────── */
 
+function DossierLine({ l }) {
+  if (typeof l === "string") return <li className="cg-ink2">· {l}</li>;
+  return (
+    <li>
+      <span className="cg-ink2">{l.rotulo}: </span>
+      {l.url ? (
+        <a className="cg-link font-semibold" href={l.url} target="_blank" rel="noopener noreferrer">
+          {l.texto}
+        </a>
+      ) : (
+        <span className="font-semibold">{l.texto}</span>
+      )}
+      {l.extra ? <span className="cg-muted"> · {l.extra}</span> : null}
+    </li>
+  );
+}
+
 function DossierCards() {
-  const notas = pack.notas_banca ?? {};
+  const cards = [
+    ["Dossiê da banca", META.dossie.banca],
+    ["Dossiê do cargo", META.dossie.cargo],
+  ];
   return (
     <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-      <Card>
-        <p className="cg-eyebrow">Dossiê da banca</p>
-        <h3 className="mt-1 text-lg font-extrabold tracking-tight">{pack.concurso.banca}</h3>
-        <ul className="mt-3 flex flex-col gap-2 text-sm">
-          <li>
-            <span className="cg-ink2">Prova de referência: </span>
-            <a className="cg-link font-semibold" href={FONTES.banca.url} target="_blank" rel="noopener noreferrer">
-              {FONTES.banca.nome}
-            </a>
-            <span className="cg-muted"> · {FONTES.banca.questoes} questões</span>
-          </li>
-          <li>
-            <span className="cg-ink2">Formato: </span>
-            {notas.formato_questao ?? "múltipla escolha"}
-          </li>
-          {(notas.estilo ?? []).concat(notas.recomendacoes_estudo ?? []).map((s) => (
-            <li key={s} className="cg-ink2">
-              · {s}
-            </li>
-          ))}
-        </ul>
-      </Card>
-      <Card>
-        <p className="cg-eyebrow">Dossiê do cargo</p>
-        <h3 className="mt-1 text-lg font-extrabold tracking-tight">{pack.concurso.cargo}</h3>
-        <ul className="mt-3 flex flex-col gap-2 text-sm">
-          <li>
-            <span className="cg-ink2">Edital 2026: </span>
-            <a className="cg-link font-semibold" href={pack.concurso.fonte_edital} target="_blank" rel="noopener noreferrer">
-              {TOTAL_Q} questões objetivas, {pack.estrutura_prova.materias.length} matérias
-            </a>
-          </li>
-          <li>
-            <span className="cg-ink2">Prova anterior: </span>
-            <a className="cg-link font-semibold" href={FONTES.cargo.url} target="_blank" rel="noopener noreferrer">
-              {FONTES.cargo.nome}
-            </a>
-            <span className="cg-muted">
-              {" "}
-              · {FONTES.cargo.banca} · {FONTES.cargo.questoes} questões
-            </span>
-          </li>
-          <li>
-            <span className="cg-ink2">Nota de corte estimada: </span>
-            {fmtPct(pack.estrutura_prova.nota_corte_estimada ?? 0.5)} · sem penalidade por erro
-          </li>
-          <li className="cg-ink2">· Considera só a prova objetiva (sem redação e sem TAF)</li>
-        </ul>
-      </Card>
+      {cards.map(([eyebrow, c]) => (
+        <Card key={eyebrow}>
+          <p className="cg-eyebrow">{eyebrow}</p>
+          <h3 className="mt-1 text-lg font-extrabold tracking-tight">{c.titulo}</h3>
+          <ul className="mt-3 flex flex-col gap-2 text-sm">
+            {c.linhas.map((l, i) => (
+              <DossierLine key={i} l={l} />
+            ))}
+          </ul>
+        </Card>
+      ))}
     </div>
   );
 }
@@ -656,7 +645,7 @@ function DossierTable({ topSet, expanded, onToggle }) {
             <th className="px-4 py-2.5 font-semibold" style={{ width: "30%" }}>
               Matéria
             </th>
-            <th className="px-3 py-2.5 text-right font-semibold">Questões</th>
+            <th className="px-3 py-2.5 text-right font-semibold">{UCAP}</th>
             <th className="px-3 py-2.5 font-semibold">% da prova</th>
             <th className="px-3 py-2.5 font-semibold">Prioridade</th>
             <th className="px-3 py-2.5 text-right font-semibold">No top 80%</th>
@@ -674,7 +663,7 @@ function DossierTable({ topSet, expanded, onToggle }) {
                   <td className="px-4 py-3">
                     <button type="button" onClick={() => onToggle(m.id)} aria-expanded={open} aria-controls={`assuntos-${m.id}`} className="flex items-center gap-2.5 rounded text-left">
                       <ChevronDown className={`h-4 w-4 shrink-0 cg-muted transition-transform ${open ? "rotate-180" : ""}`} aria-hidden="true" />
-                      <Dot color={MAT[m.id].cor} />
+                      <MatDot id={m.id} />
                       <span className="font-semibold leading-snug">{m.nome}</span>
                     </button>
                   </td>
@@ -702,8 +691,11 @@ function DossierTable({ topSet, expanded, onToggle }) {
                       <ul className="cg-rows">
                         {assuntos.map((a) => {
                           const sc = BASE_SCORES.byId[a.id];
-                          const cargo = a.incidencia_cargo.reduce((s, x) => s + x.questoes, 0);
-                          const banca = a.incidencia_banca.reduce((s, x) => s + x.questoes, 0);
+                          const u = U.charAt(0);
+                          const sinais = [
+                            ...pack.provas_historico.map((p) => `${META.sigla} ${p.ano}: ${a.incidencia_cargo.find((x) => x.ano === p.ano)?.questoes ?? 0}${u}`),
+                            ...(pack.provas_banca ?? []).map((p) => `${META.siglaBanca ?? "Banca"} ${p.ano}: ${a.incidencia_banca.find((x) => x.concurso === p.concurso)?.questoes ?? 0}${u}`),
+                          ].join(" · ");
                           return (
                             <li key={a.id} className="grid grid-cols-12 items-center gap-3 py-2">
                               <div className="col-span-5 min-w-0">
@@ -712,7 +704,7 @@ function DossierTable({ topSet, expanded, onToggle }) {
                                   {topSet.has(a.id) ? <span className="cg-pill-base ml-2 rounded px-1.5 py-0.5 align-middle text-[10px] font-bold">TOP 80%</span> : null}
                                 </p>
                                 <p className="cg-mono text-xs cg-muted">
-                                  PMSC 2023: {cargo}q · AOCP 2024: {banca}q · edital {"●".repeat(a.edital_profundidade)}
+                                  {sinais} · edital {"●".repeat(a.edital_profundidade)}
                                   {a.volatil ? " · lei alterada" : ""}
                                 </p>
                               </div>
@@ -757,7 +749,7 @@ function TopPanel({ par }) {
         <ul className="cg-rows mt-2">
           {rows.map((r) => (
             <li key={r.m.id} className="flex items-center gap-3 py-2 text-sm">
-              <Dot color={MAT[r.m.id].cor} />
+              <MatDot id={r.m.id} />
               <span className="min-w-0 flex-1 truncate font-medium">{MAT[r.m.id].curto}</span>
               <span className="w-14 text-right text-xs cg-num cg-ink2">
                 {r.n}/{r.total}
@@ -783,7 +775,7 @@ function StrengthGrid({ strengths, onSet, quizByMateria }) {
         return (
           <div key={m.id} className="cg-surface flex flex-col gap-2 rounded-xl border cg-line p-3">
             <div className="flex items-center gap-2">
-              <Dot color={MAT[m.id].cor} />
+              <MatDot id={m.id} />
               <p className="min-w-0 flex-1 truncate text-sm font-semibold">{m.nome}</p>
               {q ? (
                 <span className="cg-mono text-xs cg-ink2 cg-num" title="Acertos no simulado">
@@ -811,16 +803,29 @@ function StrengthGrid({ strengths, onSet, quizByMateria }) {
   );
 }
 
+/** Shared passage/command of a certo/errado item: short ones inline, long passages folded. */
+function SupportText({ text }) {
+  if (!text) return null;
+  if (text.length <= 320) return <p className="cg-sunken mt-4 rounded-lg px-3 py-2 text-sm cg-ink2">{text}</p>;
+  return (
+    <details className="cg-sunken mt-4 rounded-lg px-3 py-2 text-sm">
+      <summary className="cursor-pointer font-semibold cg-ink2">Texto de apoio ({Math.round(text.length / 1000)} mil caracteres)</summary>
+      <p className="mt-2 whitespace-pre-line leading-relaxed cg-ink2">{text}</p>
+    </details>
+  );
+}
+
 function QuizPanel({ quiz, items, score, onStart, onAnswer, onGo, onFinish, onReset }) {
   const [reviewing, setReviewing] = useState(false);
   if (!quiz) {
-    const ia = pack.nivelamento.itens.filter((i) => i.origem === "gerada_ia").length;
     return (
       <Card className="flex flex-wrap items-center justify-between gap-4">
         <div className="min-w-0 max-w-xl">
-          <p className="text-sm font-bold">Simulado de nivelamento · {QUIZ_N} questões</p>
+          <p className="text-sm font-bold">
+            Simulado de nivelamento · {QUIZ_N} {U}
+          </p>
           <p className="mt-1 text-sm cg-ink2">
-            Questões reais da PMSC 2023 e da AOCP (PM-PE 2024), mais {ia} geradas por IA para matérias sem prova anterior. Cada questão mostra a origem. O resultado ajusta as horas por assunto.
+            {META.quizIntro} O resultado ajusta as horas por assunto.
           </p>
         </div>
         <button type="button" onClick={onStart} className="cg-btn-primary inline-flex h-10 items-center gap-2 rounded-lg px-4 text-sm font-bold">
@@ -850,7 +855,15 @@ function QuizPanel({ quiz, items, score, onStart, onAnswer, onGo, onFinish, onRe
               {score.total.acertos}/{score.total.respondidas}
               <span className="ml-2 text-base font-semibold cg-ink2">{score.total.respondidas ? fmtPct(score.total.acertos / score.total.respondidas) : "—"}</span>
             </p>
-            <p className="text-xs cg-muted">{QUIZ_N - score.total.respondidas} sem resposta (não contam)</p>
+            <p className="text-xs cg-muted">
+              {PENALTY ? (
+                <>
+                  Nota líquida (acertos − erros): <b className="cg-ink cg-num">{score.total.acertos - score.total.erros}</b> · {QUIZ_N - score.total.respondidas} em branco
+                </>
+              ) : (
+                `${QUIZ_N - score.total.respondidas} sem resposta (não contam)`
+              )}
+            </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <button type="button" onClick={() => setReviewing(true)} className="cg-btn-ghost inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold">
@@ -872,7 +885,7 @@ function QuizPanel({ quiz, items, score, onStart, onAnswer, onGo, onFinish, onRe
               const r = byMat[m.id];
               return (
                 <li key={m.id} className="flex items-center gap-2 text-sm">
-                  <Dot color={MAT[m.id].cor} />
+                  <MatDot id={m.id} />
                   <span className="min-w-0 flex-1 truncate">{MAT[m.id].curto}</span>
                   <div className="cg-track h-1.5 w-20 overflow-hidden rounded-full">
                     <div className="h-full" style={{ width: `${(r.ok / r.n) * 100}%`, background: MAT[m.id].cor }} />
@@ -897,7 +910,8 @@ function QuizPanel({ quiz, items, score, onStart, onAnswer, onGo, onFinish, onRe
     <Card>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-xs font-semibold cg-ink2 cg-num">
-          {reviewing ? "Revisão · " : ""}Questão {idx + 1} de {items.length} · {answered} respondidas
+          {reviewing ? "Revisão · " : ""}
+          {CERTO_ERRADO ? "Item" : "Questão"} {idx + 1} de {items.length} · {answered} respondid{CERTO_ERRADO ? "os" : "as"}
         </p>
         <div className="flex items-center gap-2">
           <span className={`${src.ia ? "cg-ia" : "cg-pill-base"} inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs font-semibold`}>
@@ -905,7 +919,7 @@ function QuizPanel({ quiz, items, score, onStart, onAnswer, onGo, onFinish, onRe
             {src.label}
           </span>
           <span className="inline-flex items-center gap-1.5 text-xs cg-ink2">
-            <Dot color={MAT[assunto.materia_id].cor} size="h-2 w-2" />
+            <MatDot id={assunto.materia_id} size="h-2 w-2" />
             {MAT[assunto.materia_id].curto}
           </span>
         </div>
@@ -913,6 +927,7 @@ function QuizPanel({ quiz, items, score, onStart, onAnswer, onGo, onFinish, onRe
       <div className="cg-progress mt-2 h-1.5 overflow-hidden rounded-full">
         <span className="block h-full" style={{ width: `${((idx + 1) / items.length) * 100}%` }} />
       </div>
+      {it.contexto_id ? <SupportText text={pack.nivelamento.textos?.[it.contexto_id] ?? ""} key={it.id} /> : null}
       <p className="mt-4 whitespace-pre-line text-sm leading-relaxed md:text-base">{it.enunciado}</p>
       <div className="mt-3 flex flex-col gap-2" role={reviewing ? undefined : "radiogroup"} aria-label="Alternativas">
         {it.alternativas.map((alt, i) => {
@@ -927,7 +942,7 @@ function QuizPanel({ quiz, items, score, onStart, onAnswer, onGo, onFinish, onRe
               onClick={() => onAnswer(it.id, i)}
               className="cg-alt flex items-start gap-3 rounded-lg px-3 py-2.5 text-left text-sm"
             >
-              <span className="cg-alt-letter grid h-6 w-6 shrink-0 place-items-center rounded-full text-xs font-bold">{"ABCDE"[i]}</span>
+              <span className="cg-alt-letter grid h-6 w-6 shrink-0 place-items-center rounded-full text-xs font-bold">{LETTERS[i]}</span>
               <span className="min-w-0 pt-0.5">{alt}</span>
             </button>
           );
@@ -935,8 +950,8 @@ function QuizPanel({ quiz, items, score, onStart, onAnswer, onGo, onFinish, onRe
       </div>
       {reviewing ? (
         <p className="mt-2 text-xs cg-ink2">
-          Gabarito: <b>{"ABCDE"[it.gabarito]}</b>
-          {Number.isInteger(chosen) ? (chosen === it.gabarito ? " · você acertou" : ` · você marcou ${"ABCDE"[chosen]}`) : " · sem resposta"} · assunto: {assunto.nome}
+          Gabarito: <b>{CERTO_ERRADO ? it.alternativas[it.gabarito] : LETTERS[it.gabarito]}</b>
+          {Number.isInteger(chosen) ? (chosen === it.gabarito ? " · você acertou" : ` · você marcou ${CERTO_ERRADO ? it.alternativas[chosen] : LETTERS[chosen]}`) : " · em branco"} · assunto: {assunto.nome}
         </p>
       ) : null}
       <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
@@ -960,7 +975,7 @@ function QuizPanel({ quiz, items, score, onStart, onAnswer, onGo, onFinish, onRe
             onClick={() => onGo(idx + 1)}
             className="cg-btn-primary inline-flex h-9 items-center gap-1 rounded-lg px-3 text-xs font-bold"
           >
-            {!reviewing && !Number.isInteger(chosen) ? "Pular" : "Próxima"}
+            {!reviewing && !Number.isInteger(chosen) ? (PENALTY ? "Deixar em branco" : "Pular") : "Próxima"}
             <ChevronRight className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
@@ -1088,7 +1103,7 @@ function CoverageBar({ cov, topPts, needH, weekly, raw, suggestion, refLabel = "
           <div className="h-full" style={{ width: `${cov.cov * 100}%`, background: done ? "var(--good)" : "var(--accent)", borderRadius: "0 4px 4px 0" }} />
         </div>
         <p className="text-xs cg-ink2 cg-num">
-          ≈ <b className="cg-ink">{Math.round(cov.pts)}</b> de {Math.round(topPts)} questões · {fmtHr(cov.hours)} de {fmtHr(needH)} de conteúdo
+          ≈ <b className="cg-ink">{Math.round(cov.pts)}</b> de {Math.round(topPts)} {U} · {fmtHr(cov.hours)} de {fmtHr(needH)} de conteúdo
         </p>
       </div>
       {suggestion || manual.add || manual.del ? (
@@ -1214,7 +1229,7 @@ function TimePanel({ state, set, setHour, hours, weekly, cap, need, cov, covHard
           <div>
             <p className="text-sm font-bold">Data da prova</p>
             <p className="text-xs cg-ink2">
-              Edital: <b className="cg-num">{fmtDMY(EXAM_OFFICIAL)}</b>
+              {EXAM_ESTIMATED ? "Estimada (sem edital)" : "Edital"}: <b className="cg-num">{fmtDMY(EXAM_OFFICIAL)}</b>
             </p>
           </div>
           <label className="inline-flex items-center gap-2 text-xs font-semibold">
@@ -1318,13 +1333,13 @@ function BlockCard({ b, done, late, onToggle }) {
       </div>
       {mat ? (
         <p className="mt-1.5 flex items-center gap-1.5 text-sm font-bold leading-snug">
-          <Dot color={mat.cor} size="h-2 w-2" />
+          <MatDot id={b.materia_id} size="h-2 w-2" />
           <span className="min-w-0">{mat.curto}</span>
         </p>
       ) : (
         <p className="mt-1.5 text-sm font-bold">Prova completa</p>
       )}
-      <p className="mt-0.5 text-xs leading-snug cg-ink2">{b.assunto ? b.assunto.nome : `${TOTAL_Q} questões no tempo de prova`}</p>
+      <p className="mt-0.5 text-xs leading-snug cg-ink2">{b.assunto ? b.assunto.nome : `${TOTAL_Q} ${U} no tempo de prova`}</p>
       <div className="mt-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
         <p className={`cg-act-${b.atividade} inline-flex items-center gap-1 whitespace-nowrap text-xs font-semibold`}>
           <a.Icon className="h-3.5 w-3.5" aria-hidden="true" />
@@ -1567,9 +1582,11 @@ function MethodNotes() {
       <ul className="flex max-w-3xl list-disc flex-col gap-1 pl-4">
         <li>Prioridade do assunto = 35% prova anterior do cargo + 20% última prova da banca + 45% peso no edital, ampliada pela sua lacuna (nivelamento) e por lei alterada recentemente.</li>
         <li>Pontos esperados = pontos da matéria divididos entre os assuntos pela prioridade. Top 80% = assuntos em ordem de pontos por hora de estudo até somar 80% da prova (menor carga para 80%).</li>
-        <li>Penal Militar, Legislação Especial e Trânsito não têm prova anterior no histórico usado: a prioridade vem só do edital.</li>
+        {(META.notasMetodo ?? []).map((n) => (
+          <li key={n}>{n}</li>
+        ))}
         <li>Capacidade: 10% de folga, reta final nos últimos 15% dos dias, revisões e simulados reservados antes do conteúdo novo.</li>
-        <li>Caso de estudo com dados públicos (edital e provas oficiais). Questões geradas por IA estão marcadas. Confira datas no edital.</li>
+        <li>Dados públicos (editais e provas oficiais). Itens gerados por IA estão marcados. Confira datas e conteúdo no edital vigente.</li>
       </ul>
     </section>
   );
@@ -1772,7 +1789,7 @@ export default function App() {
     onReset: () => set({ quiz: null }),
   };
 
-  const materiasInfo = Object.fromEntries(Object.values(MAT).map((m) => [m.id, { nome: m.nome, curto: m.curto, hex: m.hex }]));
+  const materiasInfo = Object.fromEntries(Object.values(MAT).map((m) => [m.id, { nome: m.nome, curto: m.curto, hex: m.hex, shape: m.shape }]));
   const scopeLabel = state.scope === "top80" ? `Top 80% (${par.topCount} de ${N_ASSUNTOS} assuntos)` : `Edital completo (${N_ASSUNTOS} assuntos)`;
   const modeLabel = mode === "custom" ? "Personalizado" : mode === "sugestao" ? "Sugerido para o top 80%" : plan.MODES[mode].label;
 
@@ -1787,7 +1804,7 @@ export default function App() {
         pack,
         weeks,
         materias: materiasInfo,
-        info: { examISO, simulated: state.simulate, modeLabel, weeklyH: weekly, rawH: cap.raw, contentH: cap.content, scopeLabel, startISO: TODAY, todayISO: TODAY, coverage: cov.cov, manual },
+        info: { examISO, simulated: state.simulate, estimated: EXAM_ESTIMATED, unidade: U, modeLabel, weeklyH: weekly, rawH: cap.raw, contentH: cap.content, scopeLabel, startISO: TODAY, todayISO: TODAY, coverage: cov.cov, manual },
         top: par.items.filter((x) => x.inTop).map((x, i) => ({ rank: i + 1, materia_id: x.assunto.materia_id, nome: x.assunto.nome, nivel: BASE_SCORES.byId[x.id].nivel, pts: x.pts, horas: x.horas })),
         cmp: nums,
         aluno: state.aluno,
@@ -1828,6 +1845,23 @@ export default function App() {
             </span>
             <p className="min-w-0 truncate text-sm font-extrabold tracking-tight md:text-base">{APP_NAME}</p>
           </div>
+          <label className="ml-auto flex items-center gap-2 text-xs font-semibold cg-ink2 md:ml-4">
+            <span className="hidden sm:inline">Concurso</span>
+            <select
+              value={pack.concurso.id}
+              onChange={(e) => {
+                window.location.search = `?concurso=${encodeURIComponent(e.target.value)}`;
+              }}
+              className="cg-input h-9 max-w-48 rounded-lg px-2 text-xs font-semibold"
+              aria-label="Concurso"
+            >
+              {CATALOG.map((c) => (
+                <option key={c.pack.concurso.id} value={c.pack.concurso.id}>
+                  {c.meta.rotulo}
+                </option>
+              ))}
+            </select>
+          </label>
           <nav className="cg-nav ml-auto hidden items-center gap-1 md:flex" aria-label="Seções">
             {nav.map(([href, label]) => (
               <a key={href} href={href} className="rounded-md px-2.5 py-1.5 text-xs font-semibold transition-colors">
@@ -1842,10 +1876,10 @@ export default function App() {
         <div className="flex flex-col gap-3">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div className="min-w-0">
-              <p className="cg-eyebrow">Caso de estudo · {pack.concurso.banca}</p>
+              <p className="cg-eyebrow">{META.eyebrow}</p>
               <h1 className="mt-1 text-xl font-extrabold tracking-tight md:text-2xl">{pack.concurso.nome}</h1>
               <p className="mt-0.5 text-sm cg-ink2">
-                {pack.concurso.orgao} · {TOTAL_Q} questões · {N_ASSUNTOS} assuntos · edital real, curado em {fmtDMY(pack.concurso.curado_em)}
+                {pack.concurso.orgao} · {TOTAL_Q} {U} · {N_ASSUNTOS} assuntos · {META.subtitulo}
               </p>
             </div>
           </div>
@@ -1981,7 +2015,7 @@ export default function App() {
         </section>
 
         <section id="dossie" className="cg-anchor flex flex-col gap-4">
-          <SectionHead step="4 · Dossiê" title="O que mais cai nesta prova" desc="Edital 2026 cruzado com a prova anterior do cargo e com a prova mais recente da banca para o mesmo cargo." />
+          <SectionHead step="4 · Dossiê" title="O que mais cai nesta prova" desc={META.dossieDesc} />
           <DossierCards />
           <DossierTable topSet={par.top} expanded={expanded} onToggle={toggleExpand} />
         </section>

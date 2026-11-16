@@ -28,6 +28,18 @@ export function assemblePack({ config, assuntos, provas, classification = {}, ov
     min_acertos: m.min_acertos ?? null,
   }));
   const tipoDefault = Object.fromEntries(config.estrutura_prova.materias.map((m) => [m.id, m.tipo_default ?? "lei_seca"]));
+  const certoErrado = config.estrutura_prova.tipo === "certo_errado";
+  // certo/errado: shared passages go once to nivelamento.textos; items point to them
+  const textos = {};
+  const textoId = new Map();
+  const idForText = (t) => {
+    if (!textoId.has(t)) {
+      const id = `t${textoId.size + 1}`;
+      textoId.set(t, id);
+      textos[id] = t;
+    }
+    return textoId.get(t);
+  };
   const review = { contagem: [], baixa_confianca: [], sem_assunto: [], sem_gabarito: [], desatualizadas: [], padroes: [], anomalias: [], avisos: [] };
 
   // incidence per assunto per prova
@@ -58,18 +70,20 @@ export function assemblePack({ config, assuntos, provas, classification = {}, ov
       counts.set(q.materia_id ?? "?", (counts.get(q.materia_id ?? "?") ?? 0) + 1);
       if (c.confianca < cfg.confiancaMinima) review.baixa_confianca.push({ questao: key, assunto_id: c.assunto_id, confianca: c.confianca, motivo: c.motivo });
       if (c.desatualizada) review.desatualizadas.push(key);
-      const gab = LETTER_INDEX[q.gabarito];
-      if (c.confianca >= cfg.confiancaMinima && gab !== undefined && q.alternativas.length >= 2 && gab < q.alternativas.length) {
+      const gab = certoErrado ? { C: 0, E: 1 }[q.gabarito] : LETTER_INDEX[q.gabarito];
+      if (c.quiz !== false && c.confianca >= cfg.confiancaMinima && gab !== undefined && q.alternativas.length >= 2 && gab < q.alternativas.length) {
+        const shared = certoErrado && q.contexto;
         itens.push({
           id: `${p.key}-q${q.numero}`,
           assunto_id: c.assunto_id,
-          enunciado: q.contexto ? `${q.contexto}\n\n${q.enunciado}` : q.enunciado,
+          enunciado: shared ? q.enunciado : q.contexto ? `${q.contexto}\n\n${q.enunciado}` : q.enunciado,
           alternativas: q.alternativas,
           gabarito: gab,
           fonte: p.fonte,
           ano: p.ano,
           desatualizada: Boolean(c.desatualizada),
           origem: "prova",
+          ...(shared ? { contexto_id: idForText(q.contexto) } : {}),
         });
       }
     }
@@ -125,6 +139,7 @@ export function assemblePack({ config, assuntos, provas, classification = {}, ov
     estrutura_prova: {
       total_questoes: config.estrutura_prova.total_questoes,
       tipo: config.estrutura_prova.tipo,
+      ...(config.estrutura_prova.duracao_minutos ? { duracao_minutos: config.estrutura_prova.duracao_minutos } : {}),
       penalidade_erro: Boolean(config.estrutura_prova.penalidade_erro),
       nota_corte_estimada: config.estrutura_prova.nota_corte_estimada ?? 0.6,
       materias,
@@ -132,7 +147,7 @@ export function assemblePack({ config, assuntos, provas, classification = {}, ov
     assuntos: assuntosOut,
     provas_historico: provas.filter((p) => p.tipo === "cargo").map((p) => ({ ano: p.ano, total_questoes: p.total_questoes ?? p.questoes.length, fonte: p.fonte })),
     provas_banca: provas.filter((p) => p.tipo === "banca").map((p) => ({ concurso: p.concurso, ano: p.ano, total_questoes: p.total_questoes ?? p.questoes.length, fonte: p.fonte })),
-    nivelamento: { modo: itens.length ? "hibrido" : "autoavaliacao", itens },
+    nivelamento: { modo: itens.length ? "hibrido" : "autoavaliacao", itens, ...(Object.keys(textos).length ? { textos } : {}) },
     notas_banca: {
       estilo: config.notas_banca?.estilo ?? [],
       formato_questao: config.notas_banca?.formato_questao ?? "",

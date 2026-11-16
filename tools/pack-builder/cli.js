@@ -16,6 +16,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { extractText } from "./lib/pdf.js";
 import { parseProva, mergeGabarito } from "./lib/parse-prova.js";
+import { parseProvaCE } from "./lib/parse-prova-ce.js";
+import { readWords, wordsToLines } from "./lib/bbox.js";
 import { parseGabarito } from "./lib/parse-gabarito.js";
 import { parseEdital, proposeAssuntos, sliceSection } from "./lib/parse-edital.js";
 import { assemblePack, renderReview } from "./lib/assemble.js";
@@ -75,9 +77,21 @@ async function cmdInit(dir) {
 
 const txtOf = (work, rel) => path.join(work, path.basename(rel).replace(/\.(pdf|txt)$/i, "") + ".txt");
 
+// a prova may come in parts (Cebraspe P1/P2 cadernos), each { caderno, gabarito, inicio, total }
+const partsOf = (p) => p.partes ?? [{ caderno: p.caderno, caderno_url: p.caderno_url, gabarito: p.gabarito, gabarito_url: p.gabarito_url, inicio: 1, total: p.total_questoes }];
+const linesOf = (work, rel) => path.join(work, path.basename(rel).replace(/\.(pdf|txt)$/i, "") + ".lines.json");
+
 async function cmdExtract(dir) {
   const { root, work, config } = await loadWorkspace(dir);
-  const files = [config.edital?.pdf, ...config.provas.flatMap((p) => [p.caderno, p.gabarito])].filter(Boolean);
+  const ceCadernos = new Set(config.provas.filter((p) => p.formato === "certo_errado").flatMap((p) => partsOf(p).map((x) => x.caderno)));
+  for (const rel of ceCadernos) {
+    const src = path.join(root, rel);
+    if (!(await exists(src))) continue;
+    const lines = wordsToLines(await readWords(src), { columns: 2 }).map(({ page, col, x0, words }) => ({ page, col, x0, text: words.map((w) => w.t).join(" "), words: words.map((w) => ({ t: w.t, x0: w.x0, x1: w.x1 })) }));
+    await writeJSON(linesOf(work, rel), lines);
+    log(`- ${rel}: ${lines.length} linhas (bbox, 2 colunas) -> ${path.relative(root, linesOf(work, rel))}`);
+  }
+  const files = [config.edital?.pdf, ...config.provas.flatMap((p) => partsOf(p).flatMap((x) => [p.formato === "certo_errado" ? null : x.caderno, x.gabarito]))].filter(Boolean);
   for (const rel of files) {
     const src = path.join(root, rel);
     if (!(await exists(src))) {
@@ -91,7 +105,7 @@ async function cmdExtract(dir) {
       continue;
     }
     const prova = config.provas.find((p) => p.caderno === rel);
-    const isGabarito = config.provas.some((p) => p.gabarito === rel); // tables keep their rows only in layout mode
+    const isGabarito = config.provas.some((p) => partsOf(p).some((x) => x.gabarito === rel)); // tables keep their rows only in layout mode
     const { text, backend } = await extractText(src, { backend: flags.backend ?? "auto", columns: prova?.colunas ?? 1, layout: isGabarito });
     await writeFile(out, text);
     log(`- ${rel}: ${text.length} caracteres via ${backend} -> ${path.relative(root, out)}`);
@@ -105,6 +119,30 @@ async function cmdParse(dir) {
   const parseMaterias = [...materias, ...(config.secoes_ignoradas?.length ? [{ id: "_fora", nome: "_fora", aliases: config.secoes_ignoradas }] : [])];
   const provas = [];
   for (const p of config.provas) {
+    if (p.formato === "certo_errado") {
+      const questoes = [];
+      const anomalias = [];
+      let gabTotal = 0;
+      for (const part of partsOf(p)) {
+        const lp = linesOf(work, part.caderno);
+        if (!(await exists(lp))) {
+          log(`- ${p.key}: linhas de ${part.caderno} ausentes (rode extract)`);
+          continue;
+        }
+        const parsed = parseProvaCE(await readJSON(lp, []), { inicio: part.inicio ?? 1, total: part.total });
+        let merged = { questoes: parsed.questoes.map((q) => ({ ...q, gabarito: null, anulada: false })) };
+        if (part.gabarito && (await exists(txtOf(work, part.gabarito)))) {
+          const gab = parseGabarito(await readFile(txtOf(work, part.gabarito), "utf8"));
+          gabTotal += gab.total;
+          merged = mergeGabarito(parsed.questoes, gab);
+        }
+        questoes.push(...merged.questoes);
+        anomalias.push(...parsed.anomalias);
+      }
+      provas.push({ key: p.key, tipo: p.tipo, ano: p.ano, concurso: p.concurso, fonte: p.fonte, total_questoes: p.total_questoes, formato: "certo_errado", questoes, anomalias, secoes: [], sem_gabarito: questoes.filter((q) => q.gabarito === null && !q.anulada).map((q) => q.numero) });
+      log(`- ${p.key}: ${questoes.length} itens certo/errado, gabarito ${gabTotal}, anuladas ${questoes.filter((q) => q.anulada).length}, anomalias ${anomalias.length}`);
+      continue;
+    }
     const cadPath = txtOf(work, p.caderno);
     if (!(await exists(cadPath))) {
       log(`- ${p.key}: texto do caderno ausente (rode extract)`);
@@ -197,8 +235,10 @@ async function cmdFetch(dir) {
   const jobs = [];
   if (config.edital?.url) jobs.push([config.edital.pdf, config.edital.url]);
   for (const p of config.provas) {
-    if (p.caderno_url) jobs.push([p.caderno, p.caderno_url]);
-    if (p.gabarito_url) jobs.push([p.gabarito, p.gabarito_url]);
+    for (const x of partsOf(p)) {
+      if (x.caderno_url) jobs.push([x.caderno, x.caderno_url]);
+      if (x.gabarito_url) jobs.push([x.gabarito, x.gabarito_url]);
+    }
   }
   const { execFile: ef } = await import("node:child_process");
   const run = (args) => new Promise((res, rej) => ef("curl", args, (e, out) => (e ? rej(e) : res(out))));

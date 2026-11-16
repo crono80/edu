@@ -58,7 +58,8 @@ export async function exportPdf({ appName, pack, weeks, materias, info, top, cmp
       const cy = data.cell.y + data.cell.height / 2;
       if (raw?.mat && materias[raw.mat]) {
         doc.setFillColor(...hexToRgb(materias[raw.mat].hex));
-        doc.circle(data.cell.x + 2.6, cy, 1.1, "F");
+        if (materias[raw.mat].shape === "square") doc.rect(data.cell.x + 1.6, cy - 1, 2, 2, "F");
+        else doc.circle(data.cell.x + 2.6, cy, 1.1, "F");
       }
       if (raw?.check) {
         const cx = data.cell.x + data.cell.width / 2;
@@ -120,7 +121,7 @@ export async function exportPdf({ appName, pack, weeks, materias, info, top, cmp
   }
   doc.setFontSize(9);
   doc.setTextColor(...C.ink2);
-  doc.text(t(`${pack.concurso.cargo} · ${pack.concurso.banca} · ${pack.estrutura_prova.total_questoes} questões`), M, y + 5.5);
+  doc.text(t(`${pack.concurso.cargo} · ${pack.concurso.banca} · ${pack.estrutura_prova.total_questoes} ${info.unidade ?? "questões"}`), M, y + 5.5);
 
   autoTable(doc, {
     startY: y + 9,
@@ -129,7 +130,7 @@ export async function exportPdf({ appName, pack, weeks, materias, info, top, cmp
     styles: { fontSize: 9, cellPadding: { top: 1.7, bottom: 1.7, left: 3, right: 3 }, textColor: C.ink, fillColor: C.sunken },
     columnStyles: { 0: { textColor: C.muted, cellWidth: 36 }, 1: { fontStyle: "bold" }, 2: { textColor: C.muted, cellWidth: 46 }, 3: { fontStyle: "bold" } },
     body: [
-      ["Data da prova", t(`${fmtDMY(info.examISO)}${info.simulated ? " (simulada)" : ""}`), "Início", fmtDMY(info.startISO)],
+      ["Data da prova", t(`${fmtDMY(info.examISO)}${info.simulated ? " (simulada)" : info.estimated ? " (estimada)" : ""}`), "Início", fmtDMY(info.startISO)],
       ["Ritmo", t(info.modeLabel), "Horas por semana", fmtH(info.weeklyH)],
       ["Horas até a prova", fmtH(info.rawH), "Horas para conteúdo novo", fmtH(info.contentH)],
       ["Escopo", t(info.scopeLabel), "Semanas", String(weeks.length)],
@@ -183,7 +184,7 @@ export async function exportPdf({ appName, pack, weeks, materias, info, top, cmp
       }
       d.blocks.forEach((b, j) => {
         const row = j === 0 ? [{ ...label, rowSpan: d.blocks.length }] : [];
-        const title = b.assunto ? b.assunto.nome : `Simulado completo (${pack.estrutura_prova.total_questoes} questões)`;
+        const title = b.assunto ? b.assunto.nome : `Simulado completo (${pack.estrutura_prova.total_questoes} ${info.unidade ?? "questões"})`;
         row.push(
           `${fmtClock(b.start)}-${fmtClock(b.end)}`,
           b.materia_id ? matCell(b.materia_id, materias[b.materia_id].curto) : "Todas",
