@@ -137,3 +137,46 @@ test("cli: init → extract → parse → assemble num workspace temporário", (
   assert.equal(validatePack(pack).ok, true);
   assert.ok(existsSync(path.join(dir, "review.md")));
 });
+
+import { parseProvaCE } from "../lib/parse-prova-ce.js";
+
+const ceLine = (page, col, x0, words) => ({ page, col, x0, text: words.join(" "), words: words.map((t, i) => ({ t, x0: x0 + i * 10, x1: x0 + i * 10 + 8 })) });
+
+test("certo/errado: itens numerados, continuação recuada e comando como contexto", () => {
+  const lines = [
+    ceLine(1, 1, 300, ["CEBRASPE", "–", "INSS", "–", "Edital:", "2022"]),
+    ceLine(1, 1, 303, ["Acerca", "da", "seguridade,", "julgue", "os", "itens", "a", "seguir."]),
+    ceLine(1, 1, 303, ["51", "O", "princípio", "democrático"]),
+    ceLine(1, 1, 321, ["exige", "gestão", "quadripartite."]),
+    ceLine(1, 1, 303, ["52", "A", "seletividade", "é", "princípio."]),
+    ceLine(1, 1, 303, ["Quanto", "ao", "custeio,", "julgue", "o", "item", "seguinte."]),
+    ceLine(1, 1, 303, ["53", "Multas", "são", "receitas."]),
+  ];
+  const r = parseProvaCE(lines, { inicio: 51, total: 3 });
+  assert.equal(r.total, 3);
+  assert.deepEqual(r.anomalias, []);
+  assert.equal(r.questoes[0].enunciado, "O princípio democrático exige gestão quadripartite.");
+  assert.match(r.questoes[1].contexto, /seguridade, julgue/);
+  assert.match(r.questoes[2].contexto, /custeio, julgue/);
+  assert.deepEqual(r.questoes[2].alternativas, ["Certo", "Errado"]);
+});
+
+test("certo/errado: números em glifos (cadernos antigos) não colidem com a numeração de linhas do texto", () => {
+  const glyph = (n) => [...String(n)].map((d) => String.fromCharCode(0x12 + Number(d))).join("");
+  const lines = [
+    { page: 1, col: 0, x0: 31, text: "1 Naquele novo apartamento", words: [{ t: "1", x0: 31, x1: 35 }, { t: "Naquele", x0: 46, x1: 80 }, { t: "novo", x0: 83, x1: 100 }, { t: "apartamento", x0: 103, x1: 150 }] },
+    ceLine(1, 1, 304, ["Julgue", "os", "itens."]),
+    ceLine(1, 1, 304, [glyph(1), "O", "trecho", "é", "figurado."]),
+    ceLine(1, 1, 304, [glyph(2), "O", "narrador", "hesitou."]),
+  ];
+  const r = parseProvaCE(lines, { inicio: 1, total: 2 });
+  assert.equal(r.total, 2);
+  assert.equal(r.questoes[0].enunciado, "O trecho é figurado.");
+  assert.match(r.questoes[0].contexto, /^Naquele novo apartamento/);
+});
+
+test("gabarito Cebraspe em tabela Item/Gabarito com anulados", () => {
+  const g = parseGabarito("Item 51 52 53 54\nGabarito C E X C\n");
+  assert.deepEqual(g.respostas, { 51: "C", 52: "E", 53: null, 54: "C" });
+  assert.deepEqual(g.anuladas, [53]);
+});

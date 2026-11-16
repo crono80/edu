@@ -47,3 +47,11 @@ Usa `@anthropic-ai/sdk` com fallback de recusa habilitado; lotes de 10 questões
 candidatos restritos aos assuntos da matéria da questão. Custo típico: algumas centenas de tokens por
 questão. A chave vai na variável `ANTHROPIC_API_KEY` (ou perfil do `ant auth login`); nunca no
 repositório.
+
+## Provas certo/errado (Cebraspe)
+
+Na prova do `config.json`, use `"formato": "certo_errado"` e, se o caderno vier em partes (P1/P2), `"partes": [{ "caderno", "caderno_url", "gabarito", "gabarito_url", "inicio", "total" }]`.
+O `extract` reconstrói as linhas pelas coordenadas das palavras (`lib/bbox.js`, `pdftotext -bbox`, 2 colunas) e o `parse` usa `lib/parse-prova-ce.js`:
+item = número na margem da coluna (ou glifo de dígito, em cadernos antigos), continuação recuada, comando/texto sem número vira contexto.
+O gabarito em tabela `Item … / Gabarito C E X …` é lido direto. No pack, textos de apoio ficam uma vez em `nivelamento.textos` e os itens apontam para eles (`contexto_id`).
+Na classificação, `"quiz": false` mantém o item na incidência mas fora do simulado (útil para itens com figura ou fórmula ilegível).

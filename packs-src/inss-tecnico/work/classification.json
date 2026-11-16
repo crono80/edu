@@ -1,0 +1,1454 @@
+{
+ "inss-2022#1": {
+  "assunto_id": "port.interpretacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#2": {
+  "assunto_id": "port.interpretacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#4": {
+  "assunto_id": "port.interpretacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#5": {
+  "assunto_id": "port.interpretacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#3": {
+  "assunto_id": "port.tipologia",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#6": {
+  "assunto_id": "port.classes",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#7": {
+  "assunto_id": "port.semantica",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#8": {
+  "assunto_id": "port.semantica",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#12": {
+  "assunto_id": "port.semantica",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#13": {
+  "assunto_id": "port.semantica",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#9": {
+  "assunto_id": "port.pontuacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#10": {
+  "assunto_id": "port.classes",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#11": {
+  "assunto_id": "port.ortografia_acentuacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#14": {
+  "assunto_id": "port.concordancia",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#15": {
+  "assunto_id": "etica.decreto1171",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#16": {
+  "assunto_id": "etica.decreto1171",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#17": {
+  "assunto_id": "etica.decreto1171",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#18": {
+  "assunto_id": "etica.decreto6029",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#19": {
+  "assunto_id": "etica.decreto6029",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#20": {
+  "assunto_id": "etica.decreto6029",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#21": {
+  "assunto_id": "dconst.direitos_individuais",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#22": {
+  "assunto_id": "dconst.direitos_individuais",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#23": {
+  "assunto_id": "dconst.direitos_individuais",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#24": {
+  "assunto_id": "dconst.direitos_sociais",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#25": {
+  "assunto_id": "dconst.direitos_politicos",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#26": {
+  "assunto_id": "dconst.nacionalidade",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#27": {
+  "assunto_id": "dconst.adm_publica",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#28": {
+  "assunto_id": "dconst.adm_publica",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#29": {
+  "assunto_id": "dconst.adm_publica",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#30": {
+  "assunto_id": "dconst.adm_publica",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#31": {
+  "assunto_id": "dadm.estado_governo",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#32": {
+  "assunto_id": "dadm.poderes",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#33": {
+  "assunto_id": "dadm.fontes_principios",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#34": {
+  "assunto_id": "dadm.organizacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#35": {
+  "assunto_id": "dadm.lei8112_provimento",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#36": {
+  "assunto_id": "dadm.atos",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#37": {
+  "assunto_id": "dadm.servicos",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#38": {
+  "assunto_id": "dadm.processo",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#39": {
+  "assunto_id": "dadm.controle",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#40": {
+  "assunto_id": "dadm.improbidade",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#41": {
+  "assunto_id": "info.internet",
+  "confianca": 0.85,
+  "desatualizada": false,
+  "motivo": "classificação manual",
+  "quiz": false
+ },
+ "inss-2022#42": {
+  "assunto_id": "info.internet",
+  "confianca": 0.85,
+  "desatualizada": false,
+  "motivo": "classificação manual",
+  "quiz": false
+ },
+ "inss-2022#43": {
+  "assunto_id": "info.libreoffice",
+  "confianca": 0.85,
+  "desatualizada": false,
+  "motivo": "classificação manual",
+  "quiz": false
+ },
+ "inss-2022#44": {
+  "assunto_id": "info.seguranca",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#45": {
+  "assunto_id": "info.windows",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#46": {
+  "assunto_id": "rlm.porcentagem",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#47": {
+  "assunto_id": "rlm.conjuntos",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#48": {
+  "assunto_id": "rlm.proposicoes",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#50": {
+  "assunto_id": "rlm.proposicoes",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#49": {
+  "assunto_id": "rlm.tautologia",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#51": {
+  "assunto_id": "seg.principios",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#52": {
+  "assunto_id": "seg.principios",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#53": {
+  "assunto_id": "seg.legislacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#54": {
+  "assunto_id": "seg.legislacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#55": {
+  "assunto_id": "rgps.segurados_obrigatorios",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#56": {
+  "assunto_id": "rgps.segurados_obrigatorios",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#60": {
+  "assunto_id": "rgps.segurados_obrigatorios",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#57": {
+  "assunto_id": "rgps.facultativo",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#58": {
+  "assunto_id": "seg.empresa",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#61": {
+  "assunto_id": "seg.empresa",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#62": {
+  "assunto_id": "seg.empresa",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#59": {
+  "assunto_id": "rgps.filiacao_inscricao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#63": {
+  "assunto_id": "seg.financiamento",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#64": {
+  "assunto_id": "seg.financiamento",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#65": {
+  "assunto_id": "seg.financiamento",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#66": {
+  "assunto_id": "seg.financiamento",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#67": {
+  "assunto_id": "seg.salario_contribuicao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#68": {
+  "assunto_id": "seg.salario_contribuicao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#69": {
+  "assunto_id": "seg.salario_contribuicao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#70": {
+  "assunto_id": "seg.salario_contribuicao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#71": {
+  "assunto_id": "seg.salario_contribuicao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#72": {
+  "assunto_id": "seg.salario_contribuicao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#73": {
+  "assunto_id": "seg.arrecadacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#74": {
+  "assunto_id": "seg.arrecadacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#75": {
+  "assunto_id": "seg.arrecadacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#76": {
+  "assunto_id": "assist.pensoes_especiais",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#77": {
+  "assunto_id": "assist.pensoes_especiais",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#78": {
+  "assunto_id": "assist.pensoes_especiais",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#79": {
+  "assunto_id": "assist.pensoes_especiais",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#80": {
+  "assunto_id": "assist.pensoes_especiais",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#81": {
+  "assunto_id": "benef.servicos",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#82": {
+  "assunto_id": "benef.servicos",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#83": {
+  "assunto_id": "gestao.recursos",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#84": {
+  "assunto_id": "seg.decadencia_prescricao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#85": {
+  "assunto_id": "seg.crimes",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#86": {
+  "assunto_id": "seg.crimes",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#87": {
+  "assunto_id": "rgps.facultativo",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#88": {
+  "assunto_id": "benef.maternidade_familia",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#89": {
+  "assunto_id": "benef.aposentadorias",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#90": {
+  "assunto_id": "benef.incapacidade",
+  "confianca": 0.75,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#91": {
+  "assunto_id": "assist.seguro_defeso",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#92": {
+  "assunto_id": "assist.seguro_defeso",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#93": {
+  "assunto_id": "assist.seguro_defeso",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#94": {
+  "assunto_id": "assist.seguro_defeso",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#95": {
+  "assunto_id": "assist.seguro_defeso",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#96": {
+  "assunto_id": "gestao.rpps_ctc",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#97": {
+  "assunto_id": "gestao.rpps_ctc",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#98": {
+  "assunto_id": "gestao.rpps_ctc",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#99": {
+  "assunto_id": "gestao.rpps_ctc",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#100": {
+  "assunto_id": "assist.loas_bpc",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#102": {
+  "assunto_id": "assist.loas_bpc",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#103": {
+  "assunto_id": "assist.loas_bpc",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#104": {
+  "assunto_id": "assist.loas_bpc",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#105": {
+  "assunto_id": "assist.loas_bpc",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#101": {
+  "assunto_id": "assist.auxilio_inclusao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#106": {
+  "assunto_id": "gestao.rpps_ctc",
+  "confianca": 0.8,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#107": {
+  "assunto_id": "gestao.rpps_ctc",
+  "confianca": 0.8,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#108": {
+  "assunto_id": "benef.lc142",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#109": {
+  "assunto_id": "benef.lc142",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#110": {
+  "assunto_id": "benef.lc142",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#111": {
+  "assunto_id": "benef.lc142",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#112": {
+  "assunto_id": "benef.lc142",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#113": {
+  "assunto_id": "seg.principios",
+  "confianca": 0.8,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#114": {
+  "assunto_id": "seg.principios",
+  "confianca": 0.8,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#116": {
+  "assunto_id": "seg.principios",
+  "confianca": 0.8,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#117": {
+  "assunto_id": "seg.principios",
+  "confianca": 0.8,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#115": {
+  "assunto_id": "seg.origem_conceito",
+  "confianca": 0.8,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#118": {
+  "assunto_id": "gestao.in128_cnis",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#119": {
+  "assunto_id": "gestao.in128_cnis",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2022#120": {
+  "assunto_id": "gestao.in128_cnis",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#1": {
+  "assunto_id": "port.interpretacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#2": {
+  "assunto_id": "port.interpretacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#4": {
+  "assunto_id": "port.interpretacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#5": {
+  "assunto_id": "port.interpretacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#11": {
+  "assunto_id": "port.interpretacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#12": {
+  "assunto_id": "port.interpretacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#3": {
+  "assunto_id": "port.semantica",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#6": {
+  "assunto_id": "port.semantica",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#13": {
+  "assunto_id": "port.semantica",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#7": {
+  "assunto_id": "port.regencia",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#8": {
+  "assunto_id": "port.concordancia",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#9": {
+  "assunto_id": "port.classes",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#10": {
+  "assunto_id": "port.pontuacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#14": {
+  "assunto_id": "port.pontuacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#15": {
+  "assunto_id": "port.redacao_oficial",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual",
+  "quiz": false
+ },
+ "inss-2016#16": {
+  "assunto_id": "etica.decreto1171",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#17": {
+  "assunto_id": "etica.decreto1171",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#19": {
+  "assunto_id": "etica.decreto1171",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#18": {
+  "assunto_id": "etica.decreto6029",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#20": {
+  "assunto_id": "etica.decreto6029",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#21": {
+  "assunto_id": "etica.decreto6029",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#22": {
+  "assunto_id": "dadm.lei8112_provimento",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#23": {
+  "assunto_id": "dadm.lei8112_provimento",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#24": {
+  "assunto_id": "dadm.lei8112_provimento",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#25": {
+  "assunto_id": "dadm.lei8112_provimento",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#26": {
+  "assunto_id": "dadm.lei8112_direitos",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#27": {
+  "assunto_id": "dadm.lei8112_direitos",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#28": {
+  "assunto_id": "dconst.adm_publica",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#30": {
+  "assunto_id": "dconst.adm_publica",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#29": {
+  "assunto_id": "dadm.fontes_principios",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#31": {
+  "assunto_id": "dadm.fontes_principios",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#32": {
+  "assunto_id": "dconst.nacionalidade",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#33": {
+  "assunto_id": "dconst.direitos_individuais",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#34": {
+  "assunto_id": "dconst.direitos_individuais",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#35": {
+  "assunto_id": "dadm.atos",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#36": {
+  "assunto_id": "dadm.atos",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#37": {
+  "assunto_id": "dadm.atos",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#38": {
+  "assunto_id": "dadm.servicos",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#39": {
+  "assunto_id": "dadm.servicos",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#40": {
+  "assunto_id": "info.seguranca",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#41": {
+  "assunto_id": "info.internet",
+  "confianca": 0.85,
+  "desatualizada": false,
+  "motivo": "classificação manual",
+  "quiz": false
+ },
+ "inss-2016#42": {
+  "assunto_id": "info.libreoffice",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#43": {
+  "assunto_id": "info.libreoffice",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#44": {
+  "assunto_id": "info.windows",
+  "confianca": 0.8,
+  "desatualizada": false,
+  "motivo": "classificação manual",
+  "quiz": false
+ },
+ "inss-2016#45": {
+  "assunto_id": "rlm.porcentagem",
+  "confianca": 0.7,
+  "desatualizada": false,
+  "motivo": "classificação manual",
+  "quiz": false
+ },
+ "inss-2016#46": {
+  "assunto_id": "rlm.proposicoes",
+  "confianca": 0.85,
+  "desatualizada": false,
+  "motivo": "classificação manual",
+  "quiz": false
+ },
+ "inss-2016#48": {
+  "assunto_id": "rlm.proposicoes",
+  "confianca": 0.85,
+  "desatualizada": false,
+  "motivo": "classificação manual",
+  "quiz": false
+ },
+ "inss-2016#49": {
+  "assunto_id": "rlm.proposicoes",
+  "confianca": 0.85,
+  "desatualizada": false,
+  "motivo": "classificação manual",
+  "quiz": false
+ },
+ "inss-2016#47": {
+  "assunto_id": "rlm.tautologia",
+  "confianca": 0.85,
+  "desatualizada": false,
+  "motivo": "classificação manual",
+  "quiz": false
+ },
+ "inss-2016#50": {
+  "assunto_id": "rlm.conjuntos",
+  "confianca": 0.85,
+  "desatualizada": false,
+  "motivo": "classificação manual",
+  "quiz": false
+ },
+ "inss-2016#51": {
+  "assunto_id": "seg.principios",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#55": {
+  "assunto_id": "seg.principios",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#52": {
+  "assunto_id": "seg.origem_conceito",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#53": {
+  "assunto_id": "seg.origem_conceito",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#54": {
+  "assunto_id": "seg.origem_conceito",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#56": {
+  "assunto_id": "seg.legislacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#57": {
+  "assunto_id": "rgps.segurados_obrigatorios",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#58": {
+  "assunto_id": "rgps.segurados_obrigatorios",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#59": {
+  "assunto_id": "rgps.segurados_obrigatorios",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#60": {
+  "assunto_id": "rgps.segurados_obrigatorios",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#61": {
+  "assunto_id": "rgps.segurados_obrigatorios",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#62": {
+  "assunto_id": "rgps.segurados_obrigatorios",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#64": {
+  "assunto_id": "rgps.segurados_obrigatorios",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#69": {
+  "assunto_id": "rgps.segurados_obrigatorios",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#118": {
+  "assunto_id": "rgps.segurados_obrigatorios",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#63": {
+  "assunto_id": "rgps.facultativo",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#116": {
+  "assunto_id": "rgps.facultativo",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#65": {
+  "assunto_id": "rgps.filiacao_inscricao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#66": {
+  "assunto_id": "rgps.filiacao_inscricao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#67": {
+  "assunto_id": "rgps.filiacao_inscricao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#68": {
+  "assunto_id": "gestao.in128_cnis",
+  "confianca": 0.8,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#70": {
+  "assunto_id": "seg.empresa",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#71": {
+  "assunto_id": "seg.empresa",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#72": {
+  "assunto_id": "seg.financiamento",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#73": {
+  "assunto_id": "seg.financiamento",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#74": {
+  "assunto_id": "seg.financiamento",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#75": {
+  "assunto_id": "seg.financiamento",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#76": {
+  "assunto_id": "seg.financiamento",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#77": {
+  "assunto_id": "seg.financiamento",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#78": {
+  "assunto_id": "seg.financiamento",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#79": {
+  "assunto_id": "seg.financiamento",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#80": {
+  "assunto_id": "seg.financiamento",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#81": {
+  "assunto_id": "seg.salario_contribuicao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#82": {
+  "assunto_id": "seg.salario_contribuicao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#83": {
+  "assunto_id": "seg.salario_contribuicao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#84": {
+  "assunto_id": "seg.salario_contribuicao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#95": {
+  "assunto_id": "seg.salario_contribuicao",
+  "confianca": 0.8,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#85": {
+  "assunto_id": "seg.arrecadacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#86": {
+  "assunto_id": "seg.arrecadacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#87": {
+  "assunto_id": "seg.arrecadacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#88": {
+  "assunto_id": "seg.arrecadacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#89": {
+  "assunto_id": "seg.arrecadacao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#90": {
+  "assunto_id": "seg.crimes",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#91": {
+  "assunto_id": "seg.crimes",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#92": {
+  "assunto_id": "gestao.recursos",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#93": {
+  "assunto_id": "gestao.recursos",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#94": {
+  "assunto_id": "seg.decadencia_prescricao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#96": {
+  "assunto_id": "assist.loas_bpc",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#97": {
+  "assunto_id": "assist.loas_bpc",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#98": {
+  "assunto_id": "assist.loas_bpc",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#99": {
+  "assunto_id": "assist.loas_bpc",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#100": {
+  "assunto_id": "assist.loas_bpc",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#101": {
+  "assunto_id": "assist.loas_bpc",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#102": {
+  "assunto_id": "assist.loas_bpc",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#103": {
+  "assunto_id": "assist.loas_bpc",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#104": {
+  "assunto_id": "assist.loas_bpc",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#105": {
+  "assunto_id": "assist.loas_bpc",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#106": {
+  "assunto_id": "assist.loas_bpc",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#107": {
+  "assunto_id": "assist.loas_bpc",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#108": {
+  "assunto_id": "assist.loas_bpc",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#109": {
+  "assunto_id": "assist.loas_bpc",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#110": {
+  "assunto_id": "assist.loas_bpc",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#111": {
+  "assunto_id": "benef.acidente_trabalho",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#112": {
+  "assunto_id": "benef.acidente_trabalho",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#113": {
+  "assunto_id": "rgps.carencia",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#114": {
+  "assunto_id": "seg.principios",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#115": {
+  "assunto_id": "seg.principios",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#117": {
+  "assunto_id": "seg.principios",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#119": {
+  "assunto_id": "benef.pensao_reclusao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ },
+ "inss-2016#120": {
+  "assunto_id": "benef.pensao_reclusao",
+  "confianca": 0.9,
+  "desatualizada": false,
+  "motivo": "classificação manual"
+ }
+}

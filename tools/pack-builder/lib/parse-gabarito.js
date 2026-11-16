@@ -4,13 +4,13 @@
 
 const PAIR = /(?<![\dA-Z])(\d{1,3})\s*[-–—:.)]\s*(?:\(?([A-E])\)?|(\*|ANULAD[AO]|NULA|X))(?![A-Za-z0-9])/gi;
 
-/** Table layout: a "Questão 1 2 3 …" row followed by a "Gabarito C A X …" row (X = anulada). */
+/** Table layout: a "Questão 1 2 3 …" (or Cebraspe "Item …") row followed by a "Gabarito C A X …" row (X = anulada). */
 function parseTable(text, maxNumero) {
   const map = new Map();
   const anuladas = new Set();
   const lines = text.split("\n");
   for (let i = 0; i < lines.length - 1; i++) {
-    const q = /^\s*Quest[ãa]o\s+(.+)$/i.exec(lines[i]);
+    const q = /^\s*(?:Quest[ãa]o|Item)\s+(.+)$/i.exec(lines[i]);
     if (!q) continue;
     let j = i + 1;
     while (j < lines.length && !lines[j].trim()) j++;

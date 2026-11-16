@@ -189,7 +189,7 @@ export function capacity(pack, hours, start, exam, nTopics = pack.assuntos.lengt
   const input = normalizeAvailability({ horas_por_dia_semana: hours, data_inicio: start, data_prova: exam, excecoes }, pack);
   if (!input.ok) return { raw: 0, content: 0 };
   const cal = buildCalendar(input, cfg);
-  const mocks = planMocks(cal, cfg, input, pack.estrutura_prova.total_questoes);
+  const mocks = planMocks(cal, cfg, input, pack.estrutura_prova.total_questoes, pack.estrutura_prova.duracao_minutos ?? null);
   return { raw: cal.rawMin / 60, content: estimateReserves(cal, cfg, input, mocks, nTopics).content_min / 60 };
 }
 

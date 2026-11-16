@@ -1,7 +1,10 @@
 # Cronograma Personalizado para Você
 
-MVP do produto, caso de estudo **PMSC 2026 · Soldado** (Instituto AOCP), com dados reais do edital e de provas
-anteriores. SPA em React 18 + Tailwind CSS + lucide-react, sobre o engine determinístico de `app/src/engine`.
+MVP do produto com dois concursos (seletor no topo, `?concurso=<id>` na URL):
+
+- **INSS · Técnico do Seguro Social (pré-edital)** — padrão. Edital 2022 e provas Cebraspe de 2016 e 2022, 120 itens certo/errado com penalidade.
+- **PMSC 2026 · Soldado** (Instituto AOCP) — caso de estudo com edital real.
+ SPA em React 18 + Tailwind CSS + lucide-react, sobre o engine determinístico de `app/src/engine`.
 
 ```bash
 npm install
@@ -25,7 +28,9 @@ Pages é necessária.
 | `src/plan.js` | Camada de produto sobre o engine: pontos esperados, top 80%, genérico × personalizado, capacidade por data, blocos de videoaula/leitura/exercícios, `.ics` |
 | `src/pdf.js` | PDF A4 completo (jsPDF, carregado só no clique) |
 | `src/theme.js` | Tokens claro/escuro e classes `cg-*` |
-| `app/packs/pmsc-2026-soldado.json` | Content pack gerado por `tools/pack-builder` a partir de `packs-src/pmsc-2026/` |
+| `src/packs.js` | Catálogo de concursos: pack + textos específicos (dossiê, siglas, unidade "questões"/"itens") |
+| `app/packs/inss-tecnico-pre.json` | Pack INSS gerado de `packs-src/inss-tecnico/` (pré-edital) |
+| `app/packs/pmsc-2026-soldado.json` | Pack PMSC gerado de `packs-src/pmsc-2026/` |
 
 ## Fluxo
 
