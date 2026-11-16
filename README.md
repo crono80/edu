@@ -34,7 +34,7 @@ Pages é necessária.
 
 ## Fluxo
 
-Ordem da página: **vantagem** (genérico × personalizado, com a curva) → **agenda preenchida** (mão na massa) → nível → carga → dossiê e top 80% → como funciona.
+Ordem da página: **como funciona** → **vantagem** (genérico × personalizado, com a curva) → **seu tempo** (horas e data) → **agenda preenchida** (mão na massa) → nível e simulado → top 80% → dossiê.
 
 | Etapa | Entrada | Cálculo |
 |---|---|---|
