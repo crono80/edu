@@ -29,6 +29,8 @@ Pages é necessária.
 
 ## Fluxo
 
+Ordem da página: **vantagem** (genérico × personalizado, com a curva) → **agenda preenchida** (mão na massa) → nível → carga → dossiê e top 80% → como funciona.
+
 | Etapa | Entrada | Cálculo |
 |---|---|---|
 | 1 · Dossiê | Edital 2026 + prova PMSC 2023 (Cebraspe) + prova AOCP PM-PE 2024 | Prioridade P = (0,35·cargo + 0,20·banca + 0,45·edital) · (1+lacuna) · M; níveis 1–5 |

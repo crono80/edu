@@ -84,8 +84,8 @@ const ACT_KEYS = Object.keys(ACT);
 const DEFAULTS = {
   strengths: {},
   quiz: null, // { attempt, answers: {id: idx}, done, idx }
-  mode: "normal",
-  hours: { ...plan.MODES.normal.hours },
+  mode: "hard",
+  hours: { ...plan.MODES.hard.hours },
   inicio: "19:00",
   inicioFds: "09:00",
   simulate: false,
@@ -293,7 +293,7 @@ function useHover() {
 /** Coverage (% of expected points) by hours of study, generic vs personalized. */
 function CompareChart({ cmp, contentH }) {
   const [box, W] = useWidth();
-  const Hh = W < 500 ? 220 : 280;
+  const Hh = W < 500 ? 200 : 230;
   const pad = { l: 40, r: 12, t: 14, b: 30 };
   const xMaxRaw = Math.max(cmp.generic.at(-1).h, cmp.personalized.at(-1).h);
   const step = niceStep(xMaxRaw * (W < 500 ? 1.6 : 1));
@@ -306,12 +306,8 @@ function CompareChart({ cmp, contentH }) {
     const h = Math.min(xMax, Math.max(0, ((x - pad.l) / (W - pad.l - pad.r)) * xMax));
     return { h, p: plan.coverageAt(cmp.personalized, h), g: plan.coverageAt(cmp.generic, h) };
   };
-  // direct labels where the two lines are furthest apart
-  let best = { h: xMax / 3, gap: -1 };
-  for (let h = step / 2; h < xMax; h += step / 4) {
-    const gap = plan.coverageAt(cmp.personalized, h) - plan.coverageAt(cmp.generic, h);
-    if (gap > best.gap) best = { h, gap };
-  }
+  // direct labels where the personalized line is around 55% (clear of the 80% reference line)
+  const best = { h: plan.hoursTo(cmp.personalized, 0.55) ?? xMax / 3 };
   const showMarker = contentH > 0 && contentH < xMax;
   const ticksX = [];
   for (let h = 0; h <= xMax + 1e-9; h += step) ticksX.push(h);
@@ -510,20 +506,20 @@ function CompareBars({ title, hint, rows, max, fmt }) {
   );
 }
 
-function ResultHero({ examISO, simulated, daysLeft, contentH, weekly, modeLabel, nums, cov, applied }) {
+function ResultHero({ examISO, simulated, daysLeft, contentH, weekly, modeLabel, nums, cov, applied, cmp }) {
   const qP = Math.round(nums.persAt * TOTAL_Q);
   const qG = Math.round(nums.genAt * TOTAL_Q);
   const gain = qP - qG;
   const saved = nums.gen80 ? Math.max(0, nums.gen80 - nums.pers80) : 0;
   return (
-    <div className="cg-surface rounded-2xl border cg-line p-4 md:p-6">
+    <div id="resultado" className="cg-anchor cg-surface rounded-2xl border cg-line p-4 md:p-6">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <p className="cg-eyebrow">Genérico × personalizado</p>
+        <p className="cg-eyebrow">Sua vantagem · genérico × personalizado</p>
         <p className="text-xs cg-ink2 cg-num">
           Prova em <b className="cg-ink">{fmtDMY(examISO)}</b> ({simulated ? "simulada" : "edital"}) · faltam {daysLeft} dias · {fmtH(weekly)}/semana ({modeLabel})
         </p>
       </div>
-      <p className="mt-2 max-w-3xl text-xl font-extrabold leading-snug tracking-tight md:text-2xl">
+      <p className="mt-2 max-w-3xl text-lg font-extrabold leading-snug tracking-tight md:text-xl">
         {gain >= 3 ? (
           <>
             Com as mesmas {fmtHr(contentH)} de estudo até a prova, seu cronograma alcança <span className="cg-accent-ink">{qP} questões</span>. O genérico, {qG}.
@@ -534,40 +530,47 @@ function ResultHero({ examISO, simulated, daysLeft, contentH, weekly, modeLabel,
           </>
         )}
       </p>
-      <div className="mt-5 grid grid-cols-1 gap-6 md:grid-cols-2">
-        <CompareBars
-          title="Questões no seu alcance até a prova"
-          hint={`De ${TOTAL_Q}. Maior é melhor.`}
-          max={TOTAL_Q}
-          fmt={(v) => `${v}`}
-          rows={[
-            { label: "Seu cronograma", value: qP, mine: true },
-            { label: "Genérico", value: qG },
-          ]}
-        />
-        <CompareBars
-          title="Horas para dominar 80% da prova"
-          hint="Menor é melhor."
-          max={Math.max(nums.gen80 ?? 0, nums.pers80)}
-          fmt={(v) => fmtHr(v)}
-          rows={[
-            { label: "Seu cronograma", value: nums.pers80, mine: true },
-            { label: "Genérico", value: nums.gen80 ?? 0 },
-          ]}
-        />
-      </div>
-      <div className="mt-5 grid grid-cols-1 gap-px overflow-hidden rounded-xl border cg-line cg-hairlines sm:grid-cols-3">
-        <div className="cg-surface p-3">
-          <p className="text-2xl font-extrabold cg-num">{gain > 0 ? `+${gain}` : "0"}</p>
-          <p className="text-xs cg-ink2">questões a mais no alcance até a prova</p>
+      <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-5">
+        <div className="flex min-w-0 flex-col gap-4 lg:col-span-2">
+          <CompareBars
+            title="Questões no seu alcance até a prova"
+            hint={`De ${TOTAL_Q}. Maior é melhor.`}
+            max={TOTAL_Q}
+            fmt={(v) => `${v}`}
+            rows={[
+              { label: "Seu cronograma", value: qP, mine: true },
+              { label: "Genérico", value: qG },
+            ]}
+          />
+          <CompareBars
+            title="Horas para dominar 80% da prova"
+            hint="Menor é melhor."
+            max={Math.max(nums.gen80 ?? 0, nums.pers80)}
+            fmt={(v) => fmtHr(v)}
+            rows={[
+              { label: "Seu cronograma", value: nums.pers80, mine: true },
+              { label: "Genérico", value: nums.gen80 ?? 0 },
+            ]}
+          />
+          <div className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border cg-line cg-hairlines">
+            <div className="cg-surface p-3">
+              <p className="text-xl font-extrabold cg-num md:text-2xl">{gain > 0 ? `+${gain}` : "0"}</p>
+              <p className="text-xs cg-ink2">questões a mais até a prova</p>
+            </div>
+            <div className="cg-surface p-3">
+              <p className="text-xl font-extrabold cg-num md:text-2xl">−{fmtHr(saved)}</p>
+              <p className="text-xs cg-ink2">para chegar a 80% da prova</p>
+            </div>
+            <div className="cg-surface p-3">
+              <p className={`text-xl font-extrabold cg-num md:text-2xl ${cov.cov >= 0.999 ? "cg-good" : ""}`}>{fmtPct(cov.cov)}</p>
+              <p className="text-xs cg-ink2">do top 80% na sua agenda</p>
+            </div>
+          </div>
         </div>
-        <div className="cg-surface p-3">
-          <p className="text-2xl font-extrabold cg-num">−{fmtHr(saved)}</p>
-          <p className="text-xs cg-ink2">de estudo para chegar a 80% da prova</p>
-        </div>
-        <div className="cg-surface p-3">
-          <p className={`text-2xl font-extrabold cg-num ${cov.cov >= 0.999 ? "cg-good" : ""}`}>{fmtPct(cov.cov)}</p>
-          <p className="text-xs cg-ink2">do top 80% coberto na sua agenda</p>
+        <div className="min-w-0 lg:col-span-3">
+          <p className="text-sm font-bold">Questões no alcance a cada hora de estudo</p>
+          <p className="mb-2 text-xs cg-muted">Passe o mouse ou o dedo na curva. A linha vertical marca as suas horas de conteúdo novo até a prova.</p>
+          <CompareChart cmp={cmp} contentH={contentH} />
         </div>
       </div>
       {!applied ? (
@@ -580,24 +583,6 @@ function ResultHero({ examISO, simulated, daysLeft, contentH, weekly, modeLabel,
         </p>
       ) : null}
     </div>
-  );
-}
-
-function Steps({ items }) {
-  return (
-    <ol className="grid grid-cols-2 gap-2 lg:grid-cols-4" aria-label="Passos">
-      {items.map((it, i) => (
-        <li key={it.href}>
-          <a href={it.href} className="cg-surface flex h-full items-start gap-2.5 rounded-xl border cg-line p-3 hover:shadow-sm">
-            <span className={`${it.done ? "cg-good-bg" : it.warn ? "cg-pill-final" : "cg-sunken"} grid h-6 w-6 shrink-0 place-items-center rounded-full text-xs font-bold`}>{it.done ? "✓" : i + 1}</span>
-            <span className="min-w-0">
-              <span className="block text-sm font-bold">{it.title}</span>
-              <span className="block text-xs cg-ink2">{it.status}</span>
-            </span>
-          </a>
-        </li>
-      ))}
-    </ol>
   );
 }
 
@@ -1408,7 +1393,7 @@ function DayColumn({ d, edited, onAdjust, onReset, isDone, onToggle }) {
   );
 }
 
-function SchedulePanel({ weeks, week, setWeek, result, examISO, dates, onSimTop, exportBar, coverageBar, dayProps, progressPanel }) {
+function SchedulePanel({ weeks, week, setWeek, result, examISO, dates, onSimTop, exportBar, coverageBar, dayProps, progressPanel, progressTop, intro }) {
   if (!weeks.length) return null;
   const w = weeks[Math.min(week, weeks.length) - 1];
   const totals = Object.fromEntries(ACT_KEYS.map((k) => [k, 0]));
@@ -1417,9 +1402,9 @@ function SchedulePanel({ weeks, week, setWeek, result, examISO, dates, onSimTop,
   return (
     <section id="cronograma" className="cg-anchor flex flex-col gap-4">
       <SectionHead
-        step="4 · Cronograma"
+        step="1 · Mão na massa"
         title="Sua agenda, semana a semana"
-        desc="Cada assunto começa com videoaula, segue com leitura e depois exercícios. Marque ✓ no que estudar; use − e + para tirar ou incluir tempo em um dia."
+        desc="Videoaula, leitura e exercícios por assunto, já com horário. Marque ✓ no que estudar; − e + mudam o tempo do dia."
         right={
           <div className="flex items-center gap-2">
             <button type="button" onClick={() => setWeek(week - 1)} disabled={week <= 1} aria-label="Semana anterior" className="cg-btn-ghost grid h-9 w-9 place-items-center rounded-lg">
@@ -1440,24 +1425,9 @@ function SchedulePanel({ weeks, week, setWeek, result, examISO, dates, onSimTop,
           </div>
         }
       />
+      {intro}
       {coverageBar}
-      {progressPanel}
-      {result.cobertura_parcial ? (
-        <div role="status" className="cg-warn flex flex-wrap items-center justify-between gap-3 rounded-lg px-4 py-3 text-sm">
-          <span className="inline-flex items-start gap-2">
-            <TriangleAlert className="cg-warn-icon mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-            <span>
-              Até {fmtDMY(examISO)} não cabe tudo: <b>{result.assuntos_cortados.length}</b> assuntos de menor prioridade ficaram fora (faltam {fmtHr(result.deficit_horas)}). O restante recebe o mínimo e a ordem segue o que mais cai.
-            </span>
-          </span>
-          {dates.top ? (
-            <button type="button" onClick={onSimTop} className="cg-btn-primary inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-bold">
-              Simular prova em {fmtDMY(dates.top)}
-            </button>
-          ) : null}
-        </div>
-      ) : null}
-      {exportBar}
+      {progressTop ? progressPanel : null}
       <ul className="flex flex-wrap gap-2" aria-label="Tempo por atividade nesta semana">
         {ACT_KEYS.filter((k) => totals[k]).map((k) => {
           const A = ACT[k];
@@ -1475,6 +1445,23 @@ function SchedulePanel({ weeks, week, setWeek, result, examISO, dates, onSimTop,
           <DayColumn key={d.data} d={d} {...dayProps(d)} />
         ))}
       </div>
+      {progressTop ? null : progressPanel}
+      {result.cobertura_parcial ? (
+        <div role="status" className="cg-warn flex flex-wrap items-center justify-between gap-3 rounded-lg px-4 py-3 text-sm">
+          <span className="inline-flex items-start gap-2">
+            <TriangleAlert className="cg-warn-icon mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+            <span>
+              Até {fmtDMY(examISO)} não cabe tudo: <b>{result.assuntos_cortados.length}</b> assuntos de menor prioridade ficaram fora (faltam {fmtHr(result.deficit_horas)}). O restante recebe o mínimo e a ordem segue o que mais cai.
+            </span>
+          </span>
+          {dates.top ? (
+            <button type="button" onClick={onSimTop} className="cg-btn-primary inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-bold">
+              Simular prova em {fmtDMY(dates.top)}
+            </button>
+          ) : null}
+        </div>
+      ) : null}
+      {exportBar}
     </section>
   );
 }
@@ -1546,7 +1533,7 @@ function ExportBar({ aluno, setAluno, onPdf, onIcs, busy, error, summary }) {
 
 /* ───────────────────────────── 5 · Resultado ───────────────────────────── */
 
-function ComparePanel({ cmp, contentH }) {
+function ComparePanel() {
   const reasons = [
     { Icon: Target, title: "Começa pelo que mais rende", text: "Assuntos em ordem de pontos esperados por hora. O genérico segue a ordem do edital, do primeiro ao último." },
     { Icon: Sparkles, title: "Tempo onde você precisa", text: "Matéria fraca ganha mais horas, matéria forte perde. O genérico dá a mesma carga para todo mundo." },
@@ -1554,7 +1541,7 @@ function ComparePanel({ cmp, contentH }) {
   ];
   return (
     <section id="comparativo" className="cg-anchor flex flex-col gap-4">
-      <SectionHead step="5 · Resultado" title="Por que o seu cronograma rende mais" desc="As mesmas horas, em outra ordem e outra dosagem." />
+      <SectionHead step="Como funciona" title="Por que o seu cronograma rende mais" desc="As mesmas horas, em outra ordem e outra dosagem." />
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
         {reasons.map(({ Icon, title, text }, i) => (
           <Card key={title}>
@@ -1569,11 +1556,6 @@ function ComparePanel({ cmp, contentH }) {
           </Card>
         ))}
       </div>
-      <Card>
-        <p className="mb-1 text-sm font-bold">Questões no alcance a cada hora de estudo</p>
-        <p className="mb-3 text-xs cg-ink2">Passe o mouse ou o dedo na curva para comparar em qualquer ponto. A linha vertical marca as suas horas de conteúdo novo até a prova.</p>
-        <CompareChart cmp={cmp} contentH={contentH} />
-      </Card>
     </section>
   );
 }
@@ -1824,12 +1806,12 @@ export default function App() {
   };
 
   const nav = [
+    ["#resultado", "Vantagem"],
+    ["#cronograma", "Agenda"],
+    ["#nivelamento", "Nível"],
+    ["#prazo", "Carga"],
     ["#dossie", "Dossiê"],
     ["#top80", "Top 80%"],
-    ["#nivelamento", "Nivelamento"],
-    ["#prazo", "Carga"],
-    ["#cronograma", "Agenda"],
-    ["#comparativo", "Resultado"],
   ];
   const daysLeft = plan.diffDaysISO(TODAY, examISO);
   const totalBlocks = weeks.reduce((s, w) => s + w.dias.reduce((t, d) => t + d.blocks.length, 0), 0);
@@ -1856,17 +1838,16 @@ export default function App() {
         </div>
       </header>
 
-      <main className="cg-gutter cg-wrap flex flex-col gap-10 py-6 md:py-8">
-        <div className="flex flex-col gap-4">
+      <main className="cg-gutter cg-wrap flex flex-col gap-10 py-5 md:py-6">
+        <div className="flex flex-col gap-3">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div className="min-w-0">
               <p className="cg-eyebrow">Caso de estudo · {pack.concurso.banca}</p>
-              <h1 className="mt-1 text-2xl font-extrabold tracking-tight md:text-3xl">{pack.concurso.nome}</h1>
-              <p className="mt-1 text-sm cg-ink2">
-                {pack.concurso.orgao} · {TOTAL_Q} questões · {pack.estrutura_prova.materias.length} matérias · {N_ASSUNTOS} assuntos
+              <h1 className="mt-1 text-xl font-extrabold tracking-tight md:text-2xl">{pack.concurso.nome}</h1>
+              <p className="mt-0.5 text-sm cg-ink2">
+                {pack.concurso.orgao} · {TOTAL_Q} questões · {N_ASSUNTOS} assuntos · edital real, curado em {fmtDMY(pack.concurso.curado_em)}
               </p>
             </div>
-            <span className="cg-mono rounded-md border cg-line px-2 py-1 text-xs cg-muted">Edital real · curado em {fmtDMY(pack.concurso.curado_em)}</span>
           </div>
           <ResultHero
             examISO={examISO}
@@ -1878,47 +1859,77 @@ export default function App() {
             nums={nums}
             cov={cov}
             applied={Boolean(state.applied)}
-          />
-          <Steps
-            items={[
-              { href: "#dossie", title: "Dossiê da prova", status: `${N_ASSUNTOS} assuntos · top 80% = ${par.topCount}`, done: true },
-              {
-                href: "#nivelamento",
-                title: "Seu nível",
-                status: !state.applied ? "pendente" : pending ? "alterado: reajuste" : "aplicado",
-                done: Boolean(state.applied) && !pending,
-                warn: Boolean(state.applied) && pending,
-              },
-              { href: "#prazo", title: "Carga horária", status: `${fmtH(weekly)}/semana · ${modeLabel}`, done: Boolean(state.applied) },
-              { href: "#cronograma", title: "Agenda", status: weeks.length ? `${weeks.length} semanas · top 80% ${fmtPct(cov.cov)}` : "sem horas", done: Boolean(state.applied) && cov.cov >= 0.999 },
-            ]}
+            cmp={cmp}
           />
         </div>
 
-        <section id="dossie" className="cg-anchor flex flex-col gap-4">
-          <SectionHead step="1 · Dossiê" title="O que mais cai nesta prova" desc="Edital 2026 cruzado com a prova anterior do cargo e com a prova mais recente da banca para o mesmo cargo." />
-          <DossierCards />
-          <DossierTable topSet={par.top} expanded={expanded} onToggle={toggleExpand} />
-        </section>
-
-        <section id="top80" className="cg-anchor flex flex-col gap-4">
-          <SectionHead
-            step="Painel"
-            title="Top 80% da prova"
-            desc={`Os ${par.topCount} assuntos com melhor retorno (pontos esperados por hora de estudo no seu nível) somam 80% da prova. A agenda cobre esses primeiro.`}
-            right={
-              <p className="inline-flex items-center gap-1.5 text-sm cg-ink2">
-                <Target className="h-4 w-4" aria-hidden="true" />
-                <b className="cg-ink cg-num">{nf1.format(par.topPts)}</b> de {TOTAL_Q} pontos
-              </p>
+        {result.ok && weeks.length ? (
+          <SchedulePanel
+            weeks={weeks}
+            week={currentWeek}
+            setWeek={setWeek}
+            result={result}
+            examISO={examISO}
+            dates={dates}
+            onSimTop={() => set({ simulate: true, simDate: dates.top })}
+            coverageBar={<CoverageBar {...coverageProps} sticky />}
+            dayProps={(d) => ({
+              edited: d.data in excecoes,
+              onAdjust: (delta) => adjustDay(d.data, delta),
+              onReset: () => resetDay(d.data),
+              isDone: (b, i) => isDone(plan.blockKey(d.data, b, i)),
+              onToggle: (b, i) => toggleDone(plan.blockKey(d.data, b, i), d, b),
+            })}
+            progressPanel={<ProgressPanel info={progressInfo} onReorganize={reorganize} />}
+            progressTop={overdue.n > 0}
+            intro={
+              !state.applied || pending ? (
+                <div className="cg-sunken flex flex-wrap items-center justify-between gap-2 rounded-xl px-4 py-2.5">
+                  <p className="min-w-0 max-w-2xl text-sm">
+                    {!state.applied ? (
+                      <>
+                        Agenda inicial em <b>{modeLabel}</b> ({fmtH(weekly)}/semana), pela prioridade da prova. Comece já; para personalizar, informe seu nível.
+                      </>
+                    ) : (
+                      "Você alterou o nivelamento. Reajuste para a agenda refletir seu nível atual."
+                    )}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <a href="#nivelamento" className="cg-btn-primary inline-flex h-9 items-center rounded-lg px-3 text-xs font-bold">
+                      Informar meu nível
+                    </a>
+                    <a href="#prazo" className="cg-btn-ghost inline-flex h-9 items-center rounded-lg px-3 text-xs font-semibold">
+                      Ajustar carga e data
+                    </a>
+                  </div>
+                </div>
+              ) : null
+            }
+            exportBar={
+              <ExportBar
+                aluno={state.aluno}
+                setAluno={(v) => set({ aluno: v })}
+                onPdf={exportPdf}
+                onIcs={exportIcs}
+                busy={busy}
+                error={exportError}
+                summary={`${weeks.length} semanas · ${totalBlocks} blocos · .ics: Google Agenda › Configurações › Importar e exportar`}
+              />
             }
           />
-          <TopPanel par={par} />
-        </section>
+        ) : (
+          <section id="cronograma" className="cg-anchor">
+            <div role="status" className="cg-warn flex items-center gap-2 rounded-lg px-4 py-3 text-sm">
+              <TriangleAlert className="cg-warn-icon h-4 w-4 shrink-0" aria-hidden="true" />
+              {!hasHours ? "Defina ao menos um dia com horas de estudo." : `Não foi possível montar a agenda: ${result.erros?.[0]?.message ?? "verifique a data"}.`}
+            </div>
+          </section>
+        )}
+
 
         <section id="nivelamento" className="cg-anchor flex flex-col gap-4" ref={quizRef}>
           <SectionHead
-            step="2 · Nivelamento"
+            step="2 · Seu nível"
             title="Seu ponto de partida"
             desc="Marque cada matéria (opcional) e faça o simulado. Matéria fraca recebe mais horas; forte, menos. Sem marcação, vale o peso da prova."
             right={
@@ -1969,46 +1980,28 @@ export default function App() {
           />
         </section>
 
-        {result.ok && weeks.length ? (
-          <SchedulePanel
-            weeks={weeks}
-            week={currentWeek}
-            setWeek={setWeek}
-            result={result}
-            examISO={examISO}
-            dates={dates}
-            onSimTop={() => set({ simulate: true, simDate: dates.top })}
-            coverageBar={<CoverageBar {...coverageProps} sticky />}
-            dayProps={(d) => ({
-              edited: d.data in excecoes,
-              onAdjust: (delta) => adjustDay(d.data, delta),
-              onReset: () => resetDay(d.data),
-              isDone: (b, i) => isDone(plan.blockKey(d.data, b, i)),
-              onToggle: (b, i) => toggleDone(plan.blockKey(d.data, b, i), d, b),
-            })}
-            progressPanel={<ProgressPanel info={progressInfo} onReorganize={reorganize} />}
-            exportBar={
-              <ExportBar
-                aluno={state.aluno}
-                setAluno={(v) => set({ aluno: v })}
-                onPdf={exportPdf}
-                onIcs={exportIcs}
-                busy={busy}
-                error={exportError}
-                summary={`${weeks.length} semanas · ${totalBlocks} blocos · .ics: Google Agenda › Configurações › Importar e exportar`}
-              />
+        <section id="dossie" className="cg-anchor flex flex-col gap-4">
+          <SectionHead step="4 · Dossiê" title="O que mais cai nesta prova" desc="Edital 2026 cruzado com a prova anterior do cargo e com a prova mais recente da banca para o mesmo cargo." />
+          <DossierCards />
+          <DossierTable topSet={par.top} expanded={expanded} onToggle={toggleExpand} />
+        </section>
+
+        <section id="top80" className="cg-anchor flex flex-col gap-4">
+          <SectionHead
+            step="Painel"
+            title="Top 80% da prova"
+            desc={`Os ${par.topCount} assuntos com melhor retorno (pontos esperados por hora de estudo no seu nível) somam 80% da prova. A agenda cobre esses primeiro.`}
+            right={
+              <p className="inline-flex items-center gap-1.5 text-sm cg-ink2">
+                <Target className="h-4 w-4" aria-hidden="true" />
+                <b className="cg-ink cg-num">{nf1.format(par.topPts)}</b> de {TOTAL_Q} pontos
+              </p>
             }
           />
-        ) : (
-          <section id="cronograma" className="cg-anchor">
-            <div role="status" className="cg-warn flex items-center gap-2 rounded-lg px-4 py-3 text-sm">
-              <TriangleAlert className="cg-warn-icon h-4 w-4 shrink-0" aria-hidden="true" />
-              {!hasHours ? "Defina ao menos um dia com horas de estudo." : `Não foi possível montar a agenda: ${result.erros?.[0]?.message ?? "verifique a data"}.`}
-            </div>
-          </section>
-        )}
+          <TopPanel par={par} />
+        </section>
 
-        <ComparePanel cmp={cmp} contentH={cap.content} />
+        <ComparePanel />
 
         <MethodNotes />
       </main>
