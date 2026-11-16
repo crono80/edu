@@ -1591,7 +1591,7 @@ function ExportBar({ aluno, setAluno, onPdf, onIcs, busy, error, summary }) {
 function ComparePanel() {
   const reasons = [
     { Icon: Target, title: "Começa pelo que mais rende", text: "Assuntos em ordem de pontos esperados por hora. O genérico segue a ordem do edital, do primeiro ao último." },
-    { Icon: Sparkles, title: "Tempo onde você precisa", text: "Matéria fraca ganha mais horas, matéria forte perde. O genérico dá a mesma carga para todo mundo." },
+    { Icon: Sparkles, title: "Tempo onde você precisa", text: "Mais horas nas matérias em que você tem mais dificuldade, menos nas que você já domina. O genérico dá a mesma carga para todo mundo." },
     { Icon: Repeat, title: "Revisão e simulado no calendário", text: "Revisões em 1, 7, 21 e 60 dias e simulados periódicos já reservados, sem roubar o conteúdo novo." },
   ];
   return (
@@ -2032,7 +2032,7 @@ export default function App() {
           <SectionHead
             step="3 · Seu nível"
             title="Seu ponto de partida"
-            desc="Marque cada matéria (opcional) e faça o simulado. Matéria fraca recebe mais horas; forte, menos. Sem marcação, vale o peso da prova."
+            desc="Marque seu nível em cada matéria (opcional) e faça o simulado. Onde você marcar Fraco, a agenda dá mais horas; onde marcar Forte, menos. Sem marcação, vale o peso da prova."
             right={
               Object.keys(state.strengths).length ? (
                 <button type="button" onClick={() => set({ strengths: {} })} className="cg-btn-ghost inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold">
