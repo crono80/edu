@@ -27,10 +27,11 @@ const AULA_RATIO = { lei_seca: 0.3, memorizacao: 0.3, doutrina: 0.6, jurispruden
 export const PARETO_TARGET = 0.8;
 
 const pad = (n) => String(n).padStart(2, "0");
-export const todayISO = () => {
-  const d = new Date();
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-};
+// Every date and time in the product is Brasília time (no DST since 2019: UTC−03:00).
+export const TIMEZONE = "America/Sao_Paulo";
+export const UTC_OFFSET_MIN = -180;
+export const todayISO = (now = new Date()) =>
+  new Intl.DateTimeFormat("en-CA", { timeZone: TIMEZONE, year: "numeric", month: "2-digit", day: "2-digit" }).format(now);
 export const addDaysISO = (iso, n) => {
   const [y, m, d] = iso.split("-").map(Number);
   const t = new Date(Date.UTC(y, m - 1, d + n));
@@ -392,11 +393,18 @@ export const ACTIVITY_LABEL = { videoaula: "Videoaula", leitura: "Leitura", exer
 
 const icsEscape = (s) => String(s ?? "").replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
 
-/** Local wall-clock time in the viewer's time zone -> UTC "YYYYMMDDTHHMMSSZ" (DST-safe, no TZID needed). */
+/** Brasília wall-clock time -> UTC "YYYYMMDDTHHMMSSZ", whatever the viewer's device time zone is. */
 export function icsUtc(iso, minOfDay) {
   const [y, m, d] = iso.split("-").map(Number);
-  const t = new Date(y, m - 1, d, 0, minOfDay, 0); // Date normalizes minutes past midnight
+  const t = new Date(Date.UTC(y, m - 1, d, 0, minOfDay - UTC_OFFSET_MIN, 0));
   return t.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+}
+
+/** Brasília wall-clock time -> "YYYY-MM-DDTHH:MM:00" for APIs that take { dateTime, timeZone }. */
+export function localDateTime(iso, minOfDay) {
+  const day = addDaysISO(iso, Math.floor(minOfDay / 1440));
+  const mm = ((minOfDay % 1440) + 1440) % 1440;
+  return `${day}T${pad(Math.floor(mm / 60))}:${pad(mm % 60)}:00`;
 }
 
 /** RFC 5545 line folding: at most 75 octets per line, never splitting a UTF-8 character. */
@@ -427,19 +435,62 @@ const hash = (str) => {
 };
 
 /**
- * toICS({ weeks, pack, materias, appName, from, isDone, planStart, siteUrl, unidade }) -> iCalendar text.
- * Only blocks from `from` (today) on and not marked as studied. UIDs are stable for one plan version
- * (planStart), so re-importing the same plan does not duplicate events.
+ * What goes to an external calendar: studied blocks (from the progress log, any date, marked done)
+ * plus what is still planned from today on. Past blocks that were not studied are left out.
+ *   log: { key: { data, assunto_id, materia_id, atividade, minutos, inicio?, fim? } }
+ *   horizonDays: limit planned blocks to this many days ahead (null = until the exam)
  */
-export function toICS({ weeks, pack, materias, appName, from = null, isDone = () => false, planStart = "", siteUrl = "", unidade = "questões" }) {
-  const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
-  const tz = (() => {
-    try {
-      return Intl.DateTimeFormat().resolvedOptions().timeZone || "";
-    } catch {
-      return "";
+export function calendarEntries({ weeks, pack, log = {}, today, isDone = () => false, horizonDays = null, inicio = "19:00", inicioFds = "09:00" }) {
+  const byId = Object.fromEntries(pack.assuntos.map((a) => [a.id, a]));
+  const until = horizonDays === null ? null : addDaysISO(today, horizonDays);
+  const out = [];
+  // studied, from the log: times kept when the block was marked; older entries get stacked from the day's start
+  const cursor = {};
+  const entries = Object.entries(log).sort((a, b) => (a[1].data < b[1].data ? -1 : a[1].data > b[1].data ? 1 : (a[1].inicio ?? 0) - (b[1].inicio ?? 0)));
+  for (const [key, e] of entries) {
+    const weekend = ["sab", "dom"].includes(["dom", "seg", "ter", "qua", "qui", "sex", "sab"][new Date(`${e.data}T12:00:00Z`).getUTCDay()]);
+    let start = e.inicio;
+    if (!Number.isFinite(start)) {
+      start = cursor[e.data] ?? parseClock(weekend ? inicioFds : inicio);
+      cursor[e.data] = start + e.minutos;
     }
-  })();
+    const a = e.assunto_id ? byId[e.assunto_id] : null;
+    out.push({ key: `feito:${key}`, data: e.data, start, end: Number.isFinite(e.fim) ? e.fim : start + e.minutos, atividade: e.atividade, assunto: a, materia_id: e.materia_id, video: a ? videoFor(a) : null, motivo: null, estudado: true });
+  }
+  for (const w of weeks) {
+    for (const d of w.dias) {
+      if (d.data < today || (until && d.data > until)) continue;
+      d.blocks.forEach((b, i) => {
+        if (isDone(d, b, i)) return;
+        out.push({ key: `plano:${blockKey(d.data, b, i)}`, data: d.data, start: b.start, end: b.end, atividade: b.atividade, assunto: b.assunto, materia_id: b.materia_id, video: b.video, motivo: b.motivo, estudado: false });
+      });
+    }
+  }
+  return out.sort((x, y) => (x.data < y.data ? -1 : x.data > y.data ? 1 : x.start - y.start));
+}
+
+const entryTitle = (e, pack, unidade) => {
+  const what = e.assunto ? e.assunto.nome : `Simulado completo (${pack.estrutura_prova.total_questoes} ${unidade})`;
+  return `${e.estudado ? "✓ " : ""}[${ACTIVITY_LABEL[e.atividade] ?? e.atividade}] ${what}`;
+};
+const entryDescription = (e, materias, siteUrl) =>
+  [
+    e.estudado ? "Estudado (registrado na plataforma)." : "",
+    e.materia_id ? materias[e.materia_id] ?? "" : "Prova completa no tempo real",
+    e.video ? `${e.video.tipo === "video" ? "Aula" : "Buscar aula"}: ${e.video.url}` : "",
+    e.motivo ?? "",
+    siteUrl ? `Marque o progresso em ${siteUrl}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+/**
+ * toICS({ entries, pack, materias, appName, planStart, siteUrl, unidade }) -> { text, eventos }.
+ * Times in Brasília (sent as UTC). Planned UIDs are stable for one plan version (planStart);
+ * studied ones are stable forever, so re-importing does not duplicate them.
+ */
+export function toICS({ entries, pack, materias = {}, appName, planStart = "", siteUrl = "", unidade = "questões" }) {
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
@@ -447,44 +498,84 @@ export function toICS({ weeks, pack, materias, appName, from = null, isDone = ()
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     `X-WR-CALNAME:${icsEscape(`Cronograma · ${pack.concurso.nome}`)}`,
-    `X-WR-CALDESC:${icsEscape(`${appName}. Gerado em ${new Date().toLocaleDateString("pt-BR")}.`)}`,
-    ...(tz ? [`X-WR-TIMEZONE:${tz}`] : []),
+    `X-WR-CALDESC:${icsEscape(`${appName}. Gerado em ${todayISO().split("-").reverse().join("/")} (horário de Brasília).`)}`,
+    `X-WR-TIMEZONE:${TIMEZONE}`,
   ];
-  let n = 0;
-  for (const w of weeks) {
-    for (const d of w.dias) {
-      if (from && d.data < from) continue;
-      d.blocks.forEach((b, i) => {
-        if (isDone(d, b, i)) return;
-        const title = b.assunto ? b.assunto.nome : `Simulado completo (${pack.estrutura_prova.total_questoes} ${unidade})`;
-        const desc = [
-          b.materia_id ? materias[b.materia_id] : "Prova completa no tempo real",
-          b.video ? `${b.video.tipo === "video" ? "Aula" : "Buscar aula"}: ${b.video.url}` : "",
-          b.motivo ?? "",
-          siteUrl ? `Marque como estudado em ${siteUrl}` : "",
-        ]
-          .filter(Boolean)
-          .join("\n");
-        lines.push(
-          "BEGIN:VEVENT",
-          `UID:${pack.concurso.id}-${planStart || "plano"}-${d.data}-${hash(`${b.atividade}|${b.assunto?.id ?? "simulado"}|${i}`)}@cronograma-personalizado`,
-          `DTSTAMP:${stamp}`,
-          `DTSTART:${icsUtc(d.data, b.start)}`,
-          `DTEND:${icsUtc(d.data, b.end)}`,
-          `SUMMARY:${icsEscape(`[${ACTIVITY_LABEL[b.atividade]}] ${title}`)}`,
-          `DESCRIPTION:${icsEscape(desc)}`,
-          `CATEGORIES:${icsEscape(ACTIVITY_LABEL[b.atividade])}`,
-          ...(b.video ? [`URL:${b.video.url}`] : []),
-          "STATUS:CONFIRMED",
-          "TRANSP:OPAQUE",
-          "END:VEVENT"
-        );
-        n += 1;
-      });
-    }
+  for (const e of entries) {
+    const uidBase = e.estudado ? e.key : `${planStart || "plano"}|${e.key}`;
+    lines.push(
+      "BEGIN:VEVENT",
+      `UID:${pack.concurso.id}-${hash(uidBase)}-${e.data.replace(/-/g, "")}@cronograma-personalizado`,
+      `DTSTAMP:${stamp}`,
+      `DTSTART:${icsUtc(e.data, e.start)}`,
+      `DTEND:${icsUtc(e.data, e.end)}`,
+      `SUMMARY:${icsEscape(entryTitle(e, pack, unidade))}`,
+      `DESCRIPTION:${icsEscape(entryDescription(e, materias, siteUrl))}`,
+      `CATEGORIES:${icsEscape(e.estudado ? "Estudado" : ACTIVITY_LABEL[e.atividade] ?? e.atividade)}`,
+      ...(e.video ? [`URL:${e.video.url}`] : []),
+      "STATUS:CONFIRMED",
+      "TRANSP:OPAQUE",
+      "END:VEVENT"
+    );
   }
   lines.push("END:VCALENDAR");
-  return { text: lines.map(foldLine).join("\r\n") + "\r\n", eventos: n };
+  return { text: lines.map(foldLine).join("\r\n") + "\r\n", eventos: entries.length };
+}
+
+/* ---------------- Google Agenda (Calendar API v3) ---------------- */
+
+const B32HEX = "0123456789abcdefghijklmnopqrstuv";
+/** Deterministic event id in Google's alphabet (base32hex, 5–1024 chars). */
+export function gcalId(str) {
+  let a = 2166136261;
+  let b = 5381;
+  for (let i = 0; i < str.length; i++) {
+    a = Math.imul(a ^ str.charCodeAt(i), 16777619) >>> 0;
+    b = (Math.imul(b, 33) ^ str.charCodeAt(i)) >>> 0;
+  }
+  let out = "cpv";
+  for (const n of [a, b]) for (let k = 0; k < 7; k++) out += B32HEX[(n >>> (k * 5)) & 31];
+  return out;
+}
+
+/** Calendar API event body for one entry (Brasília time zone, studied blocks in green). */
+export function gcalEvent(e, { pack, materias = {}, siteUrl = "", unidade = "questões", planStart = "", appName = "" }) {
+  const id = gcalId(`${pack.concurso.id}|${e.estudado ? e.key : `${planStart}|${e.key}`}`);
+  return {
+    id,
+    summary: entryTitle(e, pack, unidade),
+    description: entryDescription(e, materias, siteUrl),
+    start: { dateTime: localDateTime(e.data, e.start), timeZone: TIMEZONE },
+    end: { dateTime: localDateTime(e.data, e.end), timeZone: TIMEZONE },
+    ...(e.estudado ? { colorId: "10" } : {}),
+    ...(siteUrl ? { source: { title: appName || "Cronograma", url: siteUrl } } : {}),
+    extendedProperties: { private: { cpv: "1", chave: e.key } },
+  };
+}
+
+const sameEvent = (a, b) =>
+  a.summary === b.summary &&
+  (a.description ?? "") === (b.description ?? "") &&
+  a.start?.dateTime?.slice(0, 16) === b.start?.dateTime?.slice(0, 16) &&
+  a.end?.dateTime?.slice(0, 16) === b.end?.dateTime?.slice(0, 16) &&
+  (a.colorId ?? "") === (b.colorId ?? "");
+
+/**
+ * What a sync has to do so that the app calendar holds exactly `desired`:
+ * insert new events, update changed ones, delete the rest (only events this app created).
+ *   existing: events listed from the app calendar (with id, summary, start, end, colorId)
+ */
+export function planSync(existing, desired) {
+  const have = new Map(existing.filter((e) => e.status !== "cancelled").map((e) => [e.id, e]));
+  const insert = [];
+  const update = [];
+  for (const d of desired) {
+    const cur = have.get(d.id);
+    if (!cur) insert.push(d);
+    else if (!sameEvent(cur, { ...d, start: { dateTime: d.start.dateTime }, end: { dateTime: d.end.dateTime } })) update.push(d);
+    have.delete(d.id);
+  }
+  return { insert, update, remove: [...have.values()].map((e) => e.id) };
 }
 
 /** Starts a download for a Blob. Returns the object URL (kept alive so a visible link can retry). */
