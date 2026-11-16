@@ -33,6 +33,7 @@ import {
 import { CATALOG, selectEntry } from "./packs.js";
 import { CSS, EXTRA_CSS } from "./theme.js";
 import * as plan from "./plan.js";
+import { GOOGLE_CLIENT_ID, GOOGLE_SYNC_DAYS } from "./config.js";
 
 /* ───────────────────────────── Dados fixos ───────────────────────────── */
 
@@ -97,7 +98,8 @@ const DEFAULTS = {
   aluno: "",
   applied: null, // leveling snapshot used by the plan: { strengths, q: { attempt, answers } | null }
   excecoes: {}, // per-date hours the student added or removed in the agenda
-  log: {}, // blocks the student marked as studied: key -> { data, assunto_id, materia_id, atividade, minutos, consolidated }
+  log: {}, // blocks the student marked as studied: key -> { data, assunto_id, materia_id, atividade, minutos, inicio, fim, consolidated }
+  gcal: null, // { calendarId, ultima } of the Google Agenda this browser syncs
   planStart: null, // the agenda runs from this date; "Reorganizar" moves it to today
 };
 
@@ -1585,7 +1587,7 @@ function FileLinks({ f, label }) {
   );
 }
 
-function ExportBar({ aluno, setAluno, onPdf, onIcs, busy, error, summary, files }) {
+function ExportBar({ aluno, setAluno, onPdf, onIcs, onGoogle, gsync, busy, error, summary, files }) {
   return (
     <div className="cg-surface flex flex-wrap items-end gap-3 rounded-xl border cg-line p-3">
       <div className="flex min-w-0 flex-1 flex-col gap-1.5" style={{ minWidth: 200 }}>
@@ -1604,7 +1606,14 @@ function ExportBar({ aluno, setAluno, onPdf, onIcs, busy, error, summary, files 
             <CalendarPlus className="h-4 w-4" aria-hidden="true" />
             Google Agenda (.ics)
           </button>
+          {onGoogle ? (
+            <button type="button" onClick={onGoogle} disabled={gsync?.fase === "rodando"} className="cg-btn-ghost inline-flex h-10 items-center gap-2 rounded-lg px-4 text-sm font-bold">
+              <Repeat className="h-4 w-4" aria-hidden="true" />
+              {gsync?.fase === "rodando" ? "Sincronizando…" : "Sincronizar com Google Agenda"}
+            </button>
+          ) : null}
         </div>
+        {gsync?.msg ? <p className={`text-xs ${gsync.fase === "erro" ? "cg-error" : "cg-ink2"}`}>{gsync.msg}</p> : null}
         <p className="text-xs cg-muted">{error ? <span className="cg-error">{error}</span> : summary}</p>
       </div>
       {files.pdf || files.ics ? (
@@ -1811,7 +1820,7 @@ export default function App() {
     setState((s) => {
       const log = { ...(s.log ?? {}) };
       if (log[key] && !log[key].consolidated) delete log[key];
-      else log[key] = { data: d.data, assunto_id: b.assunto?.id ?? null, materia_id: b.materia_id ?? null, atividade: b.atividade, minutos: b.minutos, consolidated: false };
+      else log[key] = { data: d.data, assunto_id: b.assunto?.id ?? null, materia_id: b.materia_id ?? null, atividade: b.atividade, minutos: b.minutos, inicio: b.start, fim: b.end, consolidated: false };
       return { ...s, log };
     });
   const consolidate = (s) => Object.fromEntries(Object.entries(s.log ?? {}).map(([k, e]) => [k, { ...e, consolidated: true }]));
@@ -1903,20 +1912,40 @@ export default function App() {
       setBusy(false);
     }
   };
+  const [gsync, setGsync] = useState(null); // { fase, feitos, total, msg }
+  useEffect(() => {
+    if (GOOGLE_CLIENT_ID) import("./gcal.js").then((g) => g.prepare(GOOGLE_CLIENT_ID));
+  }, []);
+  const syncGoogle = async () => {
+    if (!GOOGLE_CLIENT_ID || gsync?.fase === "rodando") return;
+    const g = await import("./gcal.js");
+    const tokenP = g.requestToken(); // inside the click: Google's popup needs the gesture
+    setGsync({ fase: "rodando", feitos: 0, total: 0, msg: "Aguardando o login do Google…" });
+    try {
+      const token = await tokenP;
+      const site = `${window.location.origin}${window.location.pathname}?concurso=${pack.concurso.id}`;
+      const entries = plan.calendarEntries({ weeks, pack, log: state.log ?? {}, today: TODAY, isDone: (d, b, i) => isDone(plan.blockKey(d.data, b, i)), horizonDays: GOOGLE_SYNC_DAYS, inicio: state.inicio, inicioFds: state.inicioFds });
+      const desired = entries.map((e) => plan.gcalEvent(e, { pack, materias: MAT_NAMES, siteUrl: site, unidade: U, planStart: start, appName: APP_NAME }));
+      const r = await g.syncCalendar({
+        token,
+        calendarId: state.gcal?.calendarId ?? null,
+        calendarName: `Cronograma · ${pack.concurso.nome}`,
+        description: `${APP_NAME}. O progresso é registrado na plataforma; aqui ficam o que falta e o que você já estudou (✓).`,
+        desired,
+        onProgress: (feitos, total) => setGsync({ fase: "rodando", feitos, total, msg: `Sincronizando ${feitos}/${total}…` }),
+      });
+      set({ gcal: { calendarId: r.calendarId, ultima: new Date().toISOString() } });
+      setGsync({ fase: "ok", msg: `Google Agenda atualizado: ${r.inserted} novos, ${r.updated} alterados, ${r.removed} removidos. Próximas ${GOOGLE_SYNC_DAYS / 7} semanas + o que você já estudou.` });
+    } catch (err) {
+      console.error(err);
+      setGsync({ fase: "erro", msg: `Não foi possível sincronizar: ${err.message}` });
+    }
+  };
   const exportIcs = () => {
     if (!weeks.length) return;
     const site = typeof window === "undefined" ? "" : `${window.location.origin}${window.location.pathname}?concurso=${pack.concurso.id}`;
-    const { text, eventos } = plan.toICS({
-      weeks,
-      pack,
-      materias: MAT_NAMES,
-      appName: APP_NAME,
-      from: TODAY,
-      isDone: (d, b, i) => isDone(plan.blockKey(d.data, b, i)),
-      planStart: start,
-      siteUrl: site,
-      unidade: U,
-    });
+    const entries = plan.calendarEntries({ weeks, pack, log: state.log ?? {}, today: TODAY, isDone: (d, b, i) => isDone(plan.blockKey(d.data, b, i)), inicio: state.inicio, inicioFds: state.inicioFds });
+    const { text, eventos } = plan.toICS({ entries, pack, materias: MAT_NAMES, appName: APP_NAME, planStart: start, siteUrl: site, unidade: U });
     const filename = `cronograma-${pack.concurso.id}-${TODAY}.ics`;
     const blob = new Blob([text], { type: "text/calendar;charset=utf-8" });
     setFile("ics", { url: plan.downloadBlob(filename, blob), filename, blob, eventos });
@@ -2075,6 +2104,8 @@ export default function App() {
                 busy={busy}
                 error={exportError}
                 files={files}
+                onGoogle={GOOGLE_CLIENT_ID ? syncGoogle : null}
+                gsync={gsync}
                 summary={`${weeks.length} semanas · ${totalBlocks} blocos · o .ics leva só o que falta, de hoje em diante`}
               />
             }

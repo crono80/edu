@@ -61,3 +61,11 @@ Exporta **PDF** (parâmetros, prioridades, comparativo, semanas com caixa "Feito
 `app/` é o **Cronograma Personalizado para Você**: content packs por concurso, scoring em três quadros,
 alocação determinística e UI em 5 telas, sem build step. No ar em
 https://thiago-harry.github.io/web/app/ · detalhes em `app/README.md`.
+
+## Google Agenda
+
+- **Fuso:** tudo em horário de Brasília (`America/Sao_Paulo`), independentemente do fuso do aparelho.
+- **Progresso:** marcado só na plataforma. Para o Google vão os blocos de hoje em diante ainda não estudados e, no passado, só os que o aluno marcou como estudados (título com ✓, cor verde).
+- **.ics:** mesma regra, para importar numa agenda nova.
+- **Sincronização direta** (`src/gcal.js`): login Google Identity Services, escopo `calendar.app.created` (o app só enxerga a agenda que ele mesmo cria). Ids fixos por evento: sincronizar de novo só insere, altera ou remove o que mudou. Envia as próximas `GOOGLE_SYNC_DAYS` (56) dias + tudo que foi estudado.
+- **Ativar:** colocar o ID do cliente OAuth em `src/config.js` (`GOOGLE_CLIENT_ID`); vazio = botão oculto. O ID é público; a chave secreta não é usada.
