@@ -1936,7 +1936,8 @@ export default function App() {
         onProgress: (feitos, total) => setGsync({ fase: "rodando", feitos, total, msg: `Sincronizando ${feitos}/${total}…` }),
       });
       set({ gcal: { calendarId: r.calendarId, ultima: new Date().toISOString() } });
-      setGsync({ fase: "ok", msg: `Google Agenda atualizado: ${r.inserted} novos, ${r.updated} alterados, ${r.removed} removidos. Próximas ${GOOGLE_SYNC_DAYS / 7} semanas + o que você já estudou.` });
+      const alcance = GOOGLE_SYNC_DAYS ? `as próximas ${Math.round(GOOGLE_SYNC_DAYS / 7)} semanas` : `a agenda até a prova (${fmtDMY(examISO)})`;
+      setGsync({ fase: "ok", msg: `Google Agenda atualizado: ${r.inserted} novos, ${r.updated} alterados, ${r.removed} removidos. Inclui ${alcance} e o que você já estudou.` });
     } catch (err) {
       console.error(err);
       setGsync({ fase: "erro", msg: `Não foi possível sincronizar: ${err.message}` });
