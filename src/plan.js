@@ -540,7 +540,9 @@ export function gcalId(str) {
 
 /** Calendar API event body for one entry (Brasília time zone, studied blocks in green). */
 export function gcalEvent(e, { pack, materias = {}, siteUrl = "", unidade = "questões", planStart = "", appName = "" }) {
-  const id = gcalId(`${pack.concurso.id}|${e.estudado ? e.key : `${planStart}|${e.key}`}`);
+  // ids come from date + activity + topic + position: a day that did not change keeps its events on re-sync,
+  // even after a reorganization (only the days that changed are rewritten)
+  const id = gcalId(`${pack.concurso.id}|${e.key}`);
   return {
     id,
     summary: entryTitle(e, pack, unidade),

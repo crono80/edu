@@ -117,6 +117,6 @@ export async function syncCalendar({ token, calendarId, calendarName, descriptio
     ...remove.map((eid) => () => api(token, "DELETE", `/calendars/${cal}/events/${eid}`).catch((err) => (err.status === 404 || err.status === 410 ? null : Promise.reject(err)))),
   ];
   onProgress(0, jobs.length);
-  await pool(jobs, 4, (n) => onProgress(n, jobs.length));
+  await pool(jobs, 3, (n) => onProgress(n, jobs.length)); // gentle on Google's per-user rate limit
   return { calendarId: id, inserted: insert.length, updated: update.length, removed: remove.length };
 }
