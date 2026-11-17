@@ -98,6 +98,8 @@ Para confirmar uma publicação: o commit `Publish from main <sha7>` aparece no 
 
 **MVP**
 - Ordem da página: Como funciona → Vantagem → Seu tempo → Agenda → Nível + simulado → Top 80% → Dossiê.
+- **Vantagem** mostra tempo, não itens: horas a menos para dominar 80% da prova, semanas de antecedência
+  e as datas em que cada cronograma chega a 80% (`plan.dateToCover`), com a diferença marcada no gráfico.
 - Estado no `localStorage` (`cpv:<packId>:v1`); concurso por `?concurso=<id>`, depois `cpv:concurso`,
   depois o padrão (INSS).
 - **Fuso:** sempre horário de Brasília (`America/Sao_Paulo`). O `.ics` grava UTC calculado a partir de

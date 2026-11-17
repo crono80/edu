@@ -151,6 +151,8 @@ const APP_CSS = `
 .cg-ref { stroke: var(--muted); }
 .cg-cross { stroke: var(--ink-2); }
 .cg-area { fill: var(--accent); opacity: .08; }
+.cg-gap-band { stroke: var(--accent); opacity: .35; }
+.cg-chart-gap { fill: var(--accent-ink); font-size: 13px; font-weight: 800; paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
 .cg-tip { background: var(--surface); border: 1px solid var(--line-strong); box-shadow: 0 4px 16px rgba(0,0,0,.12); }
 .cg-check { border: 1.5px solid var(--line-strong); background: var(--surface); color: var(--on-accent); }
 .cg-check:hover { border-color: var(--good); }
@@ -297,7 +299,7 @@ function useHover() {
 }
 
 /** Coverage (% of expected points) by hours of study, generic vs personalized. */
-function CompareChart({ cmp, contentH }) {
+function CompareChart({ cmp, contentH, gap = null }) {
   const [box, W] = useWidth();
   const Hh = W < 500 ? 200 : 230;
   const pad = { l: 40, r: 12, t: 14, b: 30 };
@@ -331,7 +333,7 @@ function CompareChart({ cmp, contentH }) {
         viewBox={`0 0 ${W} ${Hh}`}
         className="block h-auto w-full touch-none select-none"
         role="img"
-        aria-label="Pontos esperados cobertos por horas de estudo: cronograma personalizado contra genérico"
+        aria-label={gap ? `Horas de estudo até dominar 80% da prova: seu cronograma chega com ${gap.label.replace("−", "")} a menos que o genérico` : "Quanto da prova cada cronograma cobre por hora de estudo"}
         width={W}
         height={Hh}
         onPointerMove={(e) => onMove(e, toValue)}
@@ -362,12 +364,26 @@ function CompareChart({ cmp, contentH }) {
         ) : null}
         <path d={path(cmp.generic)} fill="none" className="cg-series-g" strokeWidth="2" strokeDasharray="6 3" strokeLinejoin="round" />
         <path d={path(cmp.personalized)} fill="none" className="cg-series-p" strokeWidth="2" strokeLinejoin="round" />
-        <text x={sx(best.h) - 6} y={sy(plan.coverageAt(cmp.personalized, best.h)) - 8} textAnchor="end" className="cg-chart-text cg-chart-ink" fontWeight="600">
-          Seu cronograma
-        </text>
-        <text x={sx(best.h) + 6} y={sy(plan.coverageAt(cmp.generic, best.h)) + 16} className="cg-chart-text cg-chart-ink" fontWeight="600">
-          Genérico
-        </text>
+        {gap && gap.to <= xMax ? (
+          <g>
+            <line x1={sx(gap.from)} x2={sx(gap.to)} y1={sy(0.8)} y2={sy(0.8)} className="cg-gap-band" strokeWidth="5" strokeLinecap="round" />
+            <circle cx={sx(gap.from)} cy={sy(0.8)} r="4.5" className="cg-fill-p" stroke="var(--surface)" strokeWidth="2" />
+            <circle cx={sx(gap.to)} cy={sy(0.8)} r="4.5" className="cg-fill-g" stroke="var(--surface)" strokeWidth="2" />
+            <text x={(sx(gap.from) + sx(gap.to)) / 2} y={sy(0.8) + 18} textAnchor="middle" className="cg-chart-gap">
+              {gap.label}
+            </text>
+          </g>
+        ) : null}
+        {W >= 500 ? (
+          <>
+            <text x={sx(best.h) - 6} y={sy(plan.coverageAt(cmp.personalized, best.h)) - 8} textAnchor="end" className="cg-chart-text cg-chart-ink" fontWeight="600">
+              Seu cronograma
+            </text>
+            <text x={sx(best.h) + 6} y={sy(plan.coverageAt(cmp.generic, best.h)) + 16} className="cg-chart-text cg-chart-ink" fontWeight="600">
+              Genérico
+            </text>
+          </>
+        ) : null}
         {hover ? (
           <g>
             <line x1={sx(hover.h)} x2={sx(hover.h)} y1={pad.t} y2={sy(0)} className="cg-cross" strokeWidth="1" strokeDasharray="2 3" />
@@ -512,15 +528,15 @@ function CompareBars({ title, hint, rows, max, fmt }) {
   );
 }
 
-function ResultHero({ examISO, simulated, daysLeft, contentH, weekly, modeLabel, nums, cov, applied, cmp }) {
-  const qP = Math.round(nums.persAt * TOTAL_Q);
-  const qG = Math.round(nums.genAt * TOTAL_Q);
-  const gain = qP - qG;
+function ResultHero({ examISO, simulated, daysLeft, contentH, weekly, modeLabel, nums, cov, applied, cmp, dates }) {
   const saved = nums.gen80 ? Math.max(0, nums.gen80 - nums.pers80) : 0;
-  // content hours per week in this plan: turns saved hours into weeks
+  const hasGap = saved >= 1;
+  // weeks saved: from the two finish dates when both exist, else from content hours per week of this plan
   const perWeek = daysLeft > 0 ? contentH / (daysLeft / 7) : 0;
-  const weeksSaved = perWeek > 0 ? Math.round(saved / perWeek) : 0;
-  const both = gain < 3; // both plans already reach (nearly) everything by the exam: lead with time
+  const weeksSaved =
+    dates.top && dates.gen ? Math.max(0, Math.round(plan.diffDaysISO(dates.top, dates.gen) / 7)) : perWeek > 0 ? Math.round(saved / perWeek) : 0;
+  const after = (iso) => (iso && iso > examISO ? " (depois da prova)" : "");
+  const when = (iso) => (iso ? fmtDMY(iso) : "mais de 3 anos");
   return (
     <div id="resultado" className="cg-anchor cg-surface rounded-2xl border cg-line p-4 md:p-6">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -530,26 +546,30 @@ function ResultHero({ examISO, simulated, daysLeft, contentH, weekly, modeLabel,
         </p>
       </div>
       <p className="mt-2 max-w-3xl text-lg font-extrabold leading-snug tracking-tight md:text-xl">
-        {gain >= 3 ? (
+        {hasGap ? (
           <>
-            Com as mesmas {fmtHr(contentH)} de estudo até a prova, seu cronograma alcança{" "}
-            <span className="cg-accent-ink">
-              {qP} {U}
-            </span>
-            . O genérico, {qG}.
+            Você domina 80% da prova com <span className="cg-accent-ink">{fmtHr(saved)} a menos</span> de estudo do que num cronograma genérico.
           </>
         ) : (
-          <>
-            Para dominar 80% da prova, seu cronograma precisa de <span className="cg-accent-ink">{fmtHr(nums.pers80)}</span>. O genérico, {fmtHr(nums.gen80 ?? 0)}.
-          </>
+          <>Para chegar a 80% da prova, seu cronograma e o genérico precisam de um tempo parecido ({fmtHr(nums.pers80)}).</>
         )}
       </p>
       <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-5">
         <div className="flex min-w-0 flex-col gap-4 lg:col-span-2">
-          {both ? (
-            <>
+          <div className="cg-exam rounded-xl px-4 py-3">
+            <p className="cg-eyebrow" style={{ color: "inherit" }}>Tempo economizado</p>
+            <p className="mt-1 flex flex-wrap items-baseline gap-x-2">
+              <span className="text-4xl font-extrabold tracking-tight cg-num md:text-5xl">{fmtHr(saved)}</span>
+              <span className="text-sm font-semibold">a menos para dominar 80% da prova</span>
+            </p>
+            {hasGap && weeksSaved > 0 ? (
+              <p className="mt-1 text-sm cg-ink">
+                ≈ <b className="cg-num">{weeksSaved} semana{weeksSaved === 1 ? "" : "s"}</b> antes, no seu ritmo de {fmtH(weekly)}/semana
+              </p>
+            ) : null}
+          </div>
           <CompareBars
-            title="Horas para dominar 80% da prova"
+            title="Horas de estudo para dominar 80% da prova"
             hint="Menor é melhor."
             max={Math.max(nums.gen80 ?? 0, nums.pers80)}
             fmt={(v) => fmtHr(v)}
@@ -558,69 +578,30 @@ function ResultHero({ examISO, simulated, daysLeft, contentH, weekly, modeLabel,
               { label: "Genérico", value: nums.gen80 ?? 0 },
             ]}
           />
-          <CompareBars
-            title={`${UCAP} no seu alcance até a prova`}
-            hint={`De ${TOTAL_Q}. Maior é melhor.`}
-            max={TOTAL_Q}
-            fmt={(v) => `${v}`}
-            rows={[
-              { label: "Seu cronograma", value: qP, mine: true },
-              { label: "Genérico", value: qG },
-            ]}
-          />
-            </>
-          ) : (
-            <>
-          <CompareBars
-            title={`${UCAP} no seu alcance até a prova`}
-            hint={`De ${TOTAL_Q}. Maior é melhor.`}
-            max={TOTAL_Q}
-            fmt={(v) => `${v}`}
-            rows={[
-              { label: "Seu cronograma", value: qP, mine: true },
-              { label: "Genérico", value: qG },
-            ]}
-          />
-          <CompareBars
-            title="Horas para dominar 80% da prova"
-            hint="Menor é melhor."
-            max={Math.max(nums.gen80 ?? 0, nums.pers80)}
-            fmt={(v) => fmtHr(v)}
-            rows={[
-              { label: "Seu cronograma", value: nums.pers80, mine: true },
-              { label: "Genérico", value: nums.gen80 ?? 0 },
-            ]}
-          />
-            </>
-          )}
-          <div className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border cg-line cg-hairlines">
-            <div className="cg-surface p-3">
-              {both ? (
-                <>
-                  <p className="text-xl font-extrabold cg-num md:text-2xl">−{weeksSaved} sem.</p>
-                  <p className="text-xs cg-ink2">para chegar a 80% no seu ritmo</p>
-                </>
-              ) : (
-                <>
-                  <p className="text-xl font-extrabold cg-num md:text-2xl">{gain > 0 ? `+${gain}` : "0"}</p>
-                  <p className="text-xs cg-ink2">{U} a mais até a prova</p>
-                </>
-              )}
+          <div className="grid grid-cols-1 gap-px overflow-hidden rounded-xl border cg-line cg-hairlines sm:grid-cols-3">
+            <div className="cg-surface flex items-baseline justify-between gap-3 p-3 sm:block">
+              <p className="text-xs cg-ink2">Você chega a 80% em</p>
+              <p className="text-base font-extrabold cg-num md:text-lg">{when(dates.top)}</p>
             </div>
-            <div className="cg-surface p-3">
-              <p className="text-xl font-extrabold cg-num md:text-2xl">−{fmtHr(saved)}</p>
-              <p className="text-xs cg-ink2">para chegar a 80% da prova</p>
+            <div className="cg-surface flex items-baseline justify-between gap-3 p-3 sm:block">
+              <p className="text-xs cg-ink2">No genérico, em</p>
+              <p className="text-right sm:text-left">
+                <span className="block text-base font-extrabold cg-num cg-ink2 md:text-lg">{when(dates.gen)}</span>
+                {after(dates.gen) ? <span className="block text-xs cg-error">depois da prova</span> : null}
+              </p>
             </div>
-            <div className="cg-surface p-3">
-              <p className={`text-xl font-extrabold cg-num md:text-2xl ${cov.cov >= 0.999 ? "cg-good" : ""}`}>{fmtPct(cov.cov)}</p>
-              <p className="text-xs cg-ink2">do top 80% na sua agenda</p>
+            <div className="cg-surface flex items-baseline justify-between gap-3 p-3 sm:block">
+              <p className="text-xs cg-ink2">Top 80% na sua agenda</p>
+              <p className={`text-base font-extrabold cg-num md:text-lg ${cov.cov >= 0.999 ? "cg-good" : ""}`}>{fmtPct(cov.cov)}</p>
             </div>
           </div>
         </div>
         <div className="min-w-0 lg:col-span-3">
-          <p className="text-sm font-bold">{UCAP} no alcance a cada hora de estudo</p>
-          <p className="mb-2 text-xs cg-muted">Passe o mouse ou o dedo na curva. A linha vertical marca as suas horas de conteúdo novo até a prova.</p>
-          <CompareChart cmp={cmp} contentH={contentH} />
+          <p className="text-sm font-bold">Quanto da prova você domina a cada hora de estudo</p>
+          <p className="mb-2 text-xs cg-muted">
+            {hasGap ? "Na linha de 80%, a faixa marca as horas que o seu cronograma economiza. " : ""}Passe o mouse ou o dedo na curva.
+          </p>
+          <CompareChart cmp={cmp} contentH={contentH} gap={hasGap ? { from: nums.pers80, to: nums.gen80, label: `−${fmtHr(saved)}` } : null} />
         </div>
       </div>
       {!applied ? (
@@ -1779,6 +1760,8 @@ export default function App() {
     return {
       top: topLeft > 0 ? plan.dateToCover(pack, hours, TODAY, topLeft, par.topCount) : TODAY,
       all: plan.dateToCover(pack, hours, TODAY, Math.max(1, par.totalHours - studiedAllH), N_ASSUNTOS),
+      // same weekly hours, generic order: hours to 80% minus what was already studied
+      gen: plan.dateToCover(pack, hours, TODAY, Math.max(1, (plan.hoursTo(cmp.generic, plan.PARETO_TARGET) ?? 0) - studiedAllH), par.topCount),
     };
   }, [hours, par, cmp, progressAll, studiedAllH]);
   const cap = {
@@ -2029,6 +2012,7 @@ export default function App() {
             cov={cov}
             applied={Boolean(state.applied)}
             cmp={cmp}
+            dates={dates}
           />
         </div>
 
