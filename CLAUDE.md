@@ -60,8 +60,8 @@ node tools/pack-builder/cli.js assemble packs-src/inss-tecnico   # regenera o pa
    `public/**`, `index.html`, `vite.config.js`, `package*.json` ou o próprio workflow; também tem
    `workflow_dispatch`. Pasta nova fora dessa lista não publica: inclua no filtro `paths`.
 2. O workflow faz `npm ci && npm run build`, copia `dist/` para a raiz de `docs/` (e para `docs/mvp/`),
-   `app/` para `docs/app/`, e faz commit `Publish from main <sha7>` no branch `SITE_BRANCH` (hoje
-   `claude/funny-edison-whtbw7`).
+   `app/` para `docs/app/`, e faz commit `Publish from main <sha7>` no branch `SITE_BRANCH`
+   (`gh-pages`).
 3. O GitHub Pages serve `/docs` desse branch em https://thiago-harry.github.io/web/ (Vite com `base: "./"`).
 
 Para confirmar uma publicação: o commit `Publish from main <sha7>` aparece no `SITE_BRANCH` e o run
