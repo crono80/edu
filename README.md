@@ -51,7 +51,7 @@ Ordem da página: **como funciona** → **vantagem** (genérico × personalizado
 | 3 · Carga | Sugestão, Normal/Hard/Super hard ou horas por dia; data do edital ou simulada | Capacidade do engine (folga 10%, reta final, revisões, simulados); **% do top 80% coberto** ao vivo e diferença contra a sugestão |
 | 4 · Agenda | Escopo top 80% ou edital completo; −/+ 30 min em qualquer dia | Engine aloca semanas (exceções por data); teoria começa com videoaula e segue com leitura; depois exercícios; revisões 1/7/21/60 dias |
 | Progresso | ✓ por bloco estudado (também em dias passados) | Atrasados = blocos de dias passados sem ✓. **Reorganizar agenda**: o estudado sai da carga dos assuntos (concluídos ficam só com revisões) e o que falta é redistribuído de hoje até a prova |
-| 5 · Resultado | — | No topo: questões no alcance e horas para 80% (genérico × seu). Na seção: três motivos + curva completa |
+| 5 · Resultado | — | No topo: horas a menos para chegar a 80% da prova, semanas de antecedência e a data em que cada cronograma chega lá (genérico × seu), com a diferença marcada na curva. Na seção: três motivos |
 
 Exporta **PDF** (parâmetros, prioridades, comparativo, semanas com caixa "Feito", lista de videoaulas) e
 **.ics** (Google Agenda › Configurações › Importar e exportar). Estado salvo no `localStorage` do navegador.
