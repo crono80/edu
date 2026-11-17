@@ -78,7 +78,7 @@ cd app && python3 -m http.server 8787   # ou qualquer servidor estático
 
 Automática: a cada push no `main`, `.github/workflows/publish.yml` copia `app/index.html`, `app/src`
 e `app/packs` para `docs/app/` e `public/app/` do branch que o GitHub Pages serve
-(`gh-pages`). Também pode ser disparado à mão em Actions → "Publish to GitHub
+(`claude/funny-edison-whtbw7`). Também pode ser disparado à mão em Actions → "Publish to GitHub
 Pages branch".
 
 ## Próximo passo sugerido: pack builder (Fase 4)

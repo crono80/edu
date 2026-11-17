@@ -17,7 +17,7 @@ npm test         # engine + pack builder
 
 **Página de vendas (protótipo):** https://thiago-harry.github.io/web/vendas/ (HTML estático em `public/vendas/`; preços e checkout em definição)
 
-O GitHub Pages deste repositório publica a pasta `/docs` do branch `gh-pages`.
+O GitHub Pages deste repositório publica a pasta `/docs` do branch `claude/funny-edison-whtbw7`.
 A cada push no `main`, `.github/workflows/publish.yml` reconstrói o MVP e o publica na raiz do site
 (também em `/mvp/`, para links antigos) e copia `app/` para `/app/`. Nenhuma configuração manual do
 Pages é necessária.

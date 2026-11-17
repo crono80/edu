@@ -1,6 +1,6 @@
 name: Publish to GitHub Pages branch
 
-# GitHub Pages serves /docs from SITE_BRANCH (gh-pages). On every push to main this
+# GitHub Pages serves /docs from SITE_BRANCH. On every push to main this
 # workflow rebuilds the MVP, copies it and app/ into that branch and pushes.
 on:
   push:
@@ -25,7 +25,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  SITE_BRANCH: gh-pages
+  # Must match Settings → Pages (only the repo owner can change that setting).
+  SITE_BRANCH: claude/funny-edison-whtbw7
 
 jobs:
   publish:
