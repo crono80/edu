@@ -1,17 +1,19 @@
 // A4 PDF of the full schedule (lazy-loaded jsPDF). Input is already-computed display data.
 import { ACTIVITY_LABEL, DAY_LABEL, fmtClock, fmtMin } from "./plan.js";
+import { PALETTE, hexToRgb } from "./palette.js";
 
+// PDF sempre no tema claro.
+const P = PALETTE.light;
 const C = {
-  ink: [15, 23, 41],
-  ink2: [70, 80, 104],
-  muted: [99, 108, 130],
-  line: [214, 220, 229],
-  sunken: [242, 244, 248],
-  accent: [29, 63, 168],
-  accentSoft: [230, 235, 249],
-  good: [10, 107, 58],
+  ink: hexToRgb(P.ink),
+  ink2: hexToRgb(P["ink-2"]),
+  muted: hexToRgb(P.muted),
+  line: hexToRgb(P.line),
+  sunken: hexToRgb(P.sunken),
+  accent: hexToRgb(P.accent),
+  accentSoft: hexToRgb(P["accent-soft"]),
+  good: hexToRgb(P.good),
 };
-const hexToRgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
 // Standard PDF fonts cover Latin-1 only.
 const t = (v) =>
   String(v ?? "")

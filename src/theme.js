@@ -1,31 +1,15 @@
 // Theme tokens and component classes (moved out of App.jsx).
-const DARK_TOKENS = `
-  --bg: #0b0f17; --surface: #121826; --sunken: #182031; --track: #222c40;
-  --ink: #e7ebf3; --ink-2: #aeb7c8; --muted: #8b94a7;
-  --line: #243047; --line-strong: #34415c;
-  --accent: #8da6ff; --accent-hover: #a7bbff; --on-accent: #0b1020; --accent-soft: #1b2648; --accent-ink: #a3b7ff;
-  --mark: #5e5212; --knob: #e7ebf3;
-  --hi: #ff8f86; --hi-soft: #3b1b1e; --md: #f0b455; --md-soft: #33270f; --lo: #a9b2c4; --lo-soft: #1f2737;
-  --warn-soft: #2b2310; --warn-line: #6e5622;
-  --bar: #3987e5; --mix-t: #9ec5f4; --mix-q: #5598e7; --mix-r: #256abf;
-  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9;
-  color-scheme: dark;
-`;
+import { cssVars } from "./palette.js";
+
+// Cores vêm de src/palette.js (fonte única); aqui só o CSS que as usa.
+const DARK_TOKENS = `${cssVars("dark")} color-scheme: dark;`;
 
 export const CSS = `
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600;700;800&display=swap");
 
 /* Layout: barra fixa no topo + coluna única de painéis (resumo → Fase 1 → Fase 2 → Fase 3 → Roteiro). */
 :root {
-  --bg: #f3f5f9; --surface: #ffffff; --sunken: #eef1f6; --track: #e2e7ef;
-  --ink: #0f1729; --ink-2: #465068; --muted: #636c82;
-  --line: #dde2ea; --line-strong: #c2c9d6;
-  --accent: #1d3fa8; --accent-hover: #16338c; --on-accent: #ffffff; --accent-soft: #e6ebf9; --accent-ink: #1d3fa8;
-  --mark: #ffe45e; --knob: #ffffff;
-  --hi: #b02424; --hi-soft: #fbe9e8; --md: #8a5208; --md-soft: #fcf0dc; --lo: #4b556c; --lo-soft: #edf0f5;
-  --warn-soft: #fdf3dd; --warn-line: #e6c06d;
-  --bar: #2a78d6; --mix-t: #184f95; --mix-q: #3987e5; --mix-r: #86b6ef;
-  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s6: #008300; --s7: #6250d6;
+  ${cssVars("light")}
   --font-sans: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 }
@@ -103,9 +87,6 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 
 // Additions for the product version: 9 matérias, sliders, chart, quiz.
 export const EXTRA_CSS = `
-:root { --s8: #e34948; --s9: #0e93a8; --good: #0a6b3a; --good-soft: #e3f3ea; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --s8: #e66767; --s9: #1aa3bb; --good: #5fd49a; --good-soft: #10301f; } }
-:root[data-theme="dark"] { --s8: #e66767; --s9: #1aa3bb; --good: #5fd49a; --good-soft: #10301f; }
 .cg-good { color: var(--good); }
 .cg-good-bg { background: var(--good-soft); color: var(--good); }
 .cg-chip { background: var(--surface); color: var(--ink-2); border: 1px solid var(--line-strong); }
