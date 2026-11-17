@@ -129,6 +129,11 @@ Para confirmar uma publicação: o commit `Publish from main <sha7>` aparece no 
 - Pack muda em `packs-src/` + `assemble`; nunca edite `app/packs/*.json` à mão.
 - PDFs nunca vão para o git.
 - Commits e PRs em PT-BR.
+- O dono do projeto não mexe no GitHub: o Claude abre o PR, faz o merge e confirma a publicação (commit
+  `Publish from main` no branch do site + deploy do Pages com `success`). Só Settings do repositório
+  ficam com o dono.
+- Especificações longas viram arquivo no repositório (ex.: `docs/<tema>.md`), não só mensagem no chat.
+- `npm run preview` não pega um build novo com segurança: reinicie o servidor depois de `npm run build`.
 
 ## Em aberto
 
@@ -136,3 +141,6 @@ Para confirmar uma publicação: o commit `Publish from main <sha7>` aparece no 
   80%, exigir a teoria do pré-requisito concluída, usar a ordem do edital como desempate (aguardando ok).
 - Renomear o repositório `web` → `crono` (ou usar domínio próprio).
 - Verificação do Google, checkout, preços finais, atualização do pack INSS quando o edital sair.
+- PDF: o comparativo ainda mostra "Cobertura com Xh de conteúdo" (%); alinhar ao tempo economizado se o
+  dono pedir.
+- Branch `gh-pages` sobrou sem uso (o site publica em `claude/funny-edison-whtbw7`); apagar só com ok do dono.
