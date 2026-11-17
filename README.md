@@ -15,6 +15,8 @@ npm test         # engine + pack builder
 
 **No ar:** https://thiago-harry.github.io/web/ (vira `/crono/` quando o repositório for renomeado)
 
+**Página de vendas (protótipo):** https://thiago-harry.github.io/web/vendas/ (HTML estático em `public/vendas/`; preços e checkout em definição)
+
 O GitHub Pages deste repositório publica a pasta `/docs` do branch `claude/funny-edison-whtbw7`.
 A cada push no `main`, `.github/workflows/publish.yml` reconstrói o MVP e o publica na raiz do site
 (também em `/mvp/`, para links antigos) e copia `app/` para `/app/`. Nenhuma configuração manual do
@@ -31,6 +33,8 @@ Pages é necessária.
 | `src/packs.js` | Catálogo de concursos: pack + textos específicos (dossiê, siglas, unidade "questões"/"itens") |
 | `app/packs/inss-tecnico-pre.json` | Pack INSS gerado de `packs-src/inss-tecnico/` (pré-edital) |
 | `app/packs/pmsc-2026-soldado.json` | Pack PMSC gerado de `packs-src/pmsc-2026/` |
+| `public/vendas/index.html` | Protótipo da página de vendas do INSS; o Vite copia `public/` para o build, e ela sai em `/vendas/` |
+| `public/vendas/img/` | Telas do MVP em WebP (estado: 10h/semana, Português forte, Seguridade fraca, após "Reajustar") |
 
 ## Fluxo
 
