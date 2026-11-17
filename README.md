@@ -1,10 +1,10 @@
 # Cronograma Personalizado para Você
 
-MVP do produto com dois concursos (seletor no topo, `?concurso=<id>` na URL):
+MVP do produto para **INSS · Técnico do Seguro Social (pré-edital)**: edital 2022 e provas Cebraspe de
+2016 e 2022, 120 itens certo/errado com penalidade. O catálogo aceita mais concursos (`src/packs.js`,
+`?concurso=<id>` na URL); o seletor no topo só aparece com dois ou mais.
 
-- **INSS · Técnico do Seguro Social (pré-edital)** — padrão. Edital 2022 e provas Cebraspe de 2016 e 2022, 120 itens certo/errado com penalidade.
-- **PMSC 2026 · Soldado** (Instituto AOCP) — caso de estudo com edital real.
- SPA em React 18 + Tailwind CSS + lucide-react, sobre o engine determinístico de `app/src/engine`.
+SPA em React 18 + Tailwind CSS + lucide-react, sobre o engine determinístico de `app/src/engine`.
 
 ```bash
 npm install
@@ -33,7 +33,6 @@ Pages é necessária.
 | `src/theme.js` | CSS e classes `cg-*` (cores vêm de `palette.js`) |
 | `src/packs.js` | Catálogo de concursos: pack + textos específicos (dossiê, siglas, unidade "questões"/"itens") |
 | `app/packs/inss-tecnico-pre.json` | Pack INSS gerado de `packs-src/inss-tecnico/` (pré-edital) |
-| `app/packs/pmsc-2026-soldado.json` | Pack PMSC gerado de `packs-src/pmsc-2026/` |
 | `public/vendas/index.html` | Protótipo da página de vendas do INSS; o Vite copia `public/` para o build, e ela sai em `/vendas/` |
 | `public/vendas/img/` | Telas do MVP em WebP (estado: 10h/semana, Português forte, Seguridade fraca, após "Reajustar"); refeitas com `npm run shots:vendas` |
 | `tools/vendas-shots.cjs` | Script da recaptura (Playwright); exige `npm run build` + `npm run preview` rodando |
@@ -44,9 +43,9 @@ Ordem da página: **como funciona** → **vantagem** (genérico × personalizado
 
 | Etapa | Entrada | Cálculo |
 |---|---|---|
-| 1 · Dossiê | Edital 2026 + prova PMSC 2023 (Cebraspe) + prova AOCP PM-PE 2024 | Prioridade P = (0,35·cargo + 0,20·banca + 0,45·edital) · (1+lacuna) · M; níveis 1–5 |
+| 1 · Dossiê | Edital 2022 + provas INSS 2016 e 2022 (Cebraspe) | Prioridade P = (0,35·cargo + 0,20·banca + 0,45·edital) · (1+lacuna) · M; níveis 1–5 |
 | Top 80% | Pontos esperados por assunto ÷ horas no nível do aluno | Assuntos em ordem de pontos por hora até somar 80% da prova |
-| 2 · Nivelamento | Fraco/Médio/Forte por matéria + simulado de 40 questões (reais + geradas por IA, marcadas) | Lacuna por assunto (autoavaliação e simulado com encolhimento) |
+| 2 · Nivelamento | Fraco/Médio/Forte por matéria + simulado de 40 itens reais (provas INSS 2016 e 2022) | Lacuna por assunto (autoavaliação e simulado com encolhimento) |
 | Reajustar | Botão no fim do nivelamento | Aplica o nivelamento e calcula a **carga sugerida** (menor carga que cobre 100% do top 80% até a prova). Padrão: a sugestão se couber em Hard (23h/sem); senão, Hard, com a sugestão como referência (teto 45h/sem) |
 | 3 · Carga | Sugestão, Normal/Hard/Super hard ou horas por dia; data do edital ou simulada | Capacidade do engine (folga 10%, reta final, revisões, simulados); **% do top 80% coberto** ao vivo e diferença contra a sugestão |
 | 4 · Agenda | Escopo top 80% ou edital completo; −/+ 30 min em qualquer dia | Engine aloca semanas (exceções por data); teoria começa com videoaula e segue com leitura; depois exercícios; revisões 1/7/21/60 dias |

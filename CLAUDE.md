@@ -8,8 +8,8 @@ Guia para sessões do Claude Code neste repositório. Texto em PT-BR; código e 
 mais cai na prova (edital + provas anteriores), ajustado às horas e ao nível do aluno, e mostra a vantagem
 sobre um cronograma genérico (ordem do edital, mesma carga para todos).
 
-- **Caso principal:** INSS · Técnico do Seguro Social, pré-edital (pack `inss-tecnico-pre`, padrão).
-  **Caso de estudo:** PMSC 2026 · Soldado (`pmsc-2026-soldado`).
+- **Concurso:** INSS · Técnico do Seguro Social, pré-edital (pack `inss-tecnico-pre`, único no catálogo).
+  O catálogo aceita outros packs; o seletor de concurso no topo só aparece com dois ou mais.
 - **No ar:** https://thiago-harry.github.io/web/ (MVP) · `/web/vendas/` (página de vendas, protótipo) ·
   `/web/app/` (app vanilla de próxima geração).
 - **Venda (sugerida, não confirmada):** Essencial R$ 37 (de R$ 47), Completo R$ 97, checkout Kiwify ou
@@ -62,8 +62,9 @@ node tools/pack-builder/cli.js assemble packs-src/inss-tecnico   # regenera o pa
 1. Push em `main` dispara `.github/workflows/publish.yml`. Ele só roda se mudar `app/**`, `src/**`,
    `public/**`, `index.html`, `vite.config.js`, `package*.json` ou o próprio workflow; também tem
    `workflow_dispatch`. Pasta nova fora dessa lista não publica: inclua no filtro `paths`.
-2. O workflow faz `npm ci && npm run build`, copia `dist/` para a raiz de `docs/` (e para `docs/mvp/`),
-   `app/` para `docs/app/`, e faz commit `Publish from main <sha7>` no branch `SITE_BRANCH`
+2. O workflow faz `npm ci && npm run build`, reescreve `docs/` no branch `SITE_BRANCH` (`dist/` na raiz e em
+   `docs/mvp/` para links antigos, `app/` em `docs/app/`), apaga o que estiver fora de `docs/` nesse branch e
+   faz commit `Publish from main <sha7>` em `SITE_BRANCH`
    (`claude/funny-edison-whtbw7`). O nome é interno e não aparece no site; trocar exige mudar Settings → Pages,
    que só o dono do repositório consegue fazer.
 3. O GitHub Pages serve `/docs` desse branch em https://thiago-harry.github.io/web/ (Vite com `base: "./"`).
@@ -143,4 +144,8 @@ Para confirmar uma publicação: o commit `Publish from main <sha7>` aparece no 
 - Verificação do Google, checkout, preços finais, atualização do pack INSS quando o edital sair.
 - PDF: o comparativo ainda mostra "Cobertura com Xh de conteúdo" (%); alinhar ao tempo economizado se o
   dono pedir.
-- Branch `gh-pages` sobrou sem uso (o site publica em `claude/funny-edison-whtbw7`); apagar só com ok do dono.
+- Branches remotos para apagar (ok do dono dado; o proxy da sessão só deixa o Claude dar push no branch da
+  própria sessão, então o dono apaga em github.com/thiago-harry/web/branches): `gh-pages` (sem uso),
+  `claude/blissful-faraday-o1j4j7` (teste "Olé page"), `claude/determined-albattani-7uj78s` (já mesclado),
+  `versao-0.1` (snapshot do PR #1, já contido no `main`). `claude/funny-edison-whtbw7` é o branch do site:
+  não apagar.

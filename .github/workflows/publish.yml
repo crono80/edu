@@ -1,7 +1,7 @@
 name: Publish to GitHub Pages branch
 
 # GitHub Pages serves /docs from SITE_BRANCH. On every push to main this
-# workflow rebuilds the MVP, copies it and app/ into that branch and pushes.
+# workflow rebuilds the MVP, writes it and app/ into docs/ on that branch and pushes.
 on:
   push:
     branches: [main]
@@ -45,22 +45,16 @@ jobs:
           ref: ${{ env.SITE_BRANCH }}
           path: site
 
-      - name: Copy MVP and app into the site branch
+      - name: Build docs/ in the site branch
         run: |
           set -euo pipefail
-          for d in docs/mvp public/mvp; do
-            rm -rf "site/$d"; mkdir -p "site/$d"; cp -r dist/. "site/$d/"
-          done
-          for d in docs/app public/app; do
-            rm -rf "site/$d"; mkdir -p "site/$d"; cp -r app/index.html app/src app/packs "site/$d/"
-          done
-
-      - name: MVP at the site root (pitch retired; its files stay in git history)
-        run: |
-          set -euo pipefail
-          # remove the pitch's root files, keep app/, mvp/ (old links) and .nojekyll
-          find site/docs -mindepth 1 -maxdepth 1 ! -name app ! -name mvp ! -name .nojekyll -exec rm -rf {} +
+          # Pages serves only /docs: drop everything else (old prototype files stay in git history)
+          find site -mindepth 1 -maxdepth 1 ! -name docs ! -name .git -exec rm -rf {} +
+          rm -rf site/docs; mkdir -p site/docs/mvp site/docs/app
           cp -r dist/. site/docs/
+          cp -r dist/. site/docs/mvp/   # old links to /mvp/
+          cp -r app/index.html app/src app/packs site/docs/app/
+          touch site/docs/.nojekyll
 
       - name: Commit and push
         id: push
@@ -69,7 +63,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A docs public/mvp public/app
+          git add -A
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "Nothing to publish."
