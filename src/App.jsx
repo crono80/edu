@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { CATALOG, selectEntry } from "./packs.js";
 import { CSS, EXTRA_CSS } from "./theme.js";
+import { SUBJECT_HEX as HEX } from "./palette.js";
 import * as plan from "./plan.js";
 import { GOOGLE_CLIENT_ID, GOOGLE_SYNC_DAYS } from "./config.js";
 import * as gcal from "./gcal.js";
@@ -56,7 +57,6 @@ const N_ASSUNTOS = pack.assuntos.length;
 const QUIZ_N = 40;
 const HARD_WEEKLY = plan.weeklyOf(plan.MODES.hard.hours);
 
-const HEX = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#6250d6", "#e34948", "#0e93a8"];
 // Up to 9 matérias: one validated hue each. Beyond that (INSS: 6 básicas + 5 específicas), shape encodes the block
 // (circle = conhecimentos básicos, square = específicos) and hues restart inside each block.
 const ESPECIFICAS = new Set(META.especificas ?? []);
@@ -141,13 +141,13 @@ const APP_CSS = `
 .cg-alt[data-state="wrong"] { border-color: var(--hi); }
 .cg-alt[data-state="wrong"] .cg-alt-letter { background: var(--hi); color: var(--surface); }
 .cg-ia { background: var(--warn-soft); color: var(--ink); border: 1px solid var(--warn-line); }
-.cg-series-p { stroke: var(--s1); }
-.cg-series-g { stroke: var(--s2); }
-.cg-fill-p { fill: var(--s1); }
-.cg-fill-g { fill: var(--s2); }
-.cg-sw-p { background: var(--s1); }
-.cg-sw-g { background: repeating-linear-gradient(90deg, var(--s2) 0 6px, transparent 6px 9px); }
-.cg-sw-g-solid { background: var(--s2); }
+.cg-series-p { stroke: var(--series-mine); }
+.cg-series-g { stroke: var(--series-generic); }
+.cg-fill-p { fill: var(--series-mine); }
+.cg-fill-g { fill: var(--series-generic); }
+.cg-sw-p { background: var(--series-mine); }
+.cg-sw-g { background: repeating-linear-gradient(90deg, var(--series-generic) 0 6px, transparent 6px 9px); }
+.cg-sw-g-solid { background: var(--series-generic); }
 .cg-ref { stroke: var(--muted); }
 .cg-cross { stroke: var(--ink-2); }
 .cg-area { fill: var(--accent); opacity: .08; }

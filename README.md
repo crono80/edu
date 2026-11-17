@@ -29,12 +29,14 @@ Pages é necessária.
 | `src/App.jsx` | UI: dossiê, top 80%, nivelamento + simulado, prazo, agenda, comparativo |
 | `src/plan.js` | Camada de produto sobre o engine: pontos esperados, top 80%, genérico × personalizado, capacidade por data, blocos de videoaula/leitura/exercícios, `.ics` |
 | `src/pdf.js` | PDF A4 completo (jsPDF, carregado só no clique) |
-| `src/theme.js` | Tokens claro/escuro e classes `cg-*` |
+| `src/palette.js` | Paleta "Índigo e âmbar": fonte única das cores (claro, escuro, matérias), usada por `theme.js` e `pdf.js` |
+| `src/theme.js` | CSS e classes `cg-*` (cores vêm de `palette.js`) |
 | `src/packs.js` | Catálogo de concursos: pack + textos específicos (dossiê, siglas, unidade "questões"/"itens") |
 | `app/packs/inss-tecnico-pre.json` | Pack INSS gerado de `packs-src/inss-tecnico/` (pré-edital) |
 | `app/packs/pmsc-2026-soldado.json` | Pack PMSC gerado de `packs-src/pmsc-2026/` |
 | `public/vendas/index.html` | Protótipo da página de vendas do INSS; o Vite copia `public/` para o build, e ela sai em `/vendas/` |
-| `public/vendas/img/` | Telas do MVP em WebP (estado: 10h/semana, Português forte, Seguridade fraca, após "Reajustar") |
+| `public/vendas/img/` | Telas do MVP em WebP (estado: 10h/semana, Português forte, Seguridade fraca, após "Reajustar"); refeitas com `npm run shots:vendas` |
+| `tools/vendas-shots.cjs` | Script da recaptura (Playwright); exige `npm run build` + `npm run preview` rodando |
 
 ## Fluxo
 

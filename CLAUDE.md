@@ -26,6 +26,7 @@ sobre um cronograma genérico (ordem do edital, mesma carga para todos).
 | `src/pdf.js` | PDF A4 (jsPDF + autotable, carregado só no clique) |
 | `src/packs.js` | Catálogo de concursos: pack + textos específicos (dossiê, unidade "itens"/"questões") |
 | `src/config.js` | `GOOGLE_CLIENT_ID` (público) e `GOOGLE_SYNC_DAYS` (`null` = até a prova) |
+| `src/palette.js` | **Fonte única das cores** (temas claro e escuro, cores das matérias); `theme.js` e `pdf.js` leem daqui |
 | `src/plan.test.js` | Testes da camada de produto (`.ics`, fuso, ids do Google) |
 | `app/src/engine/` | Engine determinístico, puro, sem DOM (schema, score, allocate, revision, explain, quiz, dates). O MVP importa daqui |
 | `app/packs/*.json` | Content packs **gerados** pelo pack builder; `_schema.json` gerado de `PACK_SCHEMA` (teste garante sincronia); `_fixture.json` sintético |
@@ -33,6 +34,7 @@ sobre um cronograma genérico (ordem do edital, mesma carga para todos).
 | `packs-src/<concurso>/` | Fontes curadas: `config.json`, `overrides.json` (cargas, tipos, pré-requisitos, materiais), `work/assuntos.json`, `work/classification.json`, `review.md` |
 | `tools/pack-builder/` | CLI offline: `init → extract → parse → classify → assemble` gera `app/packs/<id>.json` (detalhes no README da pasta) |
 | `public/vendas/` | Página de vendas estática (HTML com CSS inline + `img/*.webp`); o Vite copia `public/` para `dist/` |
+| `tools/vendas-shots.cjs` | Recaptura as telas do MVP usadas na página de vendas e atualiza `width`/`height` dos `<img>` |
 
 Fora do git: `packs-src/*/input/` (PDFs de edital e provas), `work/*.txt`, `work/*.lines.json`, `dist/`.
 
@@ -48,6 +50,7 @@ npm run test:engine       # node --test app/tests/engine.test.js
 npm run test:builder      # node --test tools/pack-builder/test/builder.test.js
 npm run test:app          # TZ=UTC node --test src/plan.test.js
 npm run report:engine     # tabela de prioridades + primeiras semanas
+npm run shots:vendas      # refaz public/vendas/img/*.webp (precisa de npm run build + npm run preview rodando)
 node tools/pack-builder/cli.js assemble packs-src/inss-tecnico   # regenera o pack depois de editar packs-src
 ```
 
@@ -84,6 +87,14 @@ Para confirmar uma publicação: o commit `Publish from main <sha7>` aparece no 
 - **Progresso** só na plataforma (✓ por bloco). "Reorganizar agenda" tira o estudado e redistribui o
   resto de hoje até a prova.
 
+**Visual**
+- Paleta **Índigo e âmbar**: acento `#4338ca`, fundo `#f4f4f9`, âmbar `#ffd166` só como destaque atrás do
+  texto. Valores em `src/palette.js`; a página de vendas repete os do tema claro à mão.
+- Gráficos: "seu cronograma" na cor da marca (`--series-mine`), "genérico" em cinza (`--series-generic`).
+- Não mudam com a marca: cores de estado (verde = estudado/100%, vermelho = atrasado/reta final,
+  âmbar = revisão) e as 9 cores das matérias (`--s1`…`--s9`, testadas para daltonismo).
+- Contraste WCAG AA nos dois temas: texto ≥ 4,5:1, linhas e contornos ≥ 3:1.
+
 **MVP**
 - Ordem da página: Como funciona → Vantagem → Seu tempo → Agenda → Nível + simulado → Top 80% → Dossiê.
 - Estado no `localStorage` (`cpv:<packId>:v1`); concurso por `?concurso=<id>`, depois `cpv:concurso`,
@@ -104,7 +115,7 @@ Para confirmar uma publicação: o commit `Publish from main <sha7>` aparece no 
 - A página de vendas fica `noindex` enquanto for protótipo.
 - Avisos obrigatórios: pré-edital, sem afiliação com INSS ou Cebraspe, sem garantia de aprovação.
 - Números da página de vendas vêm de telas reais do MVP (10h/sem, Português forte, Seguridade fraca,
-  após "Reajustar"). Se o engine mudar, recapture as telas.
+  após "Reajustar"). Se o engine ou as cores mudarem, rode `npm run shots:vendas`.
 - Provas e gabaritos do Cebraspe vêm do CDN público (`cdn.cebraspe.org.br`). Não contornar bloqueios de
   acesso.
 
