@@ -1,9 +1,9 @@
 /**
- * Cronograma Personalizado para Você · caso de estudo PMSC 2026 (Soldado).
+ * Cronograma Personalizado para Você · INSS Técnico do Seguro Social (pré-edital).
  *
- *  Dossiê      edital 2026 + prova PMSC 2023 (cargo) + prova AOCP PM-PE 2024 (banca) -> prioridade por assunto
+ *  Dossiê      edital + provas anteriores do cargo e da banca -> prioridade por assunto
  *  Top 80%     assuntos em ordem de pontos esperados até somar 80% da prova
- *  Nivelamento matéria fraca/média/forte + simulado de 40 questões (reais e geradas por IA, marcadas)
+ *  Nivelamento matéria fraca/média/forte + simulado de 40 itens de provas anteriores
  *  Prazo       horas por dia, data da prova (real ou simulada) -> capacidade
  *  Cronograma  engine determinístico (app/src/engine) -> blocos de videoaula, leitura, exercícios, revisão, simulado
  *  Resultado   genérico × personalizado
@@ -227,16 +227,6 @@ function SectionHead({ step, title, desc, right }) {
         {desc ? <p className="mt-1 text-sm cg-ink2">{desc}</p> : null}
       </div>
       {right ? <div className="flex flex-wrap items-center gap-2">{right}</div> : null}
-    </div>
-  );
-}
-
-function StatTile({ label, value, sub }) {
-  return (
-    <div className="cg-surface flex min-w-0 flex-col gap-1 p-4">
-      <p className="text-xs font-semibold cg-ink2">{label}</p>
-      <p className="text-2xl font-extrabold tracking-tight md:text-3xl cg-num">{value}</p>
-      <p className="text-xs cg-muted">{sub}</p>
     </div>
   );
 }
@@ -1960,6 +1950,7 @@ export default function App() {
             </span>
             <p className="min-w-0 truncate text-sm font-extrabold tracking-tight md:text-base">{APP_NAME}</p>
           </div>
+          {CATALOG.length > 1 && (
           <label className="ml-auto flex items-center gap-2 text-xs font-semibold cg-ink2 md:ml-4">
             <span className="hidden sm:inline">Concurso</span>
             <select
@@ -1977,6 +1968,7 @@ export default function App() {
               ))}
             </select>
           </label>
+          )}
           <nav className="cg-nav ml-auto hidden items-center gap-1 md:flex" aria-label="Seções">
             {nav.map(([href, label]) => (
               <a key={href} href={href} className="rounded-md px-2.5 py-1.5 text-xs font-semibold transition-colors">

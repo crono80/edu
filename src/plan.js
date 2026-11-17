@@ -126,15 +126,6 @@ export function pareto(pack, scores, target = PARETO_TARGET) {
   return { items, total, top, topPts, topCount, topHours, totalHours: cumHours };
 }
 
-/** Same pack restricted to a set of topics (prereqs and quiz items outside it are dropped). */
-export function scopePack(pack, keep) {
-  return {
-    ...pack,
-    assuntos: pack.assuntos.filter((a) => keep.has(a.id)).map((a) => ({ ...a, prereq: a.prereq.filter((p) => keep.has(p)) })),
-    nivelamento: { ...pack.nivelamento, itens: pack.nivelamento.itens.filter((it) => keep.has(it.assunto_id)) },
-  };
-}
-
 /* ---------------- generic vs personalized ---------------- */
 
 function curve(steps, total) {
@@ -271,14 +262,6 @@ export function coverageNow(par, cmp, contentH, progress = {}) {
     remainingH: Math.max(0, par.topHours - studiedH),
     examPct: Math.max(coverageAt(cmp.personalized, contentH + studiedH), cov * share),
   };
-}
-
-/** Share of the top 80% that `contentH` hours of new content cover (points-weighted, best return first). */
-export function topCoverage(par, cmp, contentH) {
-  const share = par.total > 0 ? par.topPts / par.total : 1;
-  const examPct = coverageAt(cmp.personalized, contentH);
-  const cov = Math.min(1, examPct / share);
-  return { cov, examPct, pts: cov * par.topPts, hours: Math.min(contentH, par.topHours) };
 }
 
 // Ceiling for suggestions: 6h on weekdays, 10h on Saturday, 6h on Sunday.
