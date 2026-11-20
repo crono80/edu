@@ -140,6 +140,8 @@ nos dois jobs. O ambiente cloud não acessa `github.io`.
 - Desenvolvimento: `npm run dev` + `?plano=demo|essencial|completo` força o plano (só em dev).
 
 **Conteúdo e vendas**
+- E-mail público (app, vendas, política, Kiwify): `cronogramas@zohomail.com`. O e-mail pessoal do dono não
+  aparece em nada público. A política identifica o controlador só pelo e-mail (decisão do dono).
 - Nada de depoimentos inventados nem de preço "de" que não foi praticado.
 - A página de vendas fica `noindex` enquanto for protótipo.
 - Avisos obrigatórios: pré-edital, sem afiliação com INSS ou Cebraspe, sem garantia de aprovação.
@@ -164,7 +166,7 @@ nos dois jobs. O ambiente cloud não acessa `github.io`.
 
 - Domínio no GitHub Pages: recolocar `cronograma80.com.br` em Settings → Pages quando o DNS do Registro.br
   resolver e ativar HTTPS (removido em 20/11 porque o DNS ainda estava em transição).
-- Página `/privacidade/` (aguarda nome do controlador e e-mail) → então "Publicar app" no Google Cloud.
+- "Publicar app" no Google Cloud (política em `/privacidade/`, link `https://cronograma80.com.br/privacidade/`).
 - Kiwify: produtos (Essencial, Completo, Upgrade), mapeamento em `products`, webhook e `KIWIFY_TOKEN`;
   depois preencher `CHECKOUT` em `src/config.js` e os links da página de vendas.
 - Atualização do pack INSS quando o edital sair.

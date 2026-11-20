@@ -1761,6 +1761,21 @@ function MethodNotes() {
         <li>Capacidade: 10% de folga, reta final nos últimos 15% dos dias, revisões e simulados reservados antes do conteúdo novo.</li>
         <li>Dados públicos (editais e provas oficiais). Itens gerados por IA estão marcados. Confira datas e conteúdo no edital vigente.</li>
       </ul>
+      <p>
+        Não somos afiliados ao INSS nem ao Cebraspe.{" "}
+        {SUPPORT_EMAIL ? (
+          <>
+            Contato:{" "}
+            <a className="cg-link" href={`mailto:${SUPPORT_EMAIL}`}>
+              {SUPPORT_EMAIL}
+            </a>{" "}
+            ·{" "}
+          </>
+        ) : null}
+        <a className="cg-link" href="./privacidade/">
+          Política de privacidade
+        </a>
+      </p>
     </section>
   );
 }
