@@ -1,0 +1,22 @@
+name: Supabase keepalive
+
+# O plano Free do Supabase pausa o projeto após ~7 dias com pouca atividade.
+# Uma leitura simples a cada 3 dias mantém o projeto ativo (webhook e login continuam de pé).
+on:
+  schedule:
+    - cron: "17 9 */3 * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lê a tabela products (chave publishable, leitura pública sem linhas)
+        run: |
+          code=$(curl -sS -o /dev/null -w '%{http_code}' \
+            "https://udjeyanzghbkbvhayqgg.supabase.co/rest/v1/products?select=product_id&limit=1" \
+            -H "apikey: sb_publishable_Rh633khUQRIwJYI7FZ8fTA_yGZ-Qq4w")
+          echo "HTTP $code"
+          test "$code" = "200"

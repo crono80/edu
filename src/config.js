@@ -12,8 +12,8 @@ export const SUPABASE_KEY = "sb_publishable_Rh633khUQRIwJYI7FZ8fTA_yGZ-Qq4w";
 
 // Kiwify checkouts. Empty = the buttons point to the plans on the sales page.
 export const CHECKOUT = {
-  essencial: "",
-  completo: "",
+  essencial: "https://pay.kiwify.com.br/hZt9oc1",
+  completo: "https://pay.kiwify.com.br/edjvkE2",
   upgrade: "", // Essencial -> Completo, paying the difference
 };
 export const SALES_URL = "./vendas/#planos";
