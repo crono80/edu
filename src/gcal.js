@@ -1,8 +1,8 @@
 // Google Agenda sync from the browser: Google Identity Services token + Calendar API v3.
 // Scope calendar.app.created: the app can create its own calendar and manage only the events in it.
 import { TIMEZONE, planSync } from "./plan.js";
+import { loadGis } from "./gis.js";
 
-const GIS_SRC = "https://accounts.google.com/gsi/client";
 const API = "https://www.googleapis.com/calendar/v3";
 export const SCOPE = "https://www.googleapis.com/auth/calendar.app.created";
 
@@ -29,12 +29,7 @@ export function prepare(clientId) {
       },
     });
   };
-  if (window.google?.accounts?.oauth2) return init();
-  const s = document.createElement("script");
-  s.src = GIS_SRC;
-  s.async = true;
-  s.onload = init;
-  document.head.append(s);
+  loadGis().then(init, (e) => console.error(e));
 }
 
 /** Opens Google's consent popup. Must run inside the click handler (popups need the user gesture). */

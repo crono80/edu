@@ -21,6 +21,8 @@ import {
   ClipboardCheck,
   Coffee,
   FileDown,
+  Lock,
+  LogOut,
   PencilLine,
   PlayCircle,
   Repeat,
@@ -34,8 +36,10 @@ import { CATALOG, selectEntry } from "./packs.js";
 import { CSS, EXTRA_CSS } from "./theme.js";
 import { SUBJECT_HEX as HEX } from "./palette.js";
 import * as plan from "./plan.js";
-import { GOOGLE_CLIENT_ID, GOOGLE_SYNC_DAYS } from "./config.js";
+import { CHECKOUT, GOOGLE_CLIENT_ID, GOOGLE_SYNC_DAYS, SALES_URL, SUPPORT_EMAIL } from "./config.js";
 import * as gcal from "./gcal.js";
+import { renderGoogleButton, signOut, useAccess } from "./access.js";
+import { allowedLeveling, capabilities } from "./access-rules.js";
 
 /* ───────────────────────────── Dados fixos ───────────────────────────── */
 
@@ -1002,9 +1006,9 @@ function QuizPanel({ quiz, items, score, onStart, onAnswer, onGo, onFinish, onRe
 
 /* ───────────────────────────── Ajuste ao nível ───────────────────────────── */
 
-function ApplyBar({ applied, pending, marked, quizDone, onApply }) {
+function ApplyBar({ applied, pending, marked, quizDone, onApply, quiz = true }) {
   const status = !applied
-    ? "Marque as matérias e/ou faça o simulado. Depois, reajuste: as horas por assunto mudam e você recebe a carga sugerida para cobrir o top 80%."
+    ? `Marque as matérias${quiz ? " e/ou faça o simulado" : ""}. Depois, reajuste: as horas por assunto mudam e você recebe a carga sugerida para cobrir o top 80%.`
     : pending
       ? "Você alterou o nivelamento. Reajuste para atualizar prioridades, carga sugerida e agenda."
       : `Cronograma ajustado ao seu nível (${marked} matéria${marked === 1 ? "" : "s"} marcada${marked === 1 ? "" : "s"}${quizDone ? " + simulado" : ""}).`;
@@ -1334,15 +1338,17 @@ function BlockCard({ b, done, late, onToggle }) {
     <article className="cg-block rounded-lg p-2.5" data-act={b.atividade} data-done={done || undefined} data-late={late || undefined}>
       <div className="flex items-center justify-between gap-2 cg-mono text-xs cg-num">
         <span className="inline-flex items-center gap-1.5 whitespace-nowrap cg-ink2">
-          <button
-            type="button"
-            onClick={onToggle}
-            aria-pressed={done}
-            aria-label={`${done ? "Desmarcar" : "Marcar como estudado"}: ${a.label} de ${what}`}
-            className="cg-check grid h-5 w-5 shrink-0 place-items-center rounded-full text-[11px] font-bold"
-          >
-            {done ? "✓" : ""}
-          </button>
+          {onToggle ? (
+            <button
+              type="button"
+              onClick={onToggle}
+              aria-pressed={done}
+              aria-label={`${done ? "Desmarcar" : "Marcar como estudado"}: ${a.label} de ${what}`}
+              className="cg-check grid h-5 w-5 shrink-0 place-items-center rounded-full text-[11px] font-bold"
+            >
+              {done ? "✓" : ""}
+            </button>
+          ) : null}
           {plan.fmtClock(b.start)}–{plan.fmtClock(b.end)}
         </span>
         {late ? <span className="cg-error text-[11px] font-semibold">atrasado</span> : null}
@@ -1406,14 +1412,14 @@ function DayColumn({ d, edited, onAdjust, onReset, isDone, onToggle }) {
           {d.capacidade_min ? "Livre" : "Folga"}
         </div>
       ) : null}
-      {d.blocks.length || today ? (
+      {(d.blocks.length && onToggle) || today ? (
         <p className="px-1 text-[11px] cg-muted cg-num">
-          {today ? <b className="cg-accent-ink">Hoje · </b> : null}
-          {d.blocks.length ? `${doneN}/${d.blocks.length} estudados` : ""}
+          {today ? <b className="cg-accent-ink">Hoje{d.blocks.length && onToggle ? " · " : ""}</b> : null}
+          {d.blocks.length && onToggle ? `${doneN}/${d.blocks.length} estudados` : ""}
         </p>
       ) : null}
       {d.blocks.map((b, i) => (
-        <BlockCard key={i} b={b} done={isDone(b, i)} late={past && !isDone(b, i)} onToggle={() => onToggle(b, i)} />
+        <BlockCard key={i} b={b} done={isDone(b, i)} late={Boolean(onToggle) && past && !isDone(b, i)} onToggle={onToggle ? () => onToggle(b, i) : null} />
       ))}
       {d.blocks.length > 0 && d.capacidade_min - total >= 15 ? (
         <div className="rounded-lg border border-dashed cg-line px-2.5 py-2 text-xs cg-muted">
@@ -1424,9 +1430,10 @@ function DayColumn({ d, edited, onAdjust, onReset, isDone, onToggle }) {
   );
 }
 
-function SchedulePanel({ weeks, week, setWeek, result, examISO, dates, onSimTop, exportBar, coverageBar, dayProps, progressPanel, progressTop, intro }) {
+function SchedulePanel({ weeks, week, setWeek, result, examISO, dates, onSimTop, exportBar, coverageBar, dayProps, progressPanel, progressTop, intro, limit = null, lockNote = null, progressOn = true }) {
   if (!weeks.length) return null;
-  const w = weeks[Math.min(week, weeks.length) - 1];
+  const last = Math.min(limit ?? weeks.length, weeks.length);
+  const w = weeks[Math.min(week, last) - 1];
   const totals = Object.fromEntries(ACT_KEYS.map((k) => [k, 0]));
   for (const d of w.dias) for (const b of d.blocks) totals[b.atividade] += b.minutos;
   const days = w.dias;
@@ -1435,7 +1442,11 @@ function SchedulePanel({ weeks, week, setWeek, result, examISO, dates, onSimTop,
       <SectionHead
         step="2 · Mão na massa"
         title="Sua agenda, semana a semana"
-        desc="Videoaula, leitura e exercícios por assunto, já com horário. Marque ✓ no que estudar; − e + mudam o tempo do dia."
+        desc={
+          progressOn
+            ? "Videoaula, leitura e exercícios por assunto, já com horário. Marque ✓ no que estudar; − e + mudam o tempo do dia."
+            : "Videoaula, leitura e exercícios por assunto, já com horário. − e + mudam o tempo do dia."
+        }
         right={
           <div className="flex items-center gap-2">
             <button type="button" onClick={() => setWeek(week - 1)} disabled={week <= 1} aria-label="Semana anterior" className="cg-btn-ghost grid h-9 w-9 place-items-center rounded-lg">
@@ -1449,7 +1460,7 @@ function SchedulePanel({ weeks, week, setWeek, result, examISO, dates, onSimTop,
                 {fmtDM(w.inicio)} – {fmtDM(w.fim)}
               </p>
             </div>
-            <button type="button" onClick={() => setWeek(week + 1)} disabled={week >= weeks.length} aria-label="Próxima semana" className="cg-btn-ghost grid h-9 w-9 place-items-center rounded-lg">
+            <button type="button" onClick={() => setWeek(week + 1)} disabled={week >= last} aria-label="Próxima semana" className="cg-btn-ghost grid h-9 w-9 place-items-center rounded-lg">
               <ChevronRight className="h-4 w-4" aria-hidden="true" />
             </button>
             <span className={`${w.reta_final ? "cg-pill-final" : "cg-pill-base"} rounded-md px-2 py-1 text-xs font-bold`}>{w.reta_final ? "Reta final" : "Fase base"}</span>
@@ -1477,6 +1488,7 @@ function SchedulePanel({ weeks, week, setWeek, result, examISO, dates, onSimTop,
         ))}
       </div>
       {progressTop ? null : progressPanel}
+      {lockNote}
       {result.cobertura_parcial ? (
         <div role="status" className="cg-warn flex flex-wrap items-center justify-between gap-3 rounded-lg px-4 py-3 text-sm">
           <span className="inline-flex items-start gap-2">
@@ -1576,10 +1588,12 @@ function ExportBar({ aluno, setAluno, onPdf, onIcs, onGoogle, gsync, busy, error
             <FileDown className="h-4 w-4" aria-hidden="true" />
             {busy ? "Gerando PDF…" : "PDF completo"}
           </button>
-          <button type="button" onClick={onIcs} className="cg-btn-ghost inline-flex h-10 items-center gap-2 rounded-lg px-4 text-sm font-bold">
-            <CalendarPlus className="h-4 w-4" aria-hidden="true" />
-            Google Agenda (.ics)
-          </button>
+          {onIcs ? (
+            <button type="button" onClick={onIcs} className="cg-btn-ghost inline-flex h-10 items-center gap-2 rounded-lg px-4 text-sm font-bold">
+              <CalendarPlus className="h-4 w-4" aria-hidden="true" />
+              Google Agenda (.ics)
+            </button>
+          ) : null}
           {onGoogle ? (
             <button type="button" onClick={onGoogle} disabled={gsync?.fase === "rodando"} className="cg-btn-ghost inline-flex h-10 items-center gap-2 rounded-lg px-4 text-sm font-bold">
               <Repeat className="h-4 w-4" aria-hidden="true" />
@@ -1607,6 +1621,102 @@ function ExportBar({ aluno, setAluno, onPdf, onIcs, onGoogle, gsync, busy, error
       ) : null}
     </div>
   );
+}
+
+/* ───────────────────────────── Acesso ───────────────────────────── */
+
+const PLAN_LABEL = { essencial: "Essencial", completo: "Completo" };
+const checkoutUrl = (kind) => CHECKOUT[kind] || SALES_URL;
+
+/** What a locked feature needs, with the way to buy it. `need`: "essencial" (any plan) or "completo". */
+function LockCard({ need, title, text, access }) {
+  const signedOut = access.status !== "signed";
+  const upgrade = need === "completo" && access.plan === "essencial";
+  const href = upgrade ? checkoutUrl("upgrade") : checkoutUrl(need === "completo" ? "completo" : "essencial");
+  const cta = upgrade ? "Passar para o Completo" : need === "completo" ? "Quero o Completo" : "Ver os planos";
+  return (
+    <div className="cg-surface flex flex-wrap items-center justify-between gap-3 rounded-xl border border-dashed cg-line px-4 py-3">
+      <div className="flex min-w-0 max-w-3xl items-start gap-2.5">
+        <Lock className="mt-0.5 h-4 w-4 shrink-0 cg-ink2" aria-hidden="true" />
+        <div className="min-w-0">
+          <p className="text-sm font-bold">{title}</p>
+          <p className="text-sm cg-ink2">{text}</p>
+          {signedOut ? <p className="mt-1 text-xs cg-muted">Já comprou? Entre com a conta Google do e-mail da compra (no topo da página).</p> : null}
+        </div>
+      </div>
+      <a href={href} className={`${need === "completo" ? "cg-btn-primary" : "cg-btn-ghost"} inline-flex h-10 items-center rounded-lg px-4 text-sm font-bold`}>
+        {cta}
+      </a>
+    </div>
+  );
+}
+
+function AccountBar({ access, onError }) {
+  const btnRef = useRef(null);
+  useEffect(() => {
+    if (access.status === "anon") renderGoogleButton(btnRef.current, { onError }).catch((e) => onError?.(e.message));
+  }, [access.status]);
+  if (access.status === "loading") return null;
+  if (access.status === "anon") return <div ref={btnRef} className="flex h-9 items-center" aria-label="Entrar com Google" />;
+  return (
+    <div className="flex min-w-0 items-center gap-2 text-xs">
+      <span className="hidden min-w-0 truncate cg-ink2 sm:inline" title={access.email ?? ""}>
+        {access.email}
+      </span>
+      <span className={`${access.plan ? "cg-pill-base" : "cg-pill-final"} whitespace-nowrap rounded-md px-2 py-1 font-bold`}>{access.plan ? PLAN_LABEL[access.plan] : "Sem plano"}</span>
+      <button type="button" onClick={() => signOut()} aria-label="Sair" title="Sair" className="cg-btn-ghost grid h-8 w-8 place-items-center rounded-lg">
+        <LogOut className="h-4 w-4" aria-hidden="true" />
+      </button>
+    </div>
+  );
+}
+
+function AccessNotice({ access, loginError }) {
+  if (loginError) {
+    return (
+      <div role="alert" className="cg-warn rounded-lg px-4 py-3 text-sm">
+        Não foi possível entrar: {loginError}
+      </div>
+    );
+  }
+  if (access.error) {
+    return (
+      <div role="alert" className="cg-warn rounded-lg px-4 py-3 text-sm">
+        {access.error}
+      </div>
+    );
+  }
+  if (access.status === "signed" && !access.plan) {
+    return (
+      <div role="status" className="cg-warn flex flex-wrap items-center justify-between gap-3 rounded-lg px-4 py-3 text-sm">
+        <p className="min-w-0 max-w-3xl">
+          Não encontramos compra para <b>{access.email}</b>. Use a conta Google do mesmo e-mail da compra
+          {SUPPORT_EMAIL ? (
+            <>
+              {" "}ou escreva para <a className="cg-link font-semibold" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>
+            </>
+          ) : null}
+          . A liberação leva alguns minutos depois do pagamento aprovado.
+        </p>
+        <a href={SALES_URL} className="cg-btn-primary inline-flex h-9 items-center rounded-lg px-3 text-xs font-bold">
+          Ver os planos
+        </a>
+      </div>
+    );
+  }
+  if (access.status === "anon") {
+    return (
+      <div role="status" className="cg-sunken flex flex-wrap items-center justify-between gap-3 rounded-lg px-4 py-3 text-sm">
+        <p className="min-w-0 max-w-3xl">
+          <b>Demonstração grátis:</b> veja a vantagem, o top 80%, o dossiê e a primeira semana da agenda. Para a agenda completa, o seu nível e o PDF, escolha um plano. Já comprou? Entre com o Google no topo.
+        </p>
+        <a href={SALES_URL} className="cg-btn-primary inline-flex h-9 items-center rounded-lg px-3 text-xs font-bold">
+          Ver os planos
+        </a>
+      </div>
+    );
+  }
+  return null;
 }
 
 /* ───────────────────────────── 5 · Resultado ───────────────────────────── */
@@ -1651,6 +1761,21 @@ function MethodNotes() {
         <li>Capacidade: 10% de folga, reta final nos últimos 15% dos dias, revisões e simulados reservados antes do conteúdo novo.</li>
         <li>Dados públicos (editais e provas oficiais). Itens gerados por IA estão marcados. Confira datas e conteúdo no edital vigente.</li>
       </ul>
+      <p>
+        Não somos afiliados ao INSS nem ao Cebraspe.{" "}
+        {SUPPORT_EMAIL ? (
+          <>
+            Contato:{" "}
+            <a className="cg-link" href={`mailto:${SUPPORT_EMAIL}`}>
+              {SUPPORT_EMAIL}
+            </a>{" "}
+            ·{" "}
+          </>
+        ) : null}
+        <a className="cg-link" href="./privacidade/">
+          Política de privacidade
+        </a>
+      </p>
     </section>
   );
 }
@@ -1658,6 +1783,9 @@ function MethodNotes() {
 /* ───────────────────────────── App ───────────────────────────── */
 
 export default function App() {
+  const access = useAccess(pack.concurso.id);
+  const can = capabilities(access.plan);
+  const [loginError, setLoginError] = useState(null);
   const [state, setState] = useState(loadState);
   const [expanded, setExpanded] = useState(() => new Set());
   const [week, setWeekState] = useState(null); // null = the week that contains today
@@ -1696,11 +1824,13 @@ export default function App() {
     return out;
   }, [quizScore]);
   // the plan follows the leveling the student applied with "Reajustar", not every click
-  const levelNow = { strengths: state.strengths, q: state.quiz?.done ? { attempt: state.quiz.attempt, answers: state.quiz.answers } : null };
-  const pending = !state.applied || JSON.stringify(state.applied) !== JSON.stringify(levelNow);
-  const appliedKey = JSON.stringify(state.applied);
+  // what the plan may use: no leveling in the demo, no quiz without the Completo
+  const applied = allowedLeveling(state.applied, can);
+  const levelNow = { strengths: state.strengths, q: can.quiz && state.quiz?.done ? { attempt: state.quiz.attempt, answers: state.quiz.answers } : null };
+  const pending = !applied || JSON.stringify(applied) !== JSON.stringify(levelNow);
+  const appliedKey = JSON.stringify(applied);
   const nivelamento = useMemo(() => {
-    const a = state.applied;
+    const a = applied;
     if (!a) return {};
     const q = a.q ? plan.scoreQuiz(plan.sampleQuiz(pack, { n: QUIZ_N, seed: `${pack.concurso.id}|${a.q.attempt}` }).itens, a.q.answers) : null;
     return plan.nivelamentoInput(pack, a.strengths, q);
@@ -1711,15 +1841,18 @@ export default function App() {
 
   // time
   const examISO = state.simulate && state.simDate ? state.simDate : EXAM_OFFICIAL;
-  const start = state.planStart && state.planStart <= TODAY && state.planStart < examISO ? state.planStart : TODAY;
+  // without a plan the agenda always starts today; progress (✓) and reorganizing are Completo features
+  const planStart = can.level ? state.planStart : null;
+  const log = can.progress ? (state.log ?? {}) : {};
+  const start = planStart && planStart <= TODAY && planStart < examISO ? planStart : TODAY;
   const nTopics = state.scope === "top80" ? par.topCount : N_ASSUNTOS;
   const excecoes = useMemo(() => Object.fromEntries(Object.entries(state.excecoes ?? {}).filter(([iso]) => iso >= start && iso < examISO)), [state.excecoes, start, examISO]);
   // progress: consolidated entries (before the last reorganization) shape the plan; the others are checkmarks on it
-  const logKey = JSON.stringify(state.log ?? {});
-  const progress = useMemo(() => plan.progressOf(Object.values(state.log ?? {}).filter((e) => e.consolidated)), [logKey]);
-  const progressAll = useMemo(() => plan.progressOf(Object.values(state.log ?? {})), [logKey]);
+  const logKey = JSON.stringify(log);
+  const progress = useMemo(() => plan.progressOf(Object.values(log).filter((e) => e.consolidated)), [logKey]);
+  const progressAll = useMemo(() => plan.progressOf(Object.values(log)), [logKey]);
   const suggestion = useMemo(
-    () => (state.applied ? plan.suggestLoad({ pack, par, cmp, start, exam: examISO, nTopics, progress }) : null),
+    () => (applied ? plan.suggestLoad({ pack, par, cmp, start, exam: examISO, nTopics, progress }) : null),
     [appliedKey, par, cmp, start, examISO, nTopics, progress]
   );
   // "auto" (after Reajustar): the suggestion when it fits in Hard, otherwise Hard; the suggestion stays as reference
@@ -1790,7 +1923,7 @@ export default function App() {
       return { ...s, excecoes: ex };
     });
   // studied blocks
-  const logged = state.log ?? {};
+  const logged = log;
   const isDone = (key) => Boolean(logged[key] && !logged[key].consolidated);
   const toggleDone = (key, d, b) =>
     setState((s) => {
@@ -1818,7 +1951,7 @@ export default function App() {
         else if (d.data < TODAY) overdue = { n: overdue.n + 1, min: overdue.min + b.minutos };
       });
   const studied = Object.values(logged).reduce((acc, e) => ({ n: acc.n + 1, min: acc.min + e.minutos }), { n: 0, min: 0 });
-  const progressInfo = { studied, overdue, pendingLog, finished: remaining.finished.length, planStart: start, reorganized: Boolean(state.planStart) };
+  const progressInfo = { studied, overdue, pendingLog, finished: remaining.finished.length, planStart: start, reorganized: Boolean(planStart) };
   const coverageProps = {
     cov,
     topPts: par.topPts,
@@ -1836,9 +1969,11 @@ export default function App() {
     gen80: plan.hoursTo(cmp.generic, plan.PARETO_TARGET),
     pers80: par.topHours,
   };
+  // the demo shows only the first week of the agenda
+  const weekLimit = can.fullAgenda ? weeks.length : Math.min(1, weeks.length);
   const todayWeek = Math.max(1, weeks.findIndex((w) => w.inicio <= TODAY && TODAY <= w.fim) + 1);
-  const currentWeek = Math.min(Math.max(1, week ?? todayWeek), Math.max(1, weeks.length));
-  const setWeek = (w) => setWeekState(Math.min(Math.max(1, w), weeks.length));
+  const currentWeek = Math.min(Math.max(1, week ?? todayWeek), Math.max(1, weekLimit));
+  const setWeek = (w) => setWeekState(Math.min(Math.max(1, w), weekLimit));
   useEffect(() => setWeekState(null), [examISO, state.scope, start]);
 
   const toggleExpand = (id) =>
@@ -1900,7 +2035,7 @@ export default function App() {
     try {
       const token = await tokenP;
       const site = `${window.location.origin}${window.location.pathname}?concurso=${pack.concurso.id}`;
-      const entries = plan.calendarEntries({ weeks, pack, log: state.log ?? {}, today: TODAY, isDone: (d, b, i) => isDone(plan.blockKey(d.data, b, i)), horizonDays: GOOGLE_SYNC_DAYS, inicio: state.inicio, inicioFds: state.inicioFds });
+      const entries = plan.calendarEntries({ weeks, pack, log, today: TODAY, isDone: (d, b, i) => isDone(plan.blockKey(d.data, b, i)), horizonDays: GOOGLE_SYNC_DAYS, inicio: state.inicio, inicioFds: state.inicioFds });
       const desired = entries.map((e) => plan.gcalEvent(e, { pack, materias: MAT_NAMES, siteUrl: site, unidade: U, planStart: start, appName: APP_NAME }));
       const r = await g.syncCalendar({
         token,
@@ -1921,7 +2056,7 @@ export default function App() {
   const exportIcs = () => {
     if (!weeks.length) return;
     const site = typeof window === "undefined" ? "" : `${window.location.origin}${window.location.pathname}?concurso=${pack.concurso.id}`;
-    const entries = plan.calendarEntries({ weeks, pack, log: state.log ?? {}, today: TODAY, isDone: (d, b, i) => isDone(plan.blockKey(d.data, b, i)), inicio: state.inicio, inicioFds: state.inicioFds });
+    const entries = plan.calendarEntries({ weeks, pack, log, today: TODAY, isDone: (d, b, i) => isDone(plan.blockKey(d.data, b, i)), inicio: state.inicio, inicioFds: state.inicioFds });
     const { text, eventos } = plan.toICS({ entries, pack, materias: MAT_NAMES, appName: APP_NAME, planStart: start, siteUrl: site, unidade: U });
     const filename = `cronograma-${pack.concurso.id}-${TODAY}.ics`;
     const blob = new Blob([text], { type: "text/calendar;charset=utf-8" });
@@ -1978,10 +2113,14 @@ export default function App() {
               </a>
             ))}
           </nav>
+          <div className="ml-auto flex shrink-0 items-center md:ml-2">
+            <AccountBar access={access} onError={setLoginError} />
+          </div>
         </div>
       </header>
 
       <main className="cg-gutter cg-wrap flex flex-col gap-10 py-5 md:py-6">
+        <AccessNotice access={access} loginError={loginError} />
         <ComparePanel />
 
 
@@ -2004,7 +2143,7 @@ export default function App() {
             modeLabel={modeLabel}
             nums={nums}
             cov={cov}
-            applied={Boolean(state.applied)}
+            applied={Boolean(applied)}
             cmp={cmp}
             dates={dates}
           />
@@ -2048,15 +2187,38 @@ export default function App() {
               onAdjust: (delta) => adjustDay(d.data, delta),
               onReset: () => resetDay(d.data),
               isDone: (b, i) => isDone(plan.blockKey(d.data, b, i)),
-              onToggle: (b, i) => toggleDone(plan.blockKey(d.data, b, i), d, b),
+              onToggle: can.progress ? (b, i) => toggleDone(plan.blockKey(d.data, b, i), d, b) : null,
             })}
-            progressPanel={<ProgressPanel info={progressInfo} onReorganize={reorganize} />}
-            progressTop={overdue.n > 0}
+            progressPanel={
+              can.progress ? (
+                <ProgressPanel info={progressInfo} onReorganize={reorganize} />
+              ) : can.fullAgenda ? (
+                <LockCard
+                  need="completo"
+                  access={access}
+                  title="Atrasou? Reorganize a agenda"
+                  text="No Completo você marca o que estudou e a agenda redistribui o que falta de hoje até a prova, quantas vezes precisar, e atualiza o Google Agenda."
+                />
+              ) : null
+            }
+            progressTop={can.progress && overdue.n > 0}
+            progressOn={can.progress}
+            limit={weekLimit}
+            lockNote={
+              can.fullAgenda ? null : (
+                <LockCard
+                  need="essencial"
+                  access={access}
+                  title={`Esta é a semana 1 de ${weeks.length}`}
+                  text="A agenda completa até a prova, ajustada ao seu nível, e o PDF estão nos planos Essencial e Completo."
+                />
+              )
+            }
             intro={
-              !state.applied || pending ? (
+              !applied || pending ? (
                 <div className="cg-sunken flex flex-wrap items-center justify-between gap-2 rounded-xl px-4 py-2.5">
                   <p className="min-w-0 max-w-2xl text-sm">
-                    {!state.applied ? (
+                    {!applied ? (
                       <>
                         Agenda inicial em <b>{modeLabel}</b> ({fmtH(weekly)}/semana), pela prioridade da prova. Comece já; para personalizar, informe seu nível.
                       </>
@@ -2076,18 +2238,34 @@ export default function App() {
               ) : null
             }
             exportBar={
-              <ExportBar
-                aluno={state.aluno}
-                setAluno={(v) => set({ aluno: v })}
-                onPdf={exportPdf}
-                onIcs={exportIcs}
-                busy={busy}
-                error={exportError}
-                files={files}
-                onGoogle={GOOGLE_CLIENT_ID ? syncGoogle : null}
-                gsync={gsync}
-                summary={`${weeks.length} semanas · ${totalBlocks} blocos · o .ics leva só o que falta, de hoje em diante`}
-              />
+              can.pdf ? (
+                <div className="flex flex-col gap-3">
+                  <ExportBar
+                    aluno={state.aluno}
+                    setAluno={(v) => set({ aluno: v })}
+                    onPdf={exportPdf}
+                    onIcs={can.calendar ? exportIcs : null}
+                    busy={busy}
+                    error={exportError}
+                    files={files}
+                    onGoogle={can.calendar && GOOGLE_CLIENT_ID ? syncGoogle : null}
+                    gsync={gsync}
+                    summary={
+                      can.calendar
+                        ? `${weeks.length} semanas · ${totalBlocks} blocos · o .ics leva só o que falta, de hoje em diante`
+                        : `${weeks.length} semanas · ${totalBlocks} blocos · para outra carga, troque Normal, Hard ou Super hard em "Seu tempo" e gere de novo`
+                    }
+                  />
+                  {can.calendar ? null : (
+                    <LockCard
+                      need="completo"
+                      access={access}
+                      title="Agenda no Google, atualizada sozinha"
+                      text="No Completo, a agenda vai para o Google Agenda e o .ics, e acompanha cada reorganização."
+                    />
+                  )}
+                </div>
+              ) : null
             }
           />
         ) : (
@@ -2104,9 +2282,13 @@ export default function App() {
           <SectionHead
             step="3 · Seu nível"
             title="Seu ponto de partida"
-            desc="Marque seu nível em cada matéria (opcional) e faça o simulado. Onde você marcar Fraco, a agenda dá mais horas; onde marcar Forte, menos. Sem marcação, vale o peso da prova."
+            desc={
+              can.quiz
+                ? "Marque seu nível em cada matéria (opcional) e faça o simulado. Onde você marcar Fraco, a agenda dá mais horas; onde marcar Forte, menos. Sem marcação, vale o peso da prova."
+                : "Marque seu nível em cada matéria. Onde você marcar Fraco, a agenda dá mais horas; onde marcar Forte, menos. Sem marcação, vale o peso da prova."
+            }
             right={
-              Object.keys(state.strengths).length ? (
+              can.level && Object.keys(state.strengths).length ? (
                 <button type="button" onClick={() => set({ strengths: {} })} className="cg-btn-ghost inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold">
                   <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
                   Limpar marcações
@@ -2114,20 +2296,40 @@ export default function App() {
               ) : null
             }
           />
-          <StrengthGrid
-            strengths={state.strengths}
-            quizByMateria={quizByMateria}
-            onSet={(id, v) =>
-              setState((s) => {
-                const next = { ...s.strengths };
-                if (v) next[id] = v;
-                else delete next[id];
-                return { ...s, strengths: next };
-              })
-            }
-          />
-          <QuizPanel quiz={state.quiz} items={quizItems} score={quizScore} {...quizActions} />
-          <ApplyBar applied={Boolean(state.applied)} pending={pending} marked={Object.keys(state.applied?.strengths ?? {}).length} quizDone={Boolean(state.applied?.q)} onApply={applyLevel} />
+          {can.level ? (
+            <>
+              <StrengthGrid
+                strengths={state.strengths}
+                quizByMateria={can.quiz ? quizByMateria : null}
+                onSet={(id, v) =>
+                  setState((s) => {
+                    const next = { ...s.strengths };
+                    if (v) next[id] = v;
+                    else delete next[id];
+                    return { ...s, strengths: next };
+                  })
+                }
+              />
+              {can.quiz ? (
+                <QuizPanel quiz={state.quiz} items={quizItems} score={quizScore} {...quizActions} />
+              ) : (
+                <LockCard
+                  need="completo"
+                  access={access}
+                  title={`Simulado de nivelamento com ${QUIZ_N} ${U} reais`}
+                  text="O nível declarado costuma ser otimista. No Completo, o simulado mede seu nível real em cada matéria e a agenda se ajusta a ele."
+                />
+              )}
+              <ApplyBar applied={Boolean(applied)} pending={pending} marked={Object.keys(applied?.strengths ?? {}).length} quizDone={Boolean(applied?.q)} onApply={applyLevel} quiz={can.quiz} />
+            </>
+          ) : (
+            <LockCard
+              need="essencial"
+              access={access}
+              title="Ajuste a agenda ao seu nível"
+              text="Nos planos, você marca seu nível em cada matéria e a agenda dá mais horas onde você precisa. No Completo, também faz o simulado de nivelamento."
+            />
+          )}
         </section>
 
         <section id="top80" className="cg-anchor flex flex-col gap-4">
