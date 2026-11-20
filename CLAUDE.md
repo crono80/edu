@@ -140,10 +140,10 @@ nos dois jobs. O ambiente cloud não acessa `github.io`.
 - Desenvolvimento: `npm run dev` + `?plano=demo|essencial|completo` força o plano (só em dev).
 
 **Conteúdo e vendas**
-- E-mail público (app, vendas, política, Kiwify): `cronogramas@zohomail.com`. O e-mail pessoal do dono não
+- E-mail público (app, vendas, política, Kiwify): `contato@cronograma80.com.br`. O e-mail pessoal do dono não
   aparece em nada público. A política identifica o controlador só pelo e-mail (decisão do dono).
 - Nada de depoimentos inventados nem de preço "de" que não foi praticado.
-- A página de vendas fica `noindex` enquanto for protótipo.
+- A página de vendas está indexável (noindex removido no lançamento).
 - Avisos obrigatórios: pré-edital, sem afiliação com INSS ou Cebraspe, sem garantia de aprovação.
 - Números da página de vendas vêm de telas reais do MVP (hoje fixo em 17/11/2026, Português forte,
   Seguridade fraca, após "Reajustar" → 13h/sem). Se o engine ou as cores mudarem, rode `npm run shots:vendas`.
@@ -164,11 +164,15 @@ nos dois jobs. O ambiente cloud não acessa `github.io`.
 
 ## Em aberto
 
-- Domínio no GitHub Pages: recolocar `cronograma80.com.br` em Settings → Pages quando o DNS do Registro.br
-  resolver e ativar HTTPS (removido em 20/11 porque o DNS ainda estava em transição).
-- "Publicar app" no Google Cloud (política em `/privacidade/`, link `https://cronograma80.com.br/privacidade/`).
-- Kiwify: produtos (Essencial, Completo, Upgrade), mapeamento em `products`, webhook e `KIWIFY_TOKEN`;
-  depois preencher `CHECKOUT` em `src/config.js` e os links da página de vendas.
+- Identificação no site (Decreto 7.962/2013, art. 2º): nome/CPF e endereço do fornecedor na página de vendas;
+  adiado pelo dono em 20/11.
+- Supabase está no Free (pausa após ~7 dias sem atividade): o workflow `keepalive.yml` mitiga; avaliar Pro
+  com volume de vendas.
 - Atualização do pack INSS quando o edital sair.
 - PDF: o comparativo ainda mostra "Cobertura com Xh de conteúdo" (%); alinhar ao tempo economizado se o
   dono pedir.
+
+Resolvido em 20/11/2026: domínio `cronograma80.com.br` no Pages com HTTPS; app Google "Em produção";
+Kiwify (Essencial e Completo, webhook, `KIWIFY_TOKEN`, `products`) e `CHECKOUT` preenchido; e-mail público
+`contato@cronograma80.com.br` (iCloud); teste de compra real (aprovação libera, reembolso revoga).
+Upgrade Essencial → Completo ainda não existe (`CHECKOUT.upgrade` vazio, sem menção na página de vendas).
