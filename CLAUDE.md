@@ -10,11 +10,17 @@ sobre um cronograma genérico (ordem do edital, mesma carga para todos).
 
 - **Concurso:** INSS · Técnico do Seguro Social, pré-edital (pack `inss-tecnico-pre`, único no catálogo).
   O catálogo aceita outros packs; o seletor de concurso no topo só aparece com dois ou mais.
-- **Endereço:** https://crono80.github.io/edu/ (MVP) · `/edu/vendas/` (página de vendas, protótipo).
-  O projeto veio de `thiago-harry/web` (histórico completo preservado); o site antigo,
-  https://thiago-harry.github.io/web/, fica congelado no PR #31 de lá até ser desativado.
-- **Venda (sugerida, não confirmada):** Essencial R$ 37 (de R$ 47), Completo R$ 97, checkout Kiwify ou
-  Hotmart, garantia de 7 dias (CDC art. 49).
+- **Endereço:** https://crono80.github.io/edu/ (MVP) · `/edu/vendas/` (página de vendas). Domínio próprio
+  `cronograma80.com.br` (Registro.br, DNS com A/AAAA do GitHub Pages e `www` → `crono80.github.io`; verificado
+  na organização). O projeto veio de `thiago-harry/web` (arquivado; o site antigo só redireciona para cá).
+- **Venda (decidida em 20/11/2026):** pagamento único na Kiwify, garantia de 7 dias (CDC art. 49), acesso até a
+  data da prova, atualização do pack quando o edital sair (mesmo cargo) nos dois planos. Sem preço "de".
+  - **Essencial R$ 37:** agenda completa, nível declarado por matéria, PDF (o aluno gera uma vez por carga:
+    Normal, Hard, Super hard).
+  - **Completo R$ 97:** tudo do Essencial + simulado de nivelamento, progresso (✓), "Reorganizar agenda",
+    Google Agenda e `.ics`.
+  - **Upgrade R$ 60:** Essencial → Completo pela diferença.
+  - **Demonstração (sem compra):** como funciona, vantagem, seu tempo, top 80%, dossiê e só a 1ª semana da agenda.
 
 ## Arquitetura
 
@@ -26,7 +32,12 @@ sobre um cronograma genérico (ordem do edital, mesma carga para todos).
 | `src/gcal.js` | Google Calendar API v3 direto do navegador (token GIS, cria agenda, sincroniza) |
 | `src/pdf.js` | PDF A4 (jsPDF + autotable, carregado só no clique) |
 | `src/packs.js` | Catálogo de concursos: pack + textos específicos (dossiê, unidade "itens"/"questões") |
-| `src/config.js` | `GOOGLE_CLIENT_ID` (público) e `GOOGLE_SYNC_DAYS` (`null` = até a prova) |
+| `src/config.js` | `GOOGLE_CLIENT_ID`, `SUPABASE_URL`/`SUPABASE_KEY` (publishable), `CHECKOUT` (links da Kiwify), `SALES_URL`, `SUPPORT_EMAIL`; nada secreto |
+| `src/access.js` | Login Google (botão GIS → `signInWithIdToken` no Supabase) e `useAccess()` → plano via RPC `my_plan` |
+| `src/access-rules.js` | **O que cada plano libera** (`capabilities`), puro e testado em `src/access.test.js` |
+| `src/gis.js` | Carrega o Google Identity Services uma vez (login e Google Agenda) |
+| `supabase/schema.sql` | Tabelas `products` (produto Kiwify → plano/concurso) e `purchases`, RLS, função `my_plan()` |
+| `supabase/functions/kiwify-webhook/` | Edge Function do webhook da Kiwify (assinatura HMAC-SHA1 em `?signature=`) |
 | `src/palette.js` | **Fonte única das cores** (temas claro e escuro, cores das matérias); `theme.js` e `pdf.js` leem daqui |
 | `src/plan.test.js` | Testes da camada de produto (`.ics`, fuso, ids do Google, pré-requisitos) |
 | `engine/` | Engine determinístico, puro, sem DOM (schema, score, allocate, revision, explain, quiz, dates) + `engine.test.js`. O MVP importa daqui |
@@ -47,10 +58,10 @@ npm ci                    # dependências (Node 22)
 npm run dev               # http://localhost:5173
 npm run build             # dist/
 npm run preview           # serve dist/ em http://localhost:4173 (página de vendas em /vendas/)
-npm test                  # engine (24) + pack builder (10) + app (5)
+npm test                  # engine (24) + pack builder (10) + app (11)
 npm run test:engine       # node --test engine/engine.test.js
 npm run test:builder      # node --test tools/pack-builder/test/builder.test.js (precisa de pdftotext)
-npm run test:app          # TZ=UTC node --test src/plan.test.js
+npm run test:app          # TZ=UTC node --test src/plan.test.js src/access.test.js
 npm run report:engine     # tabela de prioridades + primeiras semanas
 npm run shots:vendas      # refaz public/vendas/img/*.webp (precisa de npm run build + npm run preview rodando)
 node tools/pack-builder/cli.js assemble packs-src/inss-tecnico   # regenera o pack depois de editar packs-src
@@ -114,11 +125,19 @@ nos dois jobs. O ambiente cloud não acessa `github.io`.
   eventos são determinísticos (base32hex), com `extendedProperties.private.cpv = "1"`. Envia os blocos
   planejados de hoje até a prova e, no passado, só os estudados (✓, verde).
   - O client ID é público e fica em `src/config.js`. A chave secreta nunca é usada nem pedida.
-  - O app está em modo Teste no Google Cloud: só usuários de teste conseguem logar. Produção exige a
-    verificação do Google (e, provavelmente, domínio próprio).
-  - Origem JavaScript autorizada no cliente OAuth: `https://thiago-harry.github.io` (site antigo). Falta
-    cadastrar `https://crono80.github.io` (ver "Em aberto"); até lá, o login do Google falha no site novo.
-    Mudar só o caminho não exige mudança; domínio próprio exige cadastrar a nova origem.
+  - Escopos declarados no Google Cloud: só não confidenciais (`openid`, `userinfo.email`, `userinfo.profile`,
+    `calendar.app.created`), então publicar não exige verificação. Publicar exige página inicial e política
+    de privacidade no domínio. Nome do app na tela do Google: "Cronograma Personalizado".
+  - Origens autorizadas: `https://thiago-harry.github.io`, `https://crono80.github.io`, `https://cronograma80.com.br`.
+
+**Acesso pago**
+- Kiwify → webhook (`compra_aprovada`, `compra_reembolsada`, `chargeback`) → Edge Function `kiwify-webhook`
+  (JWT desligado; segredo `KIWIFY_TOKEN` no Supabase) → `purchases`. Reembolso e chargeback são finais.
+- Produto novo na Kiwify só libera acesso depois de mapeado em `products` (product_id → plano + concurso).
+- O app chama `my_plan(concurso)`; RLS deixa cada usuário ver só as compras do próprio e-mail (Google).
+  Login por e-mail/senha desligado no Supabase de propósito (ninguém cria conta com o e-mail de outro).
+- O bloqueio é no navegador: o pack continua no JS público. Se aparecer cópia, servir o pack por endpoint.
+- Desenvolvimento: `npm run dev` + `?plano=demo|essencial|completo` força o plano (só em dev).
 
 **Conteúdo e vendas**
 - Nada de depoimentos inventados nem de preço "de" que não foi praticado.
@@ -143,10 +162,11 @@ nos dois jobs. O ambiente cloud não acessa `github.io`.
 
 ## Em aberto
 
-- **Dono:** cadastrar `https://crono80.github.io` nas origens autorizadas do cliente OAuth no Google
-  Cloud; desativar o site antigo (Settings → Pages em `thiago-harry/web`) e arquivar aquele repositório.
-  (Pages deste repositório ativo desde 20/11/2026, primeiro deploy com `success`.)
-- Domínio próprio; verificação do Google; checkout; preços finais; atualização do pack INSS quando o
-  edital sair.
+- Domínio no GitHub Pages: recolocar `cronograma80.com.br` em Settings → Pages quando o DNS do Registro.br
+  resolver e ativar HTTPS (removido em 20/11 porque o DNS ainda estava em transição).
+- Página `/privacidade/` (aguarda nome do controlador e e-mail) → então "Publicar app" no Google Cloud.
+- Kiwify: produtos (Essencial, Completo, Upgrade), mapeamento em `products`, webhook e `KIWIFY_TOKEN`;
+  depois preencher `CHECKOUT` em `src/config.js` e os links da página de vendas.
+- Atualização do pack INSS quando o edital sair.
 - PDF: o comparativo ainda mostra "Cobertura com Xh de conteúdo" (%); alinhar ao tempo economizado se o
   dono pedir.
