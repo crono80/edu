@@ -76,6 +76,7 @@ const MAT_NAMES = Object.fromEntries(pack.estrutura_prova.materias.map((m) => [m
 // Student-independent view of the exam (no leveling): dossiê and top 80%.
 const BASE_SCORES = plan.score({ pack });
 const BASE_PTS = plan.expectedPoints(pack, BASE_SCORES);
+const ASSUNTO_NOME = Object.fromEntries(pack.assuntos.map((a) => [a.id, a.nome]));
 
 const ACT = {
   videoaula: { label: "Videoaula", Icon: PlayCircle },
@@ -648,7 +649,7 @@ function DossierCards() {
   );
 }
 
-function DossierTable({ topSet, expanded, onToggle }) {
+function DossierTable({ topSet, baseFor, expanded, onToggle }) {
   const mats = BASE_SCORES.materiaRanking.map((id) => BASE_SCORES.materias[id]);
   const maxShare = Math.max(...mats.map((m) => m.share_prova));
   return (
@@ -720,6 +721,7 @@ function DossierTable({ topSet, expanded, onToggle }) {
                                 <p className="cg-mono text-xs cg-muted">
                                   {sinais} · edital {"●".repeat(a.edital_profundidade)}
                                   {a.volatil ? " · lei alterada" : ""}
+                                  {topSet.has(a.id) && baseFor.has(a.id) ? ` · base para ${ASSUNTO_NOME[baseFor.get(a.id)]}` : ""}
                                 </p>
                               </div>
                               <div className="col-span-2">
@@ -2146,7 +2148,7 @@ export default function App() {
         <section id="dossie" className="cg-anchor flex flex-col gap-4">
           <SectionHead step="Dossiê" title="O que mais cai nesta prova" desc={META.dossieDesc} />
           <DossierCards />
-          <DossierTable topSet={par.top} expanded={expanded} onToggle={toggleExpand} />
+          <DossierTable topSet={par.top} baseFor={par.baseFor} expanded={expanded} onToggle={toggleExpand} />
         </section>
 
         <MethodNotes />

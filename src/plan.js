@@ -88,42 +88,80 @@ export function neededHours(assunto, sc) {
   return assunto.carga_horaria_base * f;
 }
 
-/** Topics by expected points per hour this student needs (best return first). */
-function efficiencyOrder(pack, scores, pts) {
+/**
+ * Study groups, best return first: each group is a topic plus the prerequisites it still lacks
+ * (deepest first), ranked by the group's expected points per hour this student needs. A prerequisite
+ * therefore always comes before the topics that need it, and a valuable topic pulls its basics in.
+ * Ties: more points first, then edital order.
+ */
+export function studyGroups(pack, scores, pts = expectedPoints(pack, scores)) {
   const byId = Object.fromEntries(pack.assuntos.map((a) => [a.id, a]));
-  const rate = (id) => pts[id] / Math.max(0.25, neededHours(byId[id], scores.byId[id]));
-  return pack.assuntos.map((a) => a.id).sort((x, y) => rate(y) - rate(x) || pts[y] - pts[x] || (x < y ? -1 : 1));
+  const pos = new Map(pack.assuntos.map((a, i) => [a.id, i]));
+  const hours = (id) => Math.max(0.25, neededHours(byId[id], scores.byId[id]));
+  const taken = new Set();
+  const withPrereqs = (id) => {
+    const out = [];
+    const seen = new Set();
+    const visit = (x) => {
+      if (taken.has(x) || seen.has(x) || !byId[x]) return;
+      seen.add(x);
+      for (const p of [...byId[x].prereq].sort((a, b) => pos.get(a) - pos.get(b))) visit(p);
+      out.push(x);
+    };
+    visit(id);
+    return out;
+  };
+  const groups = [];
+  while (taken.size < pack.assuntos.length) {
+    let best = null;
+    for (const a of pack.assuntos) {
+      if (taken.has(a.id)) continue;
+      const ids = withPrereqs(a.id);
+      const p = ids.reduce((s, x) => s + pts[x], 0);
+      const rate = p / ids.reduce((s, x) => s + hours(x), 0);
+      if (!best || rate > best.rate + 1e-12 || (Math.abs(rate - best.rate) <= 1e-12 && p > best.p + 1e-12)) best = { head: a.id, ids, rate, p };
+    }
+    groups.push({ head: best.head, ids: best.ids });
+    for (const x of best.ids) taken.add(x);
+  }
+  return groups;
 }
 
 /**
  * Top of the exam: the smallest study load that reaches `target` of the expected points.
- * Greedy by points per hour, so a cheap law worth half a question beats a long chapter worth one.
+ * Greedy by points per hour, so a cheap law worth half a question beats a long chapter worth one;
+ * a topic enters together with its prerequisites, so the top is closed under prerequisites.
+ * `baseFor`: prerequisite id -> the topic that pulled it in (when it was not picked on its own).
  */
 export function pareto(pack, scores, target = PARETO_TARGET) {
   const pts = expectedPoints(pack, scores);
   const total = Object.values(pts).reduce((s, v) => s + v, 0);
   const byId = Object.fromEntries(pack.assuntos.map((a) => [a.id, a]));
-  const order = efficiencyOrder(pack, scores, pts);
   let cum = 0;
   let cumHours = 0;
   let topCount = 0;
   let topHours = 0;
-  const items = order.map((id) => {
-    const a = byId[id];
-    const sc = scores.byId[id];
-    const horas = neededHours(a, sc);
+  const items = [];
+  const baseFor = new Map();
+  for (const g of studyGroups(pack, scores, pts)) {
     const inTop = cum / total < target - 1e-9;
-    cum += pts[id];
-    cumHours += horas;
-    if (inTop) {
-      topCount += 1;
-      topHours += horas;
+    for (const id of g.ids) {
+      const a = byId[id];
+      const sc = scores.byId[id];
+      const horas = neededHours(a, sc);
+      cum += pts[id];
+      cumHours += horas;
+      if (inTop) {
+        topCount += 1;
+        topHours += horas;
+      }
+      if (id !== g.head) baseFor.set(id, g.head);
+      items.push({ id, assunto: a, score: sc, pts: pts[id], cumPct: cum / total, horas, cumHours, inTop, baseDe: id === g.head ? null : g.head });
     }
-    return { id, assunto: a, score: sc, pts: pts[id], cumPct: cum / total, horas, cumHours, inTop };
-  });
+  }
   const top = new Set(items.filter((x) => x.inTop).map((x) => x.id));
   const topPts = items.filter((x) => x.inTop).reduce((s, x) => s + x.pts, 0);
-  return { items, total, top, topPts, topCount, topHours, totalHours: cumHours };
+  return { items, total, top, topPts, topCount, topHours, totalHours: cumHours, baseFor };
 }
 
 /* ---------------- generic vs personalized ---------------- */
@@ -160,7 +198,8 @@ export function hoursTo(points, pct) {
 
 /**
  * Generic plan: edital order, the same base hours for every topic (ignores banca, history and the
- * student). Personalized: best points per hour first (pareto order), each topic gets the hours this student needs.
+ * student). Personalized: best points per hour first, prerequisites before the topics that need them
+ * (pareto order), each topic gets the hours this student needs.
  * Both are credited against what the student actually needs, so the generic plan wastes time on
  * mastered topics and underserves weak ones.
  */
@@ -170,7 +209,7 @@ export function compare(pack, scores) {
   const byId = Object.fromEntries(pack.assuntos.map((a) => [a.id, a]));
   const need = (id) => neededHours(byId[id], scores.byId[id]);
   const generic = curve(pack.assuntos.map((a) => ({ pts: pts[a.id], alloc: a.carga_horaria_base, need: need(a.id) })), total);
-  const order = efficiencyOrder(pack, scores, pts);
+  const order = studyGroups(pack, scores, pts).flatMap((g) => g.ids);
   const personalized = curve(order.map((id) => ({ pts: pts[id], alloc: need(id), need: need(id) })), total);
   return { generic, personalized, total };
 }

@@ -9,7 +9,7 @@
 // Requer Playwright com Chromium (já instalado no ambiente cloud do Claude Code; fora dele,
 // `npm i -g playwright && npx playwright install chromium`).
 // Estado fixo para os números baterem com o texto da página: INSS, hoje = 17/11/2026 (Brasília),
-// Português forte, Seguridade Social fraca, "Reajustar" → 10h/semana.
+// Português forte, Seguridade Social fraca, "Reajustar" → 13h/semana.
 const { chromium, devices } = require("playwright");
 const fs = require("fs");
 const path = require("path");

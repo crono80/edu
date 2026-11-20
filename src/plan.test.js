@@ -66,3 +66,31 @@ test("Google: ids no alfabeto base32hex, fuso de Brasília, estudado em verde e 
   assert.deepEqual(plan.update.map((e) => e.id), [evs[1].id]);
   assert.deepEqual(plan.remove, ["cpvorfao0000000"]);
 });
+
+test("top 80% inclui os pré-requisitos e a agenda só abre um assunto depois da teoria deles", () => {
+  for (const nivelamento of [{}, P.nivelamentoInput(pack, { port: "forte", seg: "fraco" }, null)]) {
+    const scores = P.score({ pack, nivelamento });
+    const par = P.pareto(pack, scores);
+    const byId = Object.fromEntries(pack.assuntos.map((a) => [a.id, a]));
+    const pos = new Map(par.items.map((x, i) => [x.id, i]));
+    for (const x of par.items) {
+      for (const p of byId[x.id].prereq) {
+        assert.ok(pos.get(p) < pos.get(x.id), `${p} deveria vir antes de ${x.id}`);
+        if (par.top.has(x.id)) assert.ok(par.top.has(p), `${x.id} no top sem o pré-requisito ${p}`);
+      }
+    }
+    for (const [p, head] of par.baseFor) assert.ok(par.top.has(head) === par.top.has(p), `${p} entrou por ${head}`);
+    // personalized curve follows the same order: 80% of the points at the top's hours
+    const cmp = P.compare(pack, scores);
+    assert.ok(Math.abs(P.coverageAt(cmp.personalized, par.topHours) - par.topPts / par.total) < 1e-9);
+  }
+  const r = P.buildPlan({ pack, nivelamento: {}, hours: P.MODES.hard.hours, start: "2026-11-16", exam: "2027-07-18" });
+  const opened = Object.fromEntries(r.resumo.por_assunto.map((a) => [a.assunto_id, a.aberto_em]));
+  const lastTheory = {};
+  for (const w of r.cronograma) for (const d of w.dias) for (const b of d.blocos) if (b.atividade === "teoria" && b.passada === 1) lastTheory[b.assunto_id] = d.data;
+  for (const a of pack.assuntos) {
+    if (!opened[a.id]) continue;
+    for (const p of a.prereq) if (lastTheory[p]) assert.ok(lastTheory[p] <= opened[a.id], `${a.id} abriu em ${opened[a.id]}; teoria de ${p} terminou em ${lastTheory[p]}`);
+  }
+  assert.deepEqual(r.resumo.assuntos_nao_iniciados, []);
+});
