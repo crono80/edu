@@ -1,5 +1,5 @@
 {
-  "name": "cronograma-inteligente-2g",
+  "name": "crono",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -7,8 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test:engine": "node --test app/tests/engine.test.js",
-    "report:engine": "node app/scripts/report.js",
+    "test:engine": "node --test engine/engine.test.js",
+    "report:engine": "node tools/engine-report.js",
     "test:builder": "node --test tools/pack-builder/test/builder.test.js",
     "test": "npm run test:engine && npm run test:builder && npm run test:app",
     "test:app": "TZ=UTC node --test src/plan.test.js",

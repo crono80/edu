@@ -1,7 +1,5 @@
 {
   "pack_version": "0.1.0",
-  "status": "pre-edital",
-  "descricao": "Técnico do Seguro Social · pré-edital. Conteúdo e estrutura do edital nº 1/2022 (Cebraspe, 120 itens certo/errado); histórico das provas de 2016 e 2022. Atualizar quando o novo edital sair.",
   "concurso": {
     "id": "inss-tecnico-pre",
     "nome": "INSS · Técnico do Seguro Social",

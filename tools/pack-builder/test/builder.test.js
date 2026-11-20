@@ -12,7 +12,7 @@ import { parseGabarito } from "../lib/parse-gabarito.js";
 import { parseEdital, proposeAssuntos, sliceSection } from "../lib/parse-edital.js";
 import { assemblePack, renderReview } from "../lib/assemble.js";
 import { parseJsonArray } from "../lib/classify.js";
-import { validatePack } from "../../../app/src/engine/schema.js";
+import { validatePack } from "../../../engine/schema.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const fx = (name) => path.join(here, "..", "fixtures", name);
@@ -131,7 +131,7 @@ test("cli: init → extract → parse → assemble num workspace temporário", (
   const cls = Object.fromEntries([1, 2, 3, 4, 6, 7].map((n) => [`fixture-2025#${n}`, { assunto_id: assuntos[n % assuntos.length].id, confianca: 0.9, desatualizada: false, motivo: "teste" }]));
   writeFileSync(path.join(work, "classification.json"), JSON.stringify(cls));
   const outPack = path.join(dir, "out.json");
-  const asm = execFileSync("node", [cli, "assemble", dir, "--no-index", `--out=${outPack}`], { encoding: "utf8" });
+  const asm = execFileSync("node", [cli, "assemble", dir, `--out=${outPack}`], { encoding: "utf8" });
   assert.match(asm, /válido: true/);
   const pack = JSON.parse(readFileSync(outPack, "utf8"));
   assert.equal(validatePack(pack).ok, true);

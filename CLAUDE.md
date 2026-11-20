@@ -10,8 +10,9 @@ sobre um cronograma genérico (ordem do edital, mesma carga para todos).
 
 - **Concurso:** INSS · Técnico do Seguro Social, pré-edital (pack `inss-tecnico-pre`, único no catálogo).
   O catálogo aceita outros packs; o seletor de concurso no topo só aparece com dois ou mais.
-- **No ar:** https://thiago-harry.github.io/web/ (MVP) · `/web/vendas/` (página de vendas, protótipo) ·
-  `/web/app/` (app vanilla de próxima geração).
+- **Endereço:** https://crono80.github.io/edu/ (MVP) · `/edu/vendas/` (página de vendas, protótipo).
+  O projeto veio de `thiago-harry/web` (histórico completo preservado); o site antigo,
+  https://thiago-harry.github.io/web/, fica congelado no PR #31 de lá até ser desativado.
 - **Venda (sugerida, não confirmada):** Essencial R$ 37 (de R$ 47), Completo R$ 97, checkout Kiwify ou
   Hotmart, garantia de 7 dias (CDC art. 49).
 
@@ -19,7 +20,7 @@ sobre um cronograma genérico (ordem do edital, mesma carga para todos).
 
 | Caminho | Papel |
 |---|---|
-| `src/` | MVP no ar: React 18 + Vite 6 + Tailwind v4 + lucide-react |
+| `src/` | MVP: React 18 + Vite 6 + Tailwind v4 + lucide-react |
 | `src/App.jsx` | UI inteira (arquivo único) |
 | `src/plan.js` | Camada de produto sobre o engine: pontos esperados, top 80%, genérico × personalizado, capacidade, blocos, `.ics`, eventos do Google |
 | `src/gcal.js` | Google Calendar API v3 direto do navegador (token GIS, cria agenda, sincroniza) |
@@ -27,16 +28,17 @@ sobre um cronograma genérico (ordem do edital, mesma carga para todos).
 | `src/packs.js` | Catálogo de concursos: pack + textos específicos (dossiê, unidade "itens"/"questões") |
 | `src/config.js` | `GOOGLE_CLIENT_ID` (público) e `GOOGLE_SYNC_DAYS` (`null` = até a prova) |
 | `src/palette.js` | **Fonte única das cores** (temas claro e escuro, cores das matérias); `theme.js` e `pdf.js` leem daqui |
-| `src/plan.test.js` | Testes da camada de produto (`.ics`, fuso, ids do Google) |
-| `app/src/engine/` | Engine determinístico, puro, sem DOM (schema, score, allocate, revision, explain, quiz, dates). O MVP importa daqui |
-| `app/packs/*.json` | Content packs **gerados** pelo pack builder; `_schema.json` gerado de `PACK_SCHEMA` (teste garante sincronia); `_fixture.json` sintético |
-| `app/index.html`, `app/src/ui/` | App vanilla sem build step, publicado em `/app/` (detalhes em `app/README.md`) |
+| `src/plan.test.js` | Testes da camada de produto (`.ics`, fuso, ids do Google, pré-requisitos) |
+| `engine/` | Engine determinístico, puro, sem DOM (schema, score, allocate, revision, explain, quiz, dates) + `engine.test.js`. O MVP importa daqui |
+| `packs/*.json` | Content packs **gerados** pelo pack builder; `_schema.json` gerado de `PACK_SCHEMA` (teste garante sincronia); `_fixture.json` sintético (testes) |
 | `packs-src/<concurso>/` | Fontes curadas: `config.json`, `overrides.json` (cargas, tipos, pré-requisitos, materiais), `work/assuntos.json`, `work/classification.json`, `review.md` |
-| `tools/pack-builder/` | CLI offline: `init → extract → parse → classify → assemble` gera `app/packs/<id>.json` (detalhes no README da pasta) |
+| `tools/pack-builder/` | CLI offline: `init → extract → parse → classify → assemble` gera `packs/<id>.json` (detalhes no README da pasta) |
+| `tools/engine-report.js` | Tabela de prioridades + primeiras semanas do pack sintético |
 | `public/vendas/` | Página de vendas estática (HTML com CSS inline + `img/*.webp`); o Vite copia `public/` para `dist/` |
 | `tools/vendas-shots.cjs` | Recaptura as telas do MVP usadas na página de vendas e atualiza `width`/`height` dos `<img>` |
 
-Fora do git: `packs-src/*/input/` (PDFs de edital e provas), `work/*.txt`, `work/*.lines.json`, `dist/`.
+Fora do git: `packs-src/*/input/` (PDFs de edital e provas), `work/*.lines.json`, `dist/`. O texto
+extraído do edital e dos gabaritos do INSS (`work/*.txt`) está versionado.
 
 ## Comandos
 
@@ -46,8 +48,8 @@ npm run dev               # http://localhost:5173
 npm run build             # dist/
 npm run preview           # serve dist/ em http://localhost:4173 (página de vendas em /vendas/)
 npm test                  # engine (24) + pack builder (10) + app (5)
-npm run test:engine       # node --test app/tests/engine.test.js
-npm run test:builder      # node --test tools/pack-builder/test/builder.test.js
+npm run test:engine       # node --test engine/engine.test.js
+npm run test:builder      # node --test tools/pack-builder/test/builder.test.js (precisa de pdftotext)
 npm run test:app          # TZ=UTC node --test src/plan.test.js
 npm run report:engine     # tabela de prioridades + primeiras semanas
 npm run shots:vendas      # refaz public/vendas/img/*.webp (precisa de npm run build + npm run preview rodando)
@@ -59,18 +61,16 @@ node tools/pack-builder/cli.js assemble packs-src/inss-tecnico   # regenera o pa
 
 ## Publicação
 
-1. Push em `main` dispara `.github/workflows/publish.yml`. Ele só roda se mudar `app/**`, `src/**`,
-   `public/**`, `index.html`, `vite.config.js`, `package*.json` ou o próprio workflow; também tem
+1. Push em `main` dispara `.github/workflows/publish.yml`. Ele só roda se mudar `engine/**`, `packs/**`,
+   `src/**`, `public/**`, `index.html`, `vite.config.js`, `package*.json` ou o próprio workflow; também tem
    `workflow_dispatch`. Pasta nova fora dessa lista não publica: inclua no filtro `paths`.
-2. O workflow faz `npm ci && npm run build`, reescreve `docs/` no branch `SITE_BRANCH` (`dist/` na raiz e em
-   `docs/mvp/` para links antigos, `app/` em `docs/app/`), apaga o que estiver fora de `docs/` nesse branch e
-   faz commit `Publish from main <sha7>` em `SITE_BRANCH`
-   (`claude/funny-edison-whtbw7`). O nome é interno e não aparece no site; trocar exige mudar Settings → Pages,
-   que só o dono do repositório consegue fazer.
-3. O GitHub Pages serve `/docs` desse branch em https://thiago-harry.github.io/web/ (Vite com `base: "./"`).
+2. Job `build`: `npm ci`, `npm run test:engine && npm run test:app`, `npm run build`, envia `dist/` como
+   artefato do Pages. Job `deploy`: `actions/deploy-pages` no ambiente `github-pages`.
+3. Exige Settings → Pages → Build and deployment → Source: **GitHub Actions** (só o dono do repositório
+   altera). Vite com `base: "./"`: o build funciona em qualquer caminho.
 
-Para confirmar uma publicação: o commit `Publish from main <sha7>` aparece no `SITE_BRANCH` e o run
-"pages build and deployment" termina com `success`. O ambiente cloud não acessa `github.io`.
+Para confirmar uma publicação: o run "Publish to GitHub Pages" do commit no `main` termina com `success`
+nos dois jobs. O ambiente cloud não acessa `github.io`.
 
 ## Decisões tomadas
 
@@ -107,7 +107,7 @@ Para confirmar uma publicação: o commit `Publish from main <sha7>` aparece no 
 - **Vantagem** mostra tempo, não itens: horas a menos para dominar 80% da prova, semanas de antecedência
   e as datas em que cada cronograma chega a 80% (`plan.dateToCover`), com a diferença marcada no gráfico.
 - Estado no `localStorage` (`cpv:<packId>:v1`); concurso por `?concurso=<id>`, depois `cpv:concurso`,
-  depois o padrão (INSS).
+  depois o padrão (INSS). O `localStorage` é por origem: o progresso salvo no site antigo não passa para o novo.
 - **Fuso:** sempre horário de Brasília (`America/Sao_Paulo`). O `.ics` grava UTC calculado a partir de
   −03:00 fixo, com `X-WR-TIMEZONE:America/Sao_Paulo`.
 - **Google Agenda:** token client do Google Identity Services, escopo `calendar.app.created`. Os ids dos
@@ -116,8 +116,9 @@ Para confirmar uma publicação: o commit `Publish from main <sha7>` aparece no 
   - O client ID é público e fica em `src/config.js`. A chave secreta nunca é usada nem pedida.
   - O app está em modo Teste no Google Cloud: só usuários de teste conseguem logar. Produção exige a
     verificação do Google (e, provavelmente, domínio próprio).
-  - A origem autorizada é `https://thiago-harry.github.io`. Renomear o repositório só muda o caminho e não
-    exige mudança; domínio próprio exige cadastrar a nova origem no Google Cloud.
+  - Origem JavaScript autorizada no cliente OAuth: `https://thiago-harry.github.io` (site antigo). Falta
+    cadastrar `https://crono80.github.io` (ver "Em aberto"); até lá, o login do Google falha no site novo.
+    Mudar só o caminho não exige mudança; domínio próprio exige cadastrar a nova origem.
 
 **Conteúdo e vendas**
 - Nada de depoimentos inventados nem de preço "de" que não foi praticado.
@@ -132,23 +133,21 @@ Para confirmar uma publicação: o commit `Publish from main <sha7>` aparece no 
 
 - `main` só recebe mudanças por PR, a partir de branches `claude/...`. Sem force-push.
 - Antes de abrir PR: `npm test` e `npm run build`.
-- Pack muda em `packs-src/` + `assemble`; nunca edite `app/packs/*.json` à mão.
+- Pack muda em `packs-src/` + `assemble`; nunca edite `packs/*.json` à mão.
 - PDFs nunca vão para o git.
 - Commits e PRs em PT-BR.
-- O dono do projeto não mexe no GitHub: o Claude abre o PR, faz o merge e confirma a publicação (commit
-  `Publish from main` no branch do site + deploy do Pages com `success`). Só Settings do repositório
-  ficam com o dono.
+- O dono do projeto não mexe no GitHub: o Claude abre o PR, faz o merge e confirma a publicação (run
+  "Publish to GitHub Pages" com `success`). Só Settings do repositório e o Google Cloud ficam com o dono.
 - Especificações longas viram arquivo no repositório (ex.: `docs/<tema>.md`), não só mensagem no chat.
 - `npm run preview` não pega um build novo com segurança: reinicie o servidor depois de `npm run build`.
 
 ## Em aberto
 
-- Renomear o repositório `web` → `crono` (ou usar domínio próprio).
-- Verificação do Google, checkout, preços finais, atualização do pack INSS quando o edital sair.
+- **Dono:** ativar o Pages neste repositório (Settings → Pages → Source: GitHub Actions) e cadastrar
+  `https://crono80.github.io` nas origens autorizadas do cliente OAuth no Google Cloud. Depois do primeiro
+  deploy com `success`, desativar o site antigo (Settings → Pages em `thiago-harry/web`) e arquivar
+  aquele repositório.
+- Domínio próprio; verificação do Google; checkout; preços finais; atualização do pack INSS quando o
+  edital sair.
 - PDF: o comparativo ainda mostra "Cobertura com Xh de conteúdo" (%); alinhar ao tempo economizado se o
   dono pedir.
-- Branches remotos para apagar (ok do dono dado; o proxy da sessão só deixa o Claude dar push no branch da
-  própria sessão, então o dono apaga em github.com/thiago-harry/web/branches): `gh-pages` (sem uso),
-  `claude/blissful-faraday-o1j4j7` (teste "Olé page"), `claude/determined-albattani-7uj78s` e `claude/trusting-galileo-atim0n` (já mesclados),
-  `versao-0.1` (snapshot do PR #1, já contido no `main`). `claude/funny-edison-whtbw7` é o branch do site:
-  não apagar.

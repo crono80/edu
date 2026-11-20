@@ -10,8 +10,6 @@
     "fonte_edital": "fixture://edital",
     "curado_em": "2026-11-10"
   },
-  "status": "rascunho",
-  "descricao": "Pack de teste do pack builder.",
   "estrutura_prova": {
     "total_questoes": 7,
     "tipo": "multipla_escolha_5",

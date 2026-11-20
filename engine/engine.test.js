@@ -1,13 +1,13 @@
-// Engine tests. Run with: node --test app/tests/
+// Engine tests. Run with: node --test engine/
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
-import { generate, validatePack, PACK_SCHEMA, score, DEFAULT_WEIGHTS, ALLOCATION_DEFAULTS } from "../src/engine/index.js";
-import { computeGap, SCORE_DEFAULTS } from "../src/engine/score.js";
-import { planRevisions } from "../src/engine/revision.js";
+import { generate, validatePack, PACK_SCHEMA, score, DEFAULT_WEIGHTS, ALLOCATION_DEFAULTS } from "./index.js";
+import { computeGap, SCORE_DEFAULTS } from "./score.js";
+import { planRevisions } from "./revision.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const fixturePath = path.join(here, "..", "packs", "_fixture.json");
@@ -296,8 +296,8 @@ test("determinismo: mesma entrada produz saída idêntica em 3 execuções", () 
 
 /* ---------- additions: peso, níveis, simulado ---------- */
 
-import { sampleQuiz, scoreQuiz } from "../src/engine/quiz.js";
-import { levelOf } from "../src/engine/score.js";
+import { sampleQuiz, scoreQuiz } from "./quiz.js";
+import { levelOf } from "./score.js";
 
 test("peso por matéria entra em E (questões × peso)", () => {
   const pack = loadFixture();

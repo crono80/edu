@@ -8,7 +8,7 @@
 //   <dir>/work/assuntos.json     rascunho de assuntos (edite à vontade)
 //   <dir>/work/classification.json  questão -> assunto (LLM ou manual)
 //   <dir>/overrides.json         ajustes por assunto (carga, tipo, prereq, volatil)
-//   -> app/packs/<id>.json + <dir>/review.md
+//   -> packs/<id>.json + <dir>/review.md
 //
 // Commands: init | extract | parse | classify | assemble | all
 import { mkdir, readFile, writeFile, access } from "node:fs/promises";
@@ -21,7 +21,7 @@ import { readWords, wordsToLines } from "./lib/bbox.js";
 import { parseGabarito } from "./lib/parse-gabarito.js";
 import { parseEdital, proposeAssuntos, sliceSection } from "./lib/parse-edital.js";
 import { assemblePack, renderReview } from "./lib/assemble.js";
-import { validatePack, formatIssues } from "../../app/src/engine/schema.js";
+import { validatePack, formatIssues } from "../../engine/schema.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, "..", "..");
@@ -211,22 +211,12 @@ async function cmdAssemble(dir) {
   const extraItems = await readJSON(path.join(root, "itens_extra.json"), []);
   const { pack, review } = assemblePack({ config, assuntos, provas, classification, overrides, extraItems, options: { confiancaMinima: config.classificacao?.confianca_minima ?? 0.6 } });
   const v = validatePack(pack);
-  const outPath = flags.out ? path.resolve(String(flags.out)) : path.join(repoRoot, "app", "packs", `${pack.concurso.id}.json`);
+  const outPath = flags.out ? path.resolve(String(flags.out)) : path.join(repoRoot, "packs", `${pack.concurso.id}.json`);
   await writeJSON(outPath, pack);
   await writeFile(path.join(root, "review.md"), renderReview(review, pack) + (v.ok ? "" : `\n## Erros de validação\n\n\`\`\`\n${formatIssues(v.errors)}\n\`\`\`\n`));
   log(`Pack: ${path.relative(process.cwd(), outPath)} · válido: ${v.ok} (${v.errors.length} erro(s), ${v.warnings.length} aviso(s))`);
   if (!v.ok) log(formatIssues(v.errors));
   log(`Revisão: ${path.relative(process.cwd(), path.join(root, "review.md"))}`);
-  if (v.ok && !flags["no-index"]) {
-    const idxPath = path.join(repoRoot, "app", "packs", "index.json");
-    const idx = await readJSON(idxPath, { packs: [] });
-    const entry = { id: pack.concurso.id, arquivo: `${pack.concurso.id}.json`, nome: pack.concurso.nome, orgao: pack.concurso.orgao, banca: pack.concurso.banca, cargo: pack.concurso.cargo, data_prova: pack.concurso.data_prova, status: config.status ?? "rascunho", descricao: config.descricao ?? "" };
-    const i = idx.packs.findIndex((p) => p.id === entry.id);
-    if (i >= 0) idx.packs[i] = entry;
-    else idx.packs.push(entry);
-    await writeJSON(idxPath, idx);
-    log(`index.json atualizado (${entry.status}).`);
-  }
 }
 
 async function cmdFetch(dir) {
@@ -267,7 +257,7 @@ COMMANDS.all = async (dir) => {
 };
 
 if (!cmd || !COMMANDS[cmd] || !dirArg) {
-  console.log("uso: node tools/pack-builder/cli.js <init|fetch|extract|parse|classify|assemble|all> <workspace-dir> [--backend=pdftotext|pdfjs] [--force] [--dry-run] [--model=…] [--lote=10] [--effort=low|medium|high] [--no-index]");
+  console.log("uso: node tools/pack-builder/cli.js <init|fetch|extract|parse|classify|assemble|all> <workspace-dir> [--backend=pdftotext|pdfjs] [--force] [--dry-run] [--model=…] [--lote=10] [--effort=low|medium|high]");
   process.exit(cmd ? 1 : 0);
 }
 COMMANDS[cmd](dirArg).catch((err) => {

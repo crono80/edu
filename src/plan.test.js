@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import * as P from "./plan.js";
 
-const pack = JSON.parse(readFileSync(new URL("../app/packs/inss-tecnico-pre.json", import.meta.url), "utf8"));
+const pack = JSON.parse(readFileSync(new URL("../packs/inss-tecnico-pre.json", import.meta.url), "utf8"));
 const plano = () => P.displayWeeks(P.buildPlan({ pack, nivelamento: {}, hours: P.MODES.hard.hours, start: "2026-11-16", exam: "2027-02-01" }), pack);
 
 test("foldLine: no line above 75 octets, never splits a UTF-8 character, unfolds to the original", () => {

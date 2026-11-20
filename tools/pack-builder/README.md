@@ -1,7 +1,7 @@
 # Pack builder
 
 Ferramenta **offline** que transforma edital + provas anteriores + gabaritos em um content pack
-(`app/packs/<id>.json`) e em um relatório de revisão. Roda em Node 22, fora do site. É a única
+(`packs/<id>.json`) e em um relatório de revisão. Roda em Node 22, fora do site. É a única
 etapa que usa LLM (classificação de questões por assunto), e mesmo essa é opcional: o arquivo
 `classification.json` pode ser preenchido à mão.
 
@@ -11,7 +11,7 @@ node tools/pack-builder/cli.js init     packs-src/trt4-2026     # cria workspace
 node tools/pack-builder/cli.js extract  packs-src/trt4-2026     # PDF -> work/*.txt (pdftotext ou pdf.js)
 node tools/pack-builder/cli.js parse    packs-src/trt4-2026     # questões + gabarito + itens do edital -> work/*.json
 node tools/pack-builder/cli.js classify packs-src/trt4-2026     # LLM: questão -> assunto (precisa de ANTHROPIC_API_KEY)
-node tools/pack-builder/cli.js assemble packs-src/trt4-2026     # pack + review.md + entrada em app/packs/index.json
+node tools/pack-builder/cli.js assemble packs-src/trt4-2026     # pack + review.md
 ```
 
 `npm run test:builder` roda os testes com fixtures no formato dos cadernos da FCC.
@@ -23,7 +23,7 @@ node tools/pack-builder/cli.js assemble packs-src/trt4-2026     # pack + review.
 | `extract` | `work/*.txt` | Se o texto veio vazio ou embaralhado (PDF escaneado, colunas), tente `--backend=pdfjs` ou OCR. |
 | `parse` | `work/provas.json`, `work/edital.json`, `work/assuntos.json` | Contagem de questões por prova e por matéria; `anomalias`; nomes e profundidade dos assuntos. `assuntos.json` é seu: junte, divida, renomeie. Não é sobrescrito sem `--force`. |
 | `classify` | `work/classification.json` | Itens com `confianca < 0,6` e `assunto_id: null`. Edite o JSON e rode `assemble` de novo. Retomável: só classifica o que falta. |
-| `assemble` | `app/packs/<id>.json`, `review.md` | `review.md` lista tudo o que foi inferido: carga horária padrão, tipo padrão, questões sem assunto, desatualizadas. Ajustes por assunto vão em `overrides.json`. |
+| `assemble` | `packs/<id>.json`, `review.md` | `review.md` lista tudo o que foi inferido: carga horária padrão, tipo padrão, questões sem assunto, desatualizadas. Ajustes por assunto vão em `overrides.json`. |
 
 ## config.json
 

@@ -1,5 +1,5 @@
 // Concursos available in the app: the content pack plus the copy that is specific to each one.
-import inss from "../app/packs/inss-tecnico-pre.json";
+import inss from "../packs/inss-tecnico-pre.json";
 
 const prova = (p, i = 0) => p.provas_historico[i] ?? {};
 

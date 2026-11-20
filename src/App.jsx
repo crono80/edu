@@ -5,7 +5,7 @@
  *  Top 80%     assuntos em ordem de pontos esperados até somar 80% da prova
  *  Nivelamento matéria fraca/média/forte + simulado de 40 itens de provas anteriores
  *  Prazo       horas por dia, data da prova (real ou simulada) -> capacidade
- *  Cronograma  engine determinístico (app/src/engine) -> blocos de videoaula, leitura, exercícios, revisão, simulado
+ *  Cronograma  engine determinístico (engine/) -> blocos de videoaula, leitura, exercícios, revisão, simulado
  *  Resultado   genérico × personalizado
  *
  * Toda a lógica vive em ./plan.js e no engine; este arquivo só desenha.

@@ -1,9 +1,9 @@
 // Gate report for Fase 1: priority table with breakdown + first 4 weeks of the schedule.
-// Usage: node app/scripts/report.js [weeks=4]
+// Usage: node tools/engine-report.js [weeks=4]
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { generate } from "../src/engine/index.js";
+import { generate } from "../engine/index.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const pack = JSON.parse(readFileSync(path.join(here, "..", "packs", "_fixture.json"), "utf8"));

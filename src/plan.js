@@ -1,9 +1,9 @@
-// Product layer over the engine (app/src/engine): pareto of the exam, generic vs
+// Product layer over the engine (engine/): pareto of the exam, generic vs
 // personalized coverage, display blocks (videoaula / leitura / exercícios), ICS.
 // Pure functions; React only renders what these return.
-import { generate, score } from "../app/src/engine/index.js";
-import { sampleQuiz, scoreQuiz } from "../app/src/engine/quiz.js";
-import { normalizeAvailability, buildCalendar, planMocks, estimateReserves, ALLOCATION_DEFAULTS } from "../app/src/engine/allocate.js";
+import { generate, score } from "../engine/index.js";
+import { sampleQuiz, scoreQuiz } from "../engine/quiz.js";
+import { normalizeAvailability, buildCalendar, planMocks, estimateReserves, ALLOCATION_DEFAULTS } from "../engine/allocate.js";
 
 export { sampleQuiz, scoreQuiz, score };
 

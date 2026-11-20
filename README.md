@@ -1,76 +1,47 @@
 # Cronograma Personalizado para Você
 
-MVP do produto para **INSS · Técnico do Seguro Social (pré-edital)**: edital 2022 e provas Cebraspe de
-2016 e 2022, 120 itens certo/errado com penalidade. O catálogo aceita mais concursos (`src/packs.js`,
+Cronograma de estudos para concursos que começa pelo que mais cai na prova (edital + provas anteriores),
+ajustado às horas e ao nível do aluno, e mostra a vantagem sobre um cronograma genérico.
+
+Concurso atual: **INSS · Técnico do Seguro Social (pré-edital)**, edital 2022 e provas Cebraspe de 2016 e
+2022, 120 itens certo/errado com penalidade. O catálogo aceita mais concursos (`src/packs.js`,
 `?concurso=<id>` na URL); o seletor no topo só aparece com dois ou mais.
 
-SPA em React 18 + Tailwind CSS + lucide-react, sobre o engine determinístico de `app/src/engine`.
+**Endereço:** https://crono80.github.io/edu/ · página de vendas (protótipo) em `/edu/vendas/`.
 
 ```bash
-npm install
+npm ci
 npm run dev      # http://localhost:5173
-npm run build    # gera dist/
-npm test         # engine + pack builder
+npm test         # engine + pack builder + camada de produto
+npm run build    # dist/ (inclui a página de vendas em dist/vendas/)
 ```
 
-**No ar:** https://thiago-harry.github.io/web/ (vira `/crono/` quando o repositório for renomeado)
+Cada push no `main` que mexe no site roda `.github/workflows/publish.yml`: testes, build e deploy no
+GitHub Pages (Source: GitHub Actions).
 
-**Página de vendas (protótipo):** https://thiago-harry.github.io/web/vendas/ (HTML estático em `public/vendas/`; preços e checkout em definição)
+## Estrutura
 
-O GitHub Pages deste repositório publica a pasta `/docs` do branch `claude/funny-edison-whtbw7`.
-A cada push no `main`, `.github/workflows/publish.yml` reconstrói o MVP e o publica na raiz do site
-(também em `/mvp/`, para links antigos) e copia `app/` para `/app/`. Nenhuma configuração manual do
-Pages é necessária.
-
-## Arquivos
-
-| Arquivo | Papel |
+| Caminho | Papel |
 |---|---|
-| `src/App.jsx` | UI: dossiê, top 80%, nivelamento + simulado, prazo, agenda, comparativo |
-| `src/plan.js` | Camada de produto sobre o engine: pontos esperados, top 80%, genérico × personalizado, capacidade por data, blocos de videoaula/leitura/exercícios, `.ics` |
-| `src/pdf.js` | PDF A4 completo (jsPDF, carregado só no clique) |
-| `src/palette.js` | Paleta "Índigo e âmbar": fonte única das cores (claro, escuro, matérias), usada por `theme.js` e `pdf.js` |
-| `src/theme.js` | CSS e classes `cg-*` (cores vêm de `palette.js`) |
-| `src/packs.js` | Catálogo de concursos: pack + textos específicos (dossiê, siglas, unidade "questões"/"itens") |
-| `app/packs/inss-tecnico-pre.json` | Pack INSS gerado de `packs-src/inss-tecnico/` (pré-edital) |
-| `public/vendas/index.html` | Protótipo da página de vendas do INSS; o Vite copia `public/` para o build, e ela sai em `/vendas/` |
-| `public/vendas/img/` | Telas do MVP em WebP (estado: 10h/semana, Português forte, Seguridade fraca, após "Reajustar"); refeitas com `npm run shots:vendas` |
-| `tools/vendas-shots.cjs` | Script da recaptura (Playwright); exige `npm run build` + `npm run preview` rodando |
+| `src/` | MVP em React 18 + Tailwind CSS + lucide-react; `plan.js` é a camada de produto (top 80%, genérico × personalizado, blocos, `.ics`, Google Agenda) |
+| `engine/` | Engine determinístico e puro: validação do pack, prioridade, alocação semana a semana, revisões, simulado |
+| `packs/` | Content packs gerados (`inss-tecnico-pre.json`), schema e pack sintético dos testes |
+| `packs-src/` | Fontes curadas de cada pack (assuntos, cargas, pré-requisitos, classificação das questões) |
+| `tools/pack-builder/` | CLI offline que gera os packs a partir de edital, provas e gabaritos |
+| `public/vendas/` | Página de vendas estática; telas refeitas com `npm run shots:vendas` |
 
-## Fluxo
-
-Ordem da página: **como funciona** → **vantagem** (genérico × personalizado, com a curva) → **seu tempo** (horas e data) → **agenda preenchida** (mão na massa) → nível e simulado → top 80% → dossiê.
+## Como funciona
 
 | Etapa | Entrada | Cálculo |
 |---|---|---|
-| 1 · Dossiê | Edital 2022 + provas INSS 2016 e 2022 (Cebraspe) | Prioridade P = (0,35·cargo + 0,20·banca + 0,45·edital) · (1+lacuna) · M; níveis 1–5 |
-| Top 80% | Pontos esperados por assunto ÷ horas no nível do aluno | Assuntos em ordem de pontos por hora até somar 80% da prova |
-| 2 · Nivelamento | Fraco/Médio/Forte por matéria + simulado de 40 itens reais (provas INSS 2016 e 2022) | Lacuna por assunto (autoavaliação e simulado com encolhimento) |
-| Reajustar | Botão no fim do nivelamento | Aplica o nivelamento e calcula a **carga sugerida** (menor carga que cobre 100% do top 80% até a prova). Padrão: a sugestão se couber em Hard (23h/sem); senão, Hard, com a sugestão como referência (teto 45h/sem) |
-| 3 · Carga | Sugestão, Normal/Hard/Super hard ou horas por dia; data do edital ou simulada | Capacidade do engine (folga 10%, reta final, revisões, simulados); **% do top 80% coberto** ao vivo e diferença contra a sugestão |
-| 4 · Agenda | Escopo top 80% ou edital completo; −/+ 30 min em qualquer dia | Engine aloca semanas (exceções por data); teoria começa com videoaula e segue com leitura; depois exercícios; revisões 1/7/21/60 dias |
-| Progresso | ✓ por bloco estudado (também em dias passados) | Atrasados = blocos de dias passados sem ✓. **Reorganizar agenda**: o estudado sai da carga dos assuntos (concluídos ficam só com revisões) e o que falta é redistribuído de hoje até a prova |
-| 5 · Resultado | — | No topo: horas a menos para chegar a 80% da prova, semanas de antecedência e a data em que cada cronograma chega lá (genérico × seu), com a diferença marcada na curva. Na seção: três motivos |
+| Dossiê | Edital + provas anteriores do cargo e da banca | Prioridade P = (0,35·cargo + 0,20·banca + 0,45·edital) · (1+lacuna) · M |
+| Top 80% | Pontos esperados por assunto ÷ horas no nível do aluno | Assuntos (com seus pré-requisitos) em ordem de pontos por hora até somar 80% da prova |
+| Nivelamento | Fraco/Médio/Forte por matéria + simulado com itens reais | Lacuna por assunto |
+| Carga | Sugestão, Normal/Hard/Super hard ou horas por dia; data da prova | Capacidade (folga 10%, reta final, revisões, simulados) e % do top 80% coberto |
+| Agenda | Escopo top 80% ou edital completo | Do básico ao avançado: um assunto abre depois da teoria dos pré-requisitos; videoaula → leitura → exercícios; revisões 1/7/21/60 dias |
+| Progresso | ✓ por bloco | "Reorganizar agenda" redistribui o que falta de hoje até a prova |
 
-Exporta **PDF** (parâmetros, prioridades, comparativo, semanas com caixa "Feito", lista de videoaulas) e
-**.ics** (Google Agenda › Configurações › Importar e exportar). Estado salvo no `localStorage` do navegador.
+Exporta **PDF** e **.ics**, e sincroniza com o **Google Agenda** (escopo `calendar.app.created`, horário de
+Brasília). Estado salvo no `localStorage` do navegador.
 
-## Premissas
-
-- Só prova objetiva (sem redação e sem TAF).
-- Penal Militar, Legislação Especial e Trânsito não têm prova anterior no histórico: prioridade só pelo edital.
-- Datas e conteúdo seguem o edital curado em 14/11/2026; confira atualizações no edital.
-
-## Próxima geração: `app/`
-
-`app/` é o **Cronograma Personalizado para Você**: content packs por concurso, scoring em três quadros,
-alocação determinística e UI em 5 telas, sem build step. No ar em
-https://thiago-harry.github.io/web/app/ · detalhes em `app/README.md`.
-
-## Google Agenda
-
-- **Fuso:** tudo em horário de Brasília (`America/Sao_Paulo`), independentemente do fuso do aparelho.
-- **Progresso:** marcado só na plataforma. Para o Google vão os blocos de hoje em diante ainda não estudados e, no passado, só os que o aluno marcou como estudados (título com ✓, cor verde).
-- **.ics:** mesma regra, para importar numa agenda nova.
-- **Sincronização direta** (`src/gcal.js`): login Google Identity Services, escopo `calendar.app.created` (o app só enxerga a agenda que ele mesmo cria). Ids fixos por evento: sincronizar de novo só insere, altera ou remove o que mudou. Envia a agenda até a prova (`GOOGLE_SYNC_DAYS = null`; um número limita a janela de dias) + tudo que foi estudado.
-- **Ativar:** colocar o ID do cliente OAuth em `src/config.js` (`GOOGLE_CLIENT_ID`); vazio = botão oculto. O ID é público; a chave secreta não é usada.
+Decisões, publicação e pendências: `CLAUDE.md`.
