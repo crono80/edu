@@ -63,6 +63,9 @@
           "titulo": "Buscar aulas no YouTube: Emprego do sinal indicativo de crase",
           "url": "https://www.youtube.com/results?search_query=Emprego%20do%20sinal%20indicativo%20de%20crase%20aula%20concurso%20INSS"
         }
+      ],
+      "prereq": [
+        "port.regencia"
       ]
     },
     "port.sintaxe": {
@@ -73,6 +76,9 @@
           "titulo": "Buscar aulas no YouTube: Sintaxe da oração e do período",
           "url": "https://www.youtube.com/results?search_query=Sintaxe%20da%20ora%C3%A7%C3%A3o%20e%20do%20per%C3%ADodo%20aula%20concurso%20INSS"
         }
+      ],
+      "prereq": [
+        "port.classes"
       ]
     },
     "port.pontuacao": {
@@ -83,6 +89,9 @@
           "titulo": "Buscar aulas no YouTube: Pontuação",
           "url": "https://www.youtube.com/results?search_query=Pontua%C3%A7%C3%A3o%20aula%20concurso%20INSS"
         }
+      ],
+      "prereq": [
+        "port.sintaxe"
       ]
     },
     "port.concordancia": {
@@ -93,6 +102,9 @@
           "titulo": "Buscar aulas no YouTube: Concordância nominal e verbal",
           "url": "https://www.youtube.com/results?search_query=Concord%C3%A2ncia%20nominal%20e%20verbal%20aula%20concurso%20INSS"
         }
+      ],
+      "prereq": [
+        "port.sintaxe"
       ]
     },
     "port.regencia": {
@@ -103,6 +115,9 @@
           "titulo": "Buscar aulas no YouTube: Regência nominal e verbal",
           "url": "https://www.youtube.com/results?search_query=Reg%C3%AAncia%20nominal%20e%20verbal%20aula%20concurso%20INSS"
         }
+      ],
+      "prereq": [
+        "port.sintaxe"
       ]
     },
     "port.semantica": {
@@ -165,6 +180,9 @@
           "titulo": "Buscar aulas no YouTube: Sistema de Gestão da Ética (Decreto 6.029/2007)",
           "url": "https://www.youtube.com/results?search_query=Sistema%20de%20Gest%C3%A3o%20da%20%C3%89tica%20aula%20concurso%20INSS"
         }
+      ],
+      "prereq": [
+        "etica.decreto1171"
       ]
     },
     "dconst.direitos_individuais": {
@@ -205,6 +223,9 @@
           "titulo": "Buscar aulas no YouTube: Cidadania e direitos políticos",
           "url": "https://www.youtube.com/results?search_query=Cidadania%20e%20direitos%20pol%C3%ADticos%20aula%20concurso%20INSS"
         }
+      ],
+      "prereq": [
+        "dconst.nacionalidade"
       ]
     },
     "dconst.remedios": {
@@ -215,6 +236,9 @@
           "titulo": "Buscar aulas no YouTube: Garantias constitucionais (remédios)",
           "url": "https://www.youtube.com/results?search_query=Garantias%20constitucionais%20aula%20concurso%20INSS"
         }
+      ],
+      "prereq": [
+        "dconst.direitos_individuais"
       ]
     },
     "dconst.adm_publica": {
@@ -248,6 +272,9 @@
     "dadm.fontes_principios": {
       "carga_horaria_base": 4,
       "tipo": "doutrina",
+      "prereq": [
+        "dadm.estado_governo"
+      ],
       "materiais": [
         {
           "tipo": "busca_video",
@@ -259,6 +286,9 @@
     "dadm.organizacao": {
       "carga_horaria_base": 5,
       "tipo": "doutrina",
+      "prereq": [
+        "dadm.estado_governo"
+      ],
       "materiais": [
         {
           "tipo": "busca_video",
@@ -270,6 +300,9 @@
     "dadm.agentes": {
       "carga_horaria_base": 3,
       "tipo": "doutrina",
+      "prereq": [
+        "dadm.organizacao"
+      ],
       "materiais": [
         {
           "tipo": "busca_video",
@@ -281,6 +314,9 @@
     "dadm.lei8112_provimento": {
       "carga_horaria_base": 6,
       "tipo": "lei_seca",
+      "prereq": [
+        "dadm.agentes"
+      ],
       "materiais": [
         {
           "tipo": "busca_video",
@@ -320,6 +356,9 @@
     "dadm.poderes": {
       "carga_horaria_base": 4,
       "tipo": "doutrina",
+      "prereq": [
+        "dadm.fontes_principios"
+      ],
       "materiais": [
         {
           "tipo": "busca_video",
@@ -331,6 +370,9 @@
     "dadm.atos": {
       "carga_horaria_base": 7,
       "tipo": "doutrina",
+      "prereq": [
+        "dadm.poderes"
+      ],
       "materiais": [
         {
           "tipo": "busca_video",
@@ -342,6 +384,9 @@
     "dadm.servicos": {
       "carga_horaria_base": 4,
       "tipo": "doutrina",
+      "prereq": [
+        "dadm.organizacao"
+      ],
       "materiais": [
         {
           "tipo": "video",
@@ -360,6 +405,9 @@
     "dadm.controle": {
       "carga_horaria_base": 5,
       "tipo": "doutrina",
+      "prereq": [
+        "dadm.atos"
+      ],
       "materiais": [
         {
           "tipo": "busca_video",
@@ -371,6 +419,9 @@
     "dadm.improbidade": {
       "carga_horaria_base": 5,
       "tipo": "lei_seca",
+      "prereq": [
+        "dadm.fontes_principios"
+      ],
       "materiais": [
         {
           "tipo": "busca_video",
@@ -382,6 +433,9 @@
     "dadm.processo": {
       "carga_horaria_base": 6,
       "tipo": "lei_seca",
+      "prereq": [
+        "dadm.atos"
+      ],
       "materiais": [
         {
           "tipo": "busca_video",
@@ -445,6 +499,9 @@
           "titulo": "Buscar aulas no YouTube: Segurança: vírus, worms e derivados",
           "url": "https://www.youtube.com/results?search_query=Seguran%C3%A7a%3A%20v%C3%ADrus%2C%20worms%20e%20derivados%20aula%20concurso%20INSS"
         }
+      ],
+      "prereq": [
+        "info.internet"
       ]
     },
     "rlm.proposicoes": {
@@ -530,6 +587,9 @@
           "titulo": "Buscar aulas no YouTube: Organização e princípios constitucionais da seguridade",
           "url": "https://www.youtube.com/results?search_query=princ%C3%ADpios%20da%20seguridade%20social%20aula%20inss"
         }
+      ],
+      "prereq": [
+        "seg.origem_conceito"
       ]
     },
     "seg.legislacao": {
@@ -582,12 +642,17 @@
           "titulo": "Buscar aulas no YouTube: Financiamento: receitas e contribuições sociais",
           "url": "https://www.youtube.com/results?search_query=financiamento%20da%20seguridade%20social%20inss%20aula"
         }
+      ],
+      "prereq": [
+        "seg.principios",
+        "seg.empresa"
       ]
     },
     "seg.salario_contribuicao": {
       "carga_horaria_base": 6,
       "prereq": [
-        "seg.financiamento"
+        "seg.financiamento",
+        "rgps.segurados_obrigatorios"
       ],
       "materiais": [
         {
@@ -639,6 +704,9 @@
           "titulo": "Buscar aulas no YouTube: Decadência e prescrição",
           "url": "https://www.youtube.com/results?search_query=Decad%C3%AAncia%20e%20prescri%C3%A7%C3%A3o%20aula%20concurso%20INSS"
         }
+      ],
+      "prereq": [
+        "seg.arrecadacao"
       ]
     },
     "seg.crimes": {
@@ -656,6 +724,9 @@
           "titulo": "Buscar aulas no YouTube: Crimes contra a seguridade social",
           "url": "https://www.youtube.com/results?search_query=Crimes%20contra%20a%20seguridade%20social%20aula%20concurso%20INSS"
         }
+      ],
+      "prereq": [
+        "seg.arrecadacao"
       ]
     },
     "rgps.segurados_obrigatorios": {
@@ -690,6 +761,9 @@
           "titulo": "Buscar aulas no YouTube: Segurado facultativo e trabalhadores excluídos",
           "url": "https://www.youtube.com/results?search_query=Segurado%20facultativo%20e%20trabalhadores%20exclu%C3%ADdos%20aula%20concurso%20INSS"
         }
+      ],
+      "prereq": [
+        "rgps.segurados_obrigatorios"
       ]
     },
     "rgps.filiacao_inscricao": {
@@ -707,6 +781,9 @@
           "titulo": "Buscar aulas no YouTube: Filiação e inscrição",
           "url": "https://www.youtube.com/results?search_query=Filia%C3%A7%C3%A3o%20e%20inscri%C3%A7%C3%A3o%20aula%20concurso%20INSS"
         }
+      ],
+      "prereq": [
+        "rgps.segurados_obrigatorios"
       ]
     },
     "rgps.qualidade_segurado": {
@@ -730,6 +807,9 @@
           "titulo": "Buscar aulas no YouTube: Beneficiários: segurados e dependentes",
           "url": "https://www.youtube.com/results?search_query=Benefici%C3%A1rios%3A%20segurados%20e%20dependentes%20aula%20concurso%20INSS"
         }
+      ],
+      "prereq": [
+        "rgps.segurados_obrigatorios"
       ]
     },
     "rgps.carencia": {
@@ -740,6 +820,9 @@
           "titulo": "Buscar aulas no YouTube: Períodos de carência",
           "url": "https://www.youtube.com/results?search_query=Per%C3%ADodos%20de%20car%C3%AAncia%20aula%20concurso%20INSS"
         }
+      ],
+      "prereq": [
+        "rgps.filiacao_inscricao"
       ]
     },
     "benef.salario_beneficio": {
@@ -777,6 +860,9 @@
           "titulo": "Buscar aulas no YouTube: Benefícios por incapacidade e auxílio-acidente",
           "url": "https://www.youtube.com/results?search_query=Benef%C3%ADcios%20por%20incapacidade%20e%20aux%C3%ADlio-acidente%20aula%20concurso%20INSS"
         }
+      ],
+      "prereq": [
+        "rgps.carencia"
       ]
     },
     "benef.acidente_trabalho": {
@@ -787,12 +873,16 @@
           "titulo": "Buscar aulas no YouTube: Acidente do trabalho e doenças ocupacionais",
           "url": "https://www.youtube.com/results?search_query=Acidente%20do%20trabalho%20e%20doen%C3%A7as%20ocupacionais%20aula%20concurso%20INSS"
         }
+      ],
+      "prereq": [
+        "benef.incapacidade"
       ]
     },
     "benef.pensao_reclusao": {
       "carga_horaria_base": 7,
       "prereq": [
-        "rgps.dependentes"
+        "rgps.dependentes",
+        "rgps.qualidade_segurado"
       ],
       "materiais": [
         {
@@ -810,6 +900,9 @@
           "titulo": "Buscar aulas no YouTube: Salário-maternidade e salário-família",
           "url": "https://www.youtube.com/results?search_query=Sal%C3%A1rio-maternidade%20e%20sal%C3%A1rio-fam%C3%ADlia%20aula%20concurso%20INSS"
         }
+      ],
+      "prereq": [
+        "rgps.carencia"
       ]
     },
     "benef.disposicoes": {
@@ -820,6 +913,9 @@
           "titulo": "Buscar aulas no YouTube: Disposições gerais dos benefícios (acumulação, revisão, pagamento)",
           "url": "https://www.youtube.com/results?search_query=Disposi%C3%A7%C3%B5es%20gerais%20dos%20benef%C3%ADcios%20aula%20concurso%20INSS"
         }
+      ],
+      "prereq": [
+        "benef.aposentadorias"
       ]
     },
     "benef.servicos": {
@@ -847,6 +943,9 @@
           "titulo": "Buscar aulas no YouTube: Aposentadoria da pessoa com deficiência (LC 142/2013)",
           "url": "https://www.youtube.com/results?search_query=Aposentadoria%20da%20pessoa%20com%20defici%C3%AAncia%20aula%20concurso%20INSS"
         }
+      ],
+      "prereq": [
+        "benef.aposentadorias"
       ]
     },
     "assist.loas_bpc": {
@@ -947,6 +1046,9 @@
           "titulo": "Buscar aulas no YouTube: Recurso das decisões administrativas",
           "url": "https://www.youtube.com/results?search_query=Recurso%20das%20decis%C3%B5es%20administrativas%20aula%20concurso%20INSS"
         }
+      ],
+      "prereq": [
+        "dadm.processo"
       ]
     },
     "gestao.rpps_ctc": {
@@ -964,6 +1066,9 @@
           "titulo": "Buscar aulas no YouTube: RPPS, CTC, contagem recíproca e compensação",
           "url": "https://www.youtube.com/results?search_query=RPPS%2C%20CTC%2C%20contagem%20rec%C3%ADproca%20e%20compensa%C3%A7%C3%A3o%20aula%20concurso%20INSS"
         }
+      ],
+      "prereq": [
+        "benef.aposentadorias"
       ]
     },
     "gestao.in128_cnis": {
@@ -974,6 +1079,9 @@
           "titulo": "Buscar aulas no YouTube: IN PRES/INSS 128/2022 e CNIS",
           "url": "https://www.youtube.com/results?search_query=IN%20PRES%2FINSS%20128%2F2022%20e%20CNIS%20aula%20concurso%20INSS"
         }
+      ],
+      "prereq": [
+        "rgps.filiacao_inscricao"
       ]
     },
     "gestao.servidor_social": {

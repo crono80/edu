@@ -239,9 +239,18 @@ test("cenário da spec: cobre todos os assuntos, revisa, simula e respeita restr
   const blocks = blocksOf(r);
   assert.ok(blocks.some((b) => b.atividade === "revisao" && b.intervalo_dias === 1));
   assert.ok(blocks.some((b) => b.atividade === "revisao" && b.intervalo_dias === 21));
-  // prereq order: a topic opens only after its prerequisites opened
+  // prereq order: a topic opens only after the theory of its prerequisites is finished
   const openedAt = Object.fromEntries(r.resumo.por_assunto.map((a) => [a.assunto_id, a.aberto_em]));
-  for (const a of pack.assuntos) for (const p of a.prereq) assert.ok(openedAt[p] <= openedAt[a.id], `${a.id} abriu antes de ${p}`);
+  const lastTheory = {};
+  for (const b of blocks) if (b.atividade === "teoria" && (b.passada ?? 1) < 2 && !(b.data <= lastTheory[b.assunto_id])) lastTheory[b.assunto_id] = b.data;
+  const withPrereq = pack.assuntos.filter((a) => a.prereq.length);
+  assert.ok(withPrereq.length > 0);
+  for (const a of withPrereq) {
+    for (const p of a.prereq) {
+      assert.ok(lastTheory[p], `${p} sem teoria`);
+      assert.ok(lastTheory[p] <= openedAt[a.id], `${a.id} abriu em ${openedAt[a.id]}, antes do fim da teoria de ${p} (${lastTheory[p]})`);
+    }
+  }
   // mock cadence: every 4 weeks, every 2 inside the last 60 days
   const mockWeeks = r.cronograma.filter((w) => w.simulado).map((w) => w.numero);
   assert.deepEqual(mockWeeks.slice(0, 2), [4, 8]);

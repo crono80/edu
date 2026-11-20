@@ -45,7 +45,7 @@ npm ci                    # dependências (Node 22)
 npm run dev               # http://localhost:5173
 npm run build             # dist/
 npm run preview           # serve dist/ em http://localhost:4173 (página de vendas em /vendas/)
-npm test                  # engine (24) + pack builder (10) + app (4)
+npm test                  # engine (24) + pack builder (10) + app (5)
 npm run test:engine       # node --test app/tests/engine.test.js
 npm run test:builder      # node --test tools/pack-builder/test/builder.test.js
 npm run test:app          # TZ=UTC node --test src/plan.test.js
@@ -78,8 +78,13 @@ Para confirmar uma publicação: o commit `Publish from main <sha7>` aparece no 
 - Prioridade `P = (0,35·F + 0,20·B + 0,45·E) · (1 + G) · M`: F = histórico do cargo, B = banca,
   E = peso no edital, G = lacuna do aluno.
 - **Top 80%:** guloso por pontos esperados por hora no nível do aluno; horas = base · (0,6 + 0,8·G).
+  Um assunto entra junto com os pré-requisitos que faltam (vale a taxa do grupo), então o top é fechado
+  por pré-requisitos; no dossiê, o assunto puxado mostra "base para X" (`plan.studyGroups`).
   **Genérico:** ordem do edital com a mesma carga por assunto.
-- **Ordem da agenda:** topológica por pré-requisitos, empate por P, alternando matérias. Cada assunto:
+- **Ordem da agenda:** topológica por pré-requisitos, empate por P e depois pela ordem do edital,
+  alternando matérias. Um assunto só abre depois que a teoria dos pré-requisitos termina. O grafo é curado
+  em `packs-src/<concurso>/overrides.json`, do básico ao avançado (ex.: classes → sintaxe → regência →
+  crase; segurados → filiação → carência → benefícios). Cada assunto:
   videoaula → leitura → exercícios. Revisões em 1/7/21/60 dias, folga de 10% por semana, reta final nos
   últimos 15% dos dias, simulados com a duração da prova.
 - **Carga:** padrão Hard (23h/sem). "Reajustar" aplica o nivelamento e sugere a menor carga que cobre o
@@ -118,8 +123,8 @@ Para confirmar uma publicação: o commit `Publish from main <sha7>` aparece no 
 - Nada de depoimentos inventados nem de preço "de" que não foi praticado.
 - A página de vendas fica `noindex` enquanto for protótipo.
 - Avisos obrigatórios: pré-edital, sem afiliação com INSS ou Cebraspe, sem garantia de aprovação.
-- Números da página de vendas vêm de telas reais do MVP (10h/sem, Português forte, Seguridade fraca,
-  após "Reajustar"). Se o engine ou as cores mudarem, rode `npm run shots:vendas`.
+- Números da página de vendas vêm de telas reais do MVP (hoje fixo em 17/11/2026, Português forte,
+  Seguridade fraca, após "Reajustar" → 13h/sem). Se o engine ou as cores mudarem, rode `npm run shots:vendas`.
 - Provas e gabaritos do Cebraspe vêm do CDN público (`cdn.cebraspe.org.br`). Não contornar bloqueios de
   acesso.
 
@@ -138,14 +143,12 @@ Para confirmar uma publicação: o commit `Publish from main <sha7>` aparece no 
 
 ## Em aberto
 
-- Ordenação do básico ao avançado: completar o grafo de pré-requisitos, puxar pré-requisitos para o top
-  80%, exigir a teoria do pré-requisito concluída, usar a ordem do edital como desempate (aguardando ok).
 - Renomear o repositório `web` → `crono` (ou usar domínio próprio).
 - Verificação do Google, checkout, preços finais, atualização do pack INSS quando o edital sair.
 - PDF: o comparativo ainda mostra "Cobertura com Xh de conteúdo" (%); alinhar ao tempo economizado se o
   dono pedir.
 - Branches remotos para apagar (ok do dono dado; o proxy da sessão só deixa o Claude dar push no branch da
   própria sessão, então o dono apaga em github.com/thiago-harry/web/branches): `gh-pages` (sem uso),
-  `claude/blissful-faraday-o1j4j7` (teste "Olé page"), `claude/determined-albattani-7uj78s` (já mesclado),
+  `claude/blissful-faraday-o1j4j7` (teste "Olé page"), `claude/determined-albattani-7uj78s` e `claude/trusting-galileo-atim0n` (já mesclados),
   `versao-0.1` (snapshot do PR #1, já contido no `main`). `claude/funny-edison-whtbw7` é o branch do site:
   não apagar.
