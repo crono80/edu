@@ -140,10 +140,10 @@ nos dois jobs. O ambiente cloud não acessa `github.io`.
 - Desenvolvimento: `npm run dev` + `?plano=demo|essencial|completo` força o plano (só em dev).
 
 **Conteúdo e vendas**
-- E-mail público (app, vendas, política, Kiwify): `cronogramas@zohomail.com`. O e-mail pessoal do dono não
+- E-mail público (app, vendas, política, Kiwify): `contato@cronograma80.com.br`. O e-mail pessoal do dono não
   aparece em nada público. A política identifica o controlador só pelo e-mail (decisão do dono).
 - Nada de depoimentos inventados nem de preço "de" que não foi praticado.
-- A página de vendas fica `noindex` enquanto for protótipo.
+- A página de vendas está indexável (noindex removido no lançamento).
 - Avisos obrigatórios: pré-edital, sem afiliação com INSS ou Cebraspe, sem garantia de aprovação.
 - Números da página de vendas vêm de telas reais do MVP (hoje fixo em 17/11/2026, Português forte,
   Seguridade fraca, após "Reajustar" → 13h/sem). Se o engine ou as cores mudarem, rode `npm run shots:vendas`.

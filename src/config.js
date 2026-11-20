@@ -17,4 +17,4 @@ export const CHECKOUT = {
   upgrade: "", // Essencial -> Completo, paying the difference
 };
 export const SALES_URL = "./vendas/#planos";
-export const SUPPORT_EMAIL = "cronogramas@zohomail.com"; // público: aparece no app, na página de vendas e na política
+export const SUPPORT_EMAIL = "contato@cronograma80.com.br"; // público: aparece no app, na página de vendas e na política
