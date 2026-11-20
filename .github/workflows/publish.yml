@@ -1,0 +1,55 @@
+name: Publish to GitHub Pages
+
+# On every push to main that touches the site: tests the engine and the product layer, builds the
+# MVP (dist/, with the sales page in /vendas/) and deploys it with GitHub Pages.
+# Requires Settings → Pages → Build and deployment → Source: "GitHub Actions" (repository owner).
+on:
+  push:
+    branches: [main]
+    paths:
+      - "engine/**"
+      - "packs/**"
+      - "src/**"
+      - "public/**"
+      - "index.html"
+      - "vite.config.js"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/publish.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # the pack builder tests need poppler (pdftotext) and do not affect the site
+      - run: npm run test:engine && npm run test:app
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

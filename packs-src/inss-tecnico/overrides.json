@@ -1,0 +1,1106 @@
+{
+  "assuntos": {
+    "port.interpretacao": {
+      "carga_horaria_base": 10,
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "BANCA CESPE/CEBRASPE - INTERPRETAÇÃO E COMPREENSÃO DE TEXTOS - (Interpretação para Concursos)",
+          "url": "https://www.youtube.com/watch?v=OEjT6VgyhGc",
+          "canal": "Professora Pamba",
+          "duracao_min": 29
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Compreensão e interpretação de textos",
+          "url": "https://www.youtube.com/results?search_query=interpreta%C3%A7%C3%A3o%20de%20texto%20cebraspe%20inss"
+        }
+      ]
+    },
+    "port.tipologia": {
+      "carga_horaria_base": 3,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Tipologia textual",
+          "url": "https://www.youtube.com/results?search_query=Tipologia%20textual%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "port.ortografia_acentuacao": {
+      "carga_horaria_base": 4,
+      "tipo": "memorizacao",
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Ortografia oficial e acentuação gráfica",
+          "url": "https://www.youtube.com/results?search_query=Ortografia%20oficial%20e%20acentua%C3%A7%C3%A3o%20gr%C3%A1fica%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "port.classes": {
+      "carga_horaria_base": 6,
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "Intensivão INSS 2022 - Língua Portuguesa - Classe de Palavras com Sidney Martins",
+          "url": "https://www.youtube.com/watch?v=qspSxOBpaQE",
+          "canal": "Focus Concursos",
+          "duracao_min": 35
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Emprego das classes de palavras",
+          "url": "https://www.youtube.com/results?search_query=Emprego%20das%20classes%20de%20palavras%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "port.crase": {
+      "carga_horaria_base": 3,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Emprego do sinal indicativo de crase",
+          "url": "https://www.youtube.com/results?search_query=Emprego%20do%20sinal%20indicativo%20de%20crase%20aula%20concurso%20INSS"
+        }
+      ],
+      "prereq": [
+        "port.regencia"
+      ]
+    },
+    "port.sintaxe": {
+      "carga_horaria_base": 8,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Sintaxe da oração e do período",
+          "url": "https://www.youtube.com/results?search_query=Sintaxe%20da%20ora%C3%A7%C3%A3o%20e%20do%20per%C3%ADodo%20aula%20concurso%20INSS"
+        }
+      ],
+      "prereq": [
+        "port.classes"
+      ]
+    },
+    "port.pontuacao": {
+      "carga_horaria_base": 5,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Pontuação",
+          "url": "https://www.youtube.com/results?search_query=Pontua%C3%A7%C3%A3o%20aula%20concurso%20INSS"
+        }
+      ],
+      "prereq": [
+        "port.sintaxe"
+      ]
+    },
+    "port.concordancia": {
+      "carga_horaria_base": 5,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Concordância nominal e verbal",
+          "url": "https://www.youtube.com/results?search_query=Concord%C3%A2ncia%20nominal%20e%20verbal%20aula%20concurso%20INSS"
+        }
+      ],
+      "prereq": [
+        "port.sintaxe"
+      ]
+    },
+    "port.regencia": {
+      "carga_horaria_base": 5,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Regência nominal e verbal",
+          "url": "https://www.youtube.com/results?search_query=Reg%C3%AAncia%20nominal%20e%20verbal%20aula%20concurso%20INSS"
+        }
+      ],
+      "prereq": [
+        "port.sintaxe"
+      ]
+    },
+    "port.semantica": {
+      "carga_horaria_base": 5,
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "🟣 COESÃO e COERÊNCIA | Qualidade ESSENCIAIS de um TEXTO COESO e COERENTE! || Português do Zero",
+          "url": "https://www.youtube.com/watch?v=cHcFDNkxpmQ",
+          "canal": "Português com Letícia",
+          "duracao_min": 20
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Significação das palavras e coesão",
+          "url": "https://www.youtube.com/results?search_query=Significa%C3%A7%C3%A3o%20das%20palavras%20e%20coes%C3%A3o%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "port.redacao_oficial": {
+      "carga_horaria_base": 4,
+      "tipo": "memorizacao",
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Redação oficial (Manual da Presidência)",
+          "url": "https://www.youtube.com/results?search_query=Reda%C3%A7%C3%A3o%20oficial%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "etica.decreto1171": {
+      "carga_horaria_base": 4,
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "Concurso INSS 2024: Gabaritando Ética no Serviço Público",
+          "url": "https://www.youtube.com/watch?v=JihPkaMlcHk",
+          "canal": "Nova Concursos",
+          "duracao_min": 56
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Código de Ética do Servidor (Decreto 1.171/1994)",
+          "url": "https://www.youtube.com/results?search_query=C%C3%B3digo%20de%20%C3%89tica%20do%20Servidor%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "etica.decreto6029": {
+      "carga_horaria_base": 3,
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "Concurso INSS: questões sobre o Decreto 6.029/2007 (Sistema de Gestão da Ética do Poder Executivo)",
+          "url": "https://www.youtube.com/watch?v=fPmWtB3h5Fc",
+          "canal": "Alberto - Questões e Notícias",
+          "duracao_min": 20
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Sistema de Gestão da Ética (Decreto 6.029/2007)",
+          "url": "https://www.youtube.com/results?search_query=Sistema%20de%20Gest%C3%A3o%20da%20%C3%89tica%20aula%20concurso%20INSS"
+        }
+      ],
+      "prereq": [
+        "etica.decreto1171"
+      ]
+    },
+    "dconst.direitos_individuais": {
+      "carga_horaria_base": 10,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Direitos e deveres individuais e coletivos (art. 5º)",
+          "url": "https://www.youtube.com/results?search_query=Direitos%20e%20deveres%20individuais%20e%20coletivos%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "dconst.direitos_sociais": {
+      "carga_horaria_base": 3,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Direitos sociais",
+          "url": "https://www.youtube.com/results?search_query=Direitos%20sociais%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "dconst.nacionalidade": {
+      "carga_horaria_base": 3,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Nacionalidade",
+          "url": "https://www.youtube.com/results?search_query=Nacionalidade%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "dconst.direitos_politicos": {
+      "carga_horaria_base": 3,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Cidadania e direitos políticos",
+          "url": "https://www.youtube.com/results?search_query=Cidadania%20e%20direitos%20pol%C3%ADticos%20aula%20concurso%20INSS"
+        }
+      ],
+      "prereq": [
+        "dconst.nacionalidade"
+      ]
+    },
+    "dconst.remedios": {
+      "carga_horaria_base": 4,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Garantias constitucionais (remédios)",
+          "url": "https://www.youtube.com/results?search_query=Garantias%20constitucionais%20aula%20concurso%20INSS"
+        }
+      ],
+      "prereq": [
+        "dconst.direitos_individuais"
+      ]
+    },
+    "dconst.adm_publica": {
+      "carga_horaria_base": 8,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Administração pública na CF (arts. 37 a 41)",
+          "url": "https://www.youtube.com/results?search_query=Administra%C3%A7%C3%A3o%20p%C3%BAblica%20na%20CF%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "dadm.estado_governo": {
+      "carga_horaria_base": 3,
+      "tipo": "doutrina",
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "Direito Administrativo - Aula 01 (Estado, Governo e Administração Pública) - Prof Eduardo Tanaka",
+          "url": "https://www.youtube.com/watch?v=dBlmQW8uvcE",
+          "canal": "Prof. Eduardo Tanaka",
+          "duracao_min": 27
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Estado, governo e administração pública",
+          "url": "https://www.youtube.com/results?search_query=Estado%2C%20governo%20e%20administra%C3%A7%C3%A3o%20p%C3%BAblica%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "dadm.fontes_principios": {
+      "carga_horaria_base": 4,
+      "tipo": "doutrina",
+      "prereq": [
+        "dadm.estado_governo"
+      ],
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Direito administrativo: conceito, fontes e princípios",
+          "url": "https://www.youtube.com/results?search_query=Direito%20administrativo%3A%20conceito%2C%20fontes%20e%20princ%C3%ADpios%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "dadm.organizacao": {
+      "carga_horaria_base": 5,
+      "tipo": "doutrina",
+      "prereq": [
+        "dadm.estado_governo"
+      ],
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Organização administrativa: direta e indireta",
+          "url": "https://www.youtube.com/results?search_query=Organiza%C3%A7%C3%A3o%20administrativa%3A%20direta%20e%20indireta%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "dadm.agentes": {
+      "carga_horaria_base": 3,
+      "tipo": "doutrina",
+      "prereq": [
+        "dadm.organizacao"
+      ],
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Agentes públicos: espécies, cargo, emprego e função",
+          "url": "https://www.youtube.com/results?search_query=Agentes%20p%C3%BAblicos%3A%20esp%C3%A9cies%2C%20cargo%2C%20emprego%20e%20fun%C3%A7%C3%A3o%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "dadm.lei8112_provimento": {
+      "carga_horaria_base": 6,
+      "tipo": "lei_seca",
+      "prereq": [
+        "dadm.agentes"
+      ],
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Lei 8.112: provimento, vacância, remoção e redistribuição",
+          "url": "https://www.youtube.com/results?search_query=Lei%208.112%3A%20provimento%2C%20vac%C3%A2ncia%2C%20remo%C3%A7%C3%A3o%20e%20redistribui%C3%A7%C3%A3o%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "dadm.lei8112_direitos": {
+      "carga_horaria_base": 5,
+      "tipo": "lei_seca",
+      "prereq": [
+        "dadm.lei8112_provimento"
+      ],
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Lei 8.112: direitos e vantagens",
+          "url": "https://www.youtube.com/results?search_query=Lei%208.112%3A%20direitos%20e%20vantagens%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "dadm.lei8112_disciplinar": {
+      "carga_horaria_base": 6,
+      "tipo": "lei_seca",
+      "prereq": [
+        "dadm.lei8112_provimento"
+      ],
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Lei 8.112: regime disciplinar e responsabilidades",
+          "url": "https://www.youtube.com/results?search_query=Lei%208.112%3A%20regime%20disciplinar%20e%20responsabilidades%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "dadm.poderes": {
+      "carga_horaria_base": 4,
+      "tipo": "doutrina",
+      "prereq": [
+        "dadm.fontes_principios"
+      ],
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Poderes administrativos e abuso de poder",
+          "url": "https://www.youtube.com/results?search_query=Poderes%20administrativos%20e%20abuso%20de%20poder%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "dadm.atos": {
+      "carga_horaria_base": 7,
+      "tipo": "doutrina",
+      "prereq": [
+        "dadm.poderes"
+      ],
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Ato administrativo",
+          "url": "https://www.youtube.com/results?search_query=Ato%20administrativo%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "dadm.servicos": {
+      "carga_horaria_base": 4,
+      "tipo": "doutrina",
+      "prereq": [
+        "dadm.organizacao"
+      ],
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "07.05.02. Aula de Permissão, Concessão e Autorização - Serviço Público (Direito Administrativo)",
+          "url": "https://www.youtube.com/watch?v=sy-pQtv_ZPw",
+          "canal": "TecConcursos",
+          "duracao_min": 17
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Serviços públicos e delegação",
+          "url": "https://www.youtube.com/results?search_query=Servi%C3%A7os%20p%C3%BAblicos%20e%20delega%C3%A7%C3%A3o%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "dadm.controle": {
+      "carga_horaria_base": 5,
+      "tipo": "doutrina",
+      "prereq": [
+        "dadm.atos"
+      ],
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Controle e responsabilidade civil do Estado",
+          "url": "https://www.youtube.com/results?search_query=Controle%20e%20responsabilidade%20civil%20do%20Estado%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "dadm.improbidade": {
+      "carga_horaria_base": 5,
+      "tipo": "lei_seca",
+      "prereq": [
+        "dadm.fontes_principios"
+      ],
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Improbidade administrativa (Lei 8.429/1992)",
+          "url": "https://www.youtube.com/results?search_query=Improbidade%20administrativa%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "dadm.processo": {
+      "carga_horaria_base": 6,
+      "tipo": "lei_seca",
+      "prereq": [
+        "dadm.atos"
+      ],
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Processo administrativo (Lei 9.784/1999)",
+          "url": "https://www.youtube.com/results?search_query=Processo%20administrativo%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "info.internet": {
+      "carga_horaria_base": 4,
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "Internet Intranet Extranet",
+          "url": "https://www.youtube.com/watch?v=A9P2WusFQU0",
+          "canal": "Dicionário de Informática",
+          "duracao_min": 11
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Internet, intranet, navegação e correio eletrônico",
+          "url": "https://www.youtube.com/results?search_query=Internet%2C%20intranet%2C%20navega%C3%A7%C3%A3o%20e%20correio%20eletr%C3%B4nico%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "info.ferramentas": {
+      "carga_horaria_base": 3,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Tecnologias, ferramentas e procedimentos de informática",
+          "url": "https://www.youtube.com/results?search_query=Tecnologias%2C%20ferramentas%20e%20procedimentos%20de%20inform%C3%A1tica%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "info.libreoffice": {
+      "carga_horaria_base": 8,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: LibreOffice: textos, planilhas e apresentações",
+          "url": "https://www.youtube.com/results?search_query=LibreOffice%3A%20textos%2C%20planilhas%20e%20apresenta%C3%A7%C3%B5es%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "info.windows": {
+      "carga_horaria_base": 4,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Windows 7 e 10",
+          "url": "https://www.youtube.com/results?search_query=Windows%207%20e%2010%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "info.seguranca": {
+      "carga_horaria_base": 4,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Segurança: vírus, worms e derivados",
+          "url": "https://www.youtube.com/results?search_query=Seguran%C3%A7a%3A%20v%C3%ADrus%2C%20worms%20e%20derivados%20aula%20concurso%20INSS"
+        }
+      ],
+      "prereq": [
+        "info.internet"
+      ]
+    },
+    "rlm.proposicoes": {
+      "carga_horaria_base": 6,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Proposições, conectivos e tabela-verdade",
+          "url": "https://www.youtube.com/results?search_query=Proposi%C3%A7%C3%B5es%2C%20conectivos%20e%20tabela-verdade%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "rlm.tautologia": {
+      "carga_horaria_base": 4,
+      "prereq": [
+        "rlm.proposicoes"
+      ],
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Tautologia",
+          "url": "https://www.youtube.com/results?search_query=Tautologia%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "rlm.conjuntos": {
+      "carga_horaria_base": 4,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Operações com conjuntos",
+          "url": "https://www.youtube.com/results?search_query=Opera%C3%A7%C3%B5es%20com%20conjuntos%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "rlm.porcentagem": {
+      "carga_horaria_base": 3,
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "CONCURSO INSS 2025: MATEMÁTICA - CÁLCULOS COM PORCENTAGEM",
+          "url": "https://www.youtube.com/watch?v=ZU2p9EUXTWk",
+          "canal": "Nova Concursos",
+          "duracao_min": 55
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Cálculos com porcentagens",
+          "url": "https://www.youtube.com/results?search_query=C%C3%A1lculos%20com%20porcentagens%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "seg.origem_conceito": {
+      "carga_horaria_base": 3,
+      "tipo": "doutrina",
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "INSS - Seguridade Social - 1 - Conceito, origem e evolução legislativa no Brasil",
+          "url": "https://www.youtube.com/watch?v=Lt6oMhtOBh0",
+          "canal": "Gustavo Fregapani",
+          "duracao_min": 24
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Seguridade social: origem, evolução e conceito",
+          "url": "https://www.youtube.com/results?search_query=Seguridade%20social%3A%20origem%2C%20evolu%C3%A7%C3%A3o%20e%20conceito%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "seg.principios": {
+      "carga_horaria_base": 5,
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "Princípios da Seguridade Social - Seguridade Social para Técnico do INSS 2026",
+          "url": "https://www.youtube.com/watch?v=P6KlGvjPkCA",
+          "canal": "O Primo Concursado",
+          "duracao_min": 126
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Organização e princípios constitucionais da seguridade",
+          "url": "https://www.youtube.com/results?search_query=princ%C3%ADpios%20da%20seguridade%20social%20aula%20inss"
+        }
+      ],
+      "prereq": [
+        "seg.origem_conceito"
+      ]
+    },
+    "seg.legislacao": {
+      "carga_horaria_base": 3,
+      "tipo": "doutrina",
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "6 Legislação Previdenciária   Conteúdo, fontes, autonomia  Aplicação das normas previdenciárias  Vig",
+          "url": "https://www.youtube.com/watch?v=PYk4FWMnsrE",
+          "canal": "Acaz Priviat",
+          "duracao_min": 31
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Legislação previdenciária: fontes, aplicação e interpretação",
+          "url": "https://www.youtube.com/results?search_query=Legisla%C3%A7%C3%A3o%20previdenci%C3%A1ria%3A%20fontes%2C%20aplica%C3%A7%C3%A3o%20e%20interpreta%C3%A7%C3%A3o%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "seg.empresa": {
+      "carga_horaria_base": 3,
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "Direito Previdenciário - Empresa e Empregador Doméstico - aula 33 - Prof Eduardo Tanaka",
+          "url": "https://www.youtube.com/watch?v=-gyraA0sMrQ",
+          "canal": "Prof. Eduardo Tanaka",
+          "duracao_min": 11
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Empresa e empregador doméstico (conceito previdenciário)",
+          "url": "https://www.youtube.com/results?search_query=Empresa%20e%20empregador%20dom%C3%A9stico%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "seg.financiamento": {
+      "carga_horaria_base": 7,
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "Concurso INSS: Aula de Financiamento da seguridade social | Você no INSS",
+          "url": "https://www.youtube.com/watch?v=4Hmcopyz-zY",
+          "canal": "Qconcursos",
+          "duracao_min": 57
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Financiamento: receitas e contribuições sociais",
+          "url": "https://www.youtube.com/results?search_query=financiamento%20da%20seguridade%20social%20inss%20aula"
+        }
+      ],
+      "prereq": [
+        "seg.principios",
+        "seg.empresa"
+      ]
+    },
+    "seg.salario_contribuicao": {
+      "carga_horaria_base": 6,
+      "prereq": [
+        "seg.financiamento",
+        "rgps.segurados_obrigatorios"
+      ],
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "CONCURSO INSS: SALÁRIO DE CONTRIBUIÇÃO | Com o Profº. Harlenson Fonseca",
+          "url": "https://www.youtube.com/watch?v=3IVngawMlRU",
+          "canal": "Cursos do Portal",
+          "duracao_min": 114
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Salário de contribuição",
+          "url": "https://www.youtube.com/results?search_query=sal%C3%A1rio%20de%20contribui%C3%A7%C3%A3o%20inss%20aula"
+        }
+      ]
+    },
+    "seg.arrecadacao": {
+      "carga_horaria_base": 6,
+      "prereq": [
+        "seg.financiamento"
+      ],
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "Direito Previdenciário - Arrecadação e Recolhimento - Parte 1 -  Aula 71 - Prof. Eduardo Tanaka",
+          "url": "https://www.youtube.com/watch?v=Q8yxKiU2bKo",
+          "canal": "Prof. Eduardo Tanaka",
+          "duracao_min": 10
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Arrecadação, recolhimento, prazos e acréscimos",
+          "url": "https://www.youtube.com/results?search_query=Arrecada%C3%A7%C3%A3o%2C%20recolhimento%2C%20prazos%20e%20acr%C3%A9scimos%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "seg.decadencia_prescricao": {
+      "carga_horaria_base": 3,
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "Concurso INSS - Decadência e prescrição | Você no INSS",
+          "url": "https://www.youtube.com/watch?v=Jw0OcWeRkNU",
+          "canal": "Qconcursos",
+          "duracao_min": 53
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Decadência e prescrição",
+          "url": "https://www.youtube.com/results?search_query=Decad%C3%AAncia%20e%20prescri%C3%A7%C3%A3o%20aula%20concurso%20INSS"
+        }
+      ],
+      "prereq": [
+        "seg.arrecadacao"
+      ]
+    },
+    "seg.crimes": {
+      "carga_horaria_base": 3,
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "Previdenciário - Aula 73 (Crimes Contra a Seguridade Social - Parte I)",
+          "url": "https://www.youtube.com/watch?v=ZYr_BO1m0x8",
+          "canal": "Prof. Emerson Bruno",
+          "duracao_min": 12
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Crimes contra a seguridade social",
+          "url": "https://www.youtube.com/results?search_query=Crimes%20contra%20a%20seguridade%20social%20aula%20concurso%20INSS"
+        }
+      ],
+      "prereq": [
+        "seg.arrecadacao"
+      ]
+    },
+    "rgps.segurados_obrigatorios": {
+      "carga_horaria_base": 9,
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "DIREITO PREVIDENCIÁRIO DO ZERO - INSS | Segurados da Previdência Social - AULA 02",
+          "url": "https://www.youtube.com/watch?v=LL-JbQ21_cQ",
+          "canal": "Cursos do Portal",
+          "duracao_min": 141
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Segurados obrigatórios: empregado, doméstico, CI, avulso e especial",
+          "url": "https://www.youtube.com/results?search_query=segurados%20obrigat%C3%B3rios%20rgps%20aula%20inss"
+        }
+      ]
+    },
+    "rgps.facultativo": {
+      "carga_horaria_base": 3,
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "Segurado Facultativo | Você no INSS - Aula 5",
+          "url": "https://www.youtube.com/watch?v=0A-_9QHpSa4",
+          "canal": "Qconcursos",
+          "duracao_min": 48
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Segurado facultativo e trabalhadores excluídos",
+          "url": "https://www.youtube.com/results?search_query=Segurado%20facultativo%20e%20trabalhadores%20exclu%C3%ADdos%20aula%20concurso%20INSS"
+        }
+      ],
+      "prereq": [
+        "rgps.segurados_obrigatorios"
+      ]
+    },
+    "rgps.filiacao_inscricao": {
+      "carga_horaria_base": 4,
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "Filiação e Inscrição - parte 1 - aula 25 - Bloco 1 - Professor Eduardo Tanaka",
+          "url": "https://www.youtube.com/watch?v=HBvoAN4QEG4",
+          "canal": "Prof. Eduardo Tanaka",
+          "duracao_min": 10
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Filiação e inscrição",
+          "url": "https://www.youtube.com/results?search_query=Filia%C3%A7%C3%A3o%20e%20inscri%C3%A7%C3%A3o%20aula%20concurso%20INSS"
+        }
+      ],
+      "prereq": [
+        "rgps.segurados_obrigatorios"
+      ]
+    },
+    "rgps.qualidade_segurado": {
+      "carga_horaria_base": 5,
+      "prereq": [
+        "rgps.filiacao_inscricao"
+      ],
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Manutenção, perda e restabelecimento da qualidade de segurado",
+          "url": "https://www.youtube.com/results?search_query=Manuten%C3%A7%C3%A3o%2C%20perda%20e%20restabelecimento%20da%20qualidade%20de%20segurado%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "rgps.dependentes": {
+      "carga_horaria_base": 5,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Beneficiários: segurados e dependentes",
+          "url": "https://www.youtube.com/results?search_query=Benefici%C3%A1rios%3A%20segurados%20e%20dependentes%20aula%20concurso%20INSS"
+        }
+      ],
+      "prereq": [
+        "rgps.segurados_obrigatorios"
+      ]
+    },
+    "rgps.carencia": {
+      "carga_horaria_base": 5,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Períodos de carência",
+          "url": "https://www.youtube.com/results?search_query=Per%C3%ADodos%20de%20car%C3%AAncia%20aula%20concurso%20INSS"
+        }
+      ],
+      "prereq": [
+        "rgps.filiacao_inscricao"
+      ]
+    },
+    "benef.salario_beneficio": {
+      "carga_horaria_base": 6,
+      "tipo": "calculo",
+      "prereq": [
+        "seg.salario_contribuicao"
+      ],
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Salário de benefício, renda mensal e reajustamento",
+          "url": "https://www.youtube.com/results?search_query=Sal%C3%A1rio%20de%20benef%C3%ADcio%2C%20renda%20mensal%20e%20reajustamento%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "benef.aposentadorias": {
+      "carga_horaria_base": 10,
+      "prereq": [
+        "rgps.carencia"
+      ],
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Aposentadorias e regras da EC 103/2019",
+          "url": "https://www.youtube.com/results?search_query=Aposentadorias%20e%20regras%20da%20EC%20103%2F2019%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "benef.incapacidade": {
+      "carga_horaria_base": 6,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Benefícios por incapacidade e auxílio-acidente",
+          "url": "https://www.youtube.com/results?search_query=Benef%C3%ADcios%20por%20incapacidade%20e%20aux%C3%ADlio-acidente%20aula%20concurso%20INSS"
+        }
+      ],
+      "prereq": [
+        "rgps.carencia"
+      ]
+    },
+    "benef.acidente_trabalho": {
+      "carga_horaria_base": 5,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Acidente do trabalho e doenças ocupacionais",
+          "url": "https://www.youtube.com/results?search_query=Acidente%20do%20trabalho%20e%20doen%C3%A7as%20ocupacionais%20aula%20concurso%20INSS"
+        }
+      ],
+      "prereq": [
+        "benef.incapacidade"
+      ]
+    },
+    "benef.pensao_reclusao": {
+      "carga_horaria_base": 7,
+      "prereq": [
+        "rgps.dependentes",
+        "rgps.qualidade_segurado"
+      ],
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Pensão por morte e auxílio-reclusão",
+          "url": "https://www.youtube.com/results?search_query=Pens%C3%A3o%20por%20morte%20e%20aux%C3%ADlio-reclus%C3%A3o%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "benef.maternidade_familia": {
+      "carga_horaria_base": 5,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Salário-maternidade e salário-família",
+          "url": "https://www.youtube.com/results?search_query=Sal%C3%A1rio-maternidade%20e%20sal%C3%A1rio-fam%C3%ADlia%20aula%20concurso%20INSS"
+        }
+      ],
+      "prereq": [
+        "rgps.carencia"
+      ]
+    },
+    "benef.disposicoes": {
+      "carga_horaria_base": 5,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Disposições gerais dos benefícios (acumulação, revisão, pagamento)",
+          "url": "https://www.youtube.com/results?search_query=Disposi%C3%A7%C3%B5es%20gerais%20dos%20benef%C3%ADcios%20aula%20concurso%20INSS"
+        }
+      ],
+      "prereq": [
+        "benef.aposentadorias"
+      ]
+    },
+    "benef.servicos": {
+      "carga_horaria_base": 3,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Serviço social e reabilitação profissional",
+          "url": "https://www.youtube.com/results?search_query=Servi%C3%A7o%20social%20e%20reabilita%C3%A7%C3%A3o%20profissional%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "benef.lc142": {
+      "carga_horaria_base": 3,
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "Aposentadoria do Segurado com Deficiência - Aula 144- Prof. Eduardo Tanaka - Dto Previdenciário",
+          "url": "https://www.youtube.com/watch?v=qwDGWCCuVq0",
+          "canal": "Prof. Eduardo Tanaka",
+          "duracao_min": 10
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Aposentadoria da pessoa com deficiência (LC 142/2013)",
+          "url": "https://www.youtube.com/results?search_query=Aposentadoria%20da%20pessoa%20com%20defici%C3%AAncia%20aula%20concurso%20INSS"
+        }
+      ],
+      "prereq": [
+        "benef.aposentadorias"
+      ]
+    },
+    "assist.loas_bpc": {
+      "carga_horaria_base": 7,
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "Lei de Assistência Social- LOAS - Art. 1° e 2°  - Aula 176 - Dto Previdenciário -Prof Eduardo Tanaka",
+          "url": "https://www.youtube.com/watch?v=BmcAUFv7ros",
+          "canal": "Prof. Eduardo Tanaka",
+          "duracao_min": 16
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: LOAS e BPC (Lei 8.742/1993 e Decreto 6.214/2007)",
+          "url": "https://www.youtube.com/results?search_query=BPC%20LOAS%20aula%20concurso%20inss"
+        }
+      ]
+    },
+    "assist.auxilio_inclusao": {
+      "carga_horaria_base": 2,
+      "prereq": [
+        "assist.loas_bpc"
+      ],
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "Auxílio-inclusão - Seguridade Social para Técnico do INSS 2026",
+          "url": "https://www.youtube.com/watch?v=vlrTwj35UKQ",
+          "canal": "O Primo Concursado",
+          "duracao_min": 79
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Auxílio-inclusão (Lei 14.176/2021)",
+          "url": "https://www.youtube.com/results?search_query=Aux%C3%ADlio-inclus%C3%A3o%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "assist.pensoes_especiais": {
+      "carga_horaria_base": 5,
+      "tipo": "memorizacao",
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "Pensões Especiais (Zika vírus e Feminicídio) - Seguridade Social para Técnico do INSS 2026",
+          "url": "https://www.youtube.com/watch?v=Ve906MfoErc",
+          "canal": "O Primo Concursado",
+          "duracao_min": 82
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Pensões especiais (talidomida, seringueiros, ex-combatente, Caruaru, Césio 137, hanseníase, zika)",
+          "url": "https://www.youtube.com/results?search_query=Pens%C3%B5es%20especiais%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "assist.anistiado": {
+      "carga_horaria_base": 2,
+      "tipo": "memorizacao",
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "Aposentadoria e Pensão Excepcional ao Anistiado Político Lei 10559 Parte 1 - Aula 200 Previdenciário",
+          "url": "https://www.youtube.com/watch?v=QM6vFjTHm6Y",
+          "canal": "Prof. Eduardo Tanaka",
+          "duracao_min": 25
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Aposentadoria e pensão excepcional ao anistiado político",
+          "url": "https://www.youtube.com/results?search_query=Aposentadoria%20e%20pens%C3%A3o%20excepcional%20ao%20anistiado%20pol%C3%ADtico%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "assist.seguro_defeso": {
+      "carga_horaria_base": 3,
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "Concurso INSS: Seguro-Desemprego do Pescador Artesanal (Seguro Defeso)",
+          "url": "https://www.youtube.com/watch?v=eeFcsyiw64E",
+          "canal": "Memória de Aprovado",
+          "duracao_min": 8
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Seguro-defeso do pescador artesanal",
+          "url": "https://www.youtube.com/results?search_query=Seguro-defeso%20do%20pescador%20artesanal%20aula%20concurso%20INSS"
+        }
+      ]
+    },
+    "gestao.recursos": {
+      "carga_horaria_base": 4,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Recurso das decisões administrativas",
+          "url": "https://www.youtube.com/results?search_query=Recurso%20das%20decis%C3%B5es%20administrativas%20aula%20concurso%20INSS"
+        }
+      ],
+      "prereq": [
+        "dadm.processo"
+      ]
+    },
+    "gestao.rpps_ctc": {
+      "carga_horaria_base": 5,
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "RPPS - Compensação Previdenciária e Contagem Recíproca - Aula 212 - Parte 1 - Direito Previdenciário",
+          "url": "https://www.youtube.com/watch?v=-PNk1HjS76c",
+          "canal": "Prof. Eduardo Tanaka",
+          "duracao_min": 16
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: RPPS, CTC, contagem recíproca e compensação",
+          "url": "https://www.youtube.com/results?search_query=RPPS%2C%20CTC%2C%20contagem%20rec%C3%ADproca%20e%20compensa%C3%A7%C3%A3o%20aula%20concurso%20INSS"
+        }
+      ],
+      "prereq": [
+        "benef.aposentadorias"
+      ]
+    },
+    "gestao.in128_cnis": {
+      "carga_horaria_base": 8,
+      "materiais": [
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: IN PRES/INSS 128/2022 e CNIS",
+          "url": "https://www.youtube.com/results?search_query=IN%20PRES%2FINSS%20128%2F2022%20e%20CNIS%20aula%20concurso%20INSS"
+        }
+      ],
+      "prereq": [
+        "rgps.filiacao_inscricao"
+      ]
+    },
+    "gestao.servidor_social": {
+      "carga_horaria_base": 2,
+      "tipo": "doutrina",
+      "materiais": [
+        {
+          "tipo": "video",
+          "titulo": "Servidor Público como Agente de Desenvolvimento Social - Concurso INSS 2022",
+          "url": "https://www.youtube.com/watch?v=GBnXXH7zMrw",
+          "canal": "João Nicolle | Carreira Médica",
+          "duracao_min": 14
+        },
+        {
+          "tipo": "busca_video",
+          "titulo": "Buscar aulas no YouTube: Servidor como agente de desenvolvimento social; saúde no serviço público",
+          "url": "https://www.youtube.com/results?search_query=Servidor%20como%20agente%20de%20desenvolvimento%20social%3B%20sa%C3%BAde%20no%20servi%C3%A7o%20p%C3%BAblico%20aula%20concurso%20INSS"
+        }
+      ]
+    }
+  }
+}

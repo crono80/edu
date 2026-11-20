@@ -1,0 +1,520 @@
+[
+  {
+    "id": "port.interpretacao",
+    "materia_id": "port",
+    "nome": "Compreensão e interpretação de textos",
+    "edital_literal": "1 Compreensão e interpretação de textos.",
+    "edital_profundidade": 3
+  },
+  {
+    "id": "port.tipologia",
+    "materia_id": "port",
+    "nome": "Tipologia textual",
+    "edital_literal": "2 Tipologia textual.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "port.ortografia_acentuacao",
+    "materia_id": "port",
+    "nome": "Ortografia oficial e acentuação gráfica",
+    "edital_literal": "3 Ortografia oficial. 4 Acentuação gráfica.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "port.classes",
+    "materia_id": "port",
+    "nome": "Emprego das classes de palavras",
+    "edital_literal": "5 Emprego das classes de palavras.",
+    "edital_profundidade": 2
+  },
+  {
+    "id": "port.crase",
+    "materia_id": "port",
+    "nome": "Emprego do sinal indicativo de crase",
+    "edital_literal": "6 Emprego do sinal indicativo de crase.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "port.sintaxe",
+    "materia_id": "port",
+    "nome": "Sintaxe da oração e do período",
+    "edital_literal": "7 Sintaxe da oração e do período.",
+    "edital_profundidade": 2
+  },
+  {
+    "id": "port.pontuacao",
+    "materia_id": "port",
+    "nome": "Pontuação",
+    "edital_literal": "8 Pontuação.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "port.concordancia",
+    "materia_id": "port",
+    "nome": "Concordância nominal e verbal",
+    "edital_literal": "9 Concordância nominal e verbal.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "port.regencia",
+    "materia_id": "port",
+    "nome": "Regência nominal e verbal",
+    "edital_literal": "10 Regências nominal e verbal.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "port.semantica",
+    "materia_id": "port",
+    "nome": "Significação das palavras e coesão",
+    "edital_literal": "11 Significação das palavras.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "port.redacao_oficial",
+    "materia_id": "port",
+    "nome": "Redação oficial (Manual da Presidência)",
+    "edital_literal": "12 Redação de correspondências oficiais (conforme Manual de Redação da Presidência da República).",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "etica.decreto1171",
+    "materia_id": "etica",
+    "nome": "Código de Ética do Servidor (Decreto 1.171/1994)",
+    "edital_literal": "1 Código de Ética Profissional do Servidor Público Civil do Poder Executivo Federal: Decreto nº 1.171/1994.",
+    "edital_profundidade": 2
+  },
+  {
+    "id": "etica.decreto6029",
+    "materia_id": "etica",
+    "nome": "Sistema de Gestão da Ética (Decreto 6.029/2007)",
+    "edital_literal": "Decreto nº 6.029/2007 e suas alterações.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "dconst.direitos_individuais",
+    "materia_id": "dconst",
+    "nome": "Direitos e deveres individuais e coletivos (art. 5º)",
+    "edital_literal": "1 Direitos e garantias fundamentais: direitos e deveres individuais e coletivos; direito à vida, à liberdade, à igualdade, à segurança e à propriedade.",
+    "edital_profundidade": 3
+  },
+  {
+    "id": "dconst.direitos_sociais",
+    "materia_id": "dconst",
+    "nome": "Direitos sociais",
+    "edital_literal": "direitos sociais",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "dconst.nacionalidade",
+    "materia_id": "dconst",
+    "nome": "Nacionalidade",
+    "edital_literal": "nacionalidade",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "dconst.direitos_politicos",
+    "materia_id": "dconst",
+    "nome": "Cidadania e direitos políticos",
+    "edital_literal": "cidadania; garantias dos direitos políticos",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "dconst.remedios",
+    "materia_id": "dconst",
+    "nome": "Garantias constitucionais (remédios)",
+    "edital_literal": "garantias constitucionais individuais; garantias dos direitos coletivos, sociais e políticos.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "dconst.adm_publica",
+    "materia_id": "dconst",
+    "nome": "Administração pública na CF (arts. 37 a 41)",
+    "edital_literal": "2 Administração pública (artigos de 37 a 41, capítulo VII, Constituição Federal de 1988).",
+    "edital_profundidade": 2
+  },
+  {
+    "id": "dadm.estado_governo",
+    "materia_id": "dadm",
+    "nome": "Estado, governo e administração pública",
+    "edital_literal": "1 Estado, governo e administração pública: conceitos, elementos, poderes e organização; natureza, fins e princípios.",
+    "edital_profundidade": 2
+  },
+  {
+    "id": "dadm.fontes_principios",
+    "materia_id": "dadm",
+    "nome": "Direito administrativo: conceito, fontes e princípios",
+    "edital_literal": "2 Direito administrativo: conceito, fontes e princípios.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "dadm.organizacao",
+    "materia_id": "dadm",
+    "nome": "Organização administrativa: direta e indireta",
+    "edital_literal": "3 Organização administrativa da União; administração direta e indireta.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "dadm.agentes",
+    "materia_id": "dadm",
+    "nome": "Agentes públicos: espécies, cargo, emprego e função",
+    "edital_literal": "4 Agentes públicos: espécies e classificação; poderes, deveres e prerrogativas; cargo, emprego e função públicos.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "dadm.lei8112_provimento",
+    "materia_id": "dadm",
+    "nome": "Lei 8.112: provimento, vacância, remoção e redistribuição",
+    "edital_literal": "Regime Jurídico Único (Lei nº 8.112/1990): provimento, vacância, remoção, redistribuição e substituição",
+    "edital_profundidade": 2
+  },
+  {
+    "id": "dadm.lei8112_direitos",
+    "materia_id": "dadm",
+    "nome": "Lei 8.112: direitos e vantagens",
+    "edital_literal": "Lei nº 8.112/1990: direitos e vantagens",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "dadm.lei8112_disciplinar",
+    "materia_id": "dadm",
+    "nome": "Lei 8.112: regime disciplinar e responsabilidades",
+    "edital_literal": "Lei nº 8.112/1990: regime disciplinar; responsabilidade civil, criminal e administrativa.",
+    "edital_profundidade": 2
+  },
+  {
+    "id": "dadm.poderes",
+    "materia_id": "dadm",
+    "nome": "Poderes administrativos e abuso de poder",
+    "edital_literal": "5 Poderes administrativos: poder hierárquico; poder disciplinar; poder regulamentar; poder de polícia; uso e abuso do poder.",
+    "edital_profundidade": 2
+  },
+  {
+    "id": "dadm.atos",
+    "materia_id": "dadm",
+    "nome": "Ato administrativo",
+    "edital_literal": "6 Ato administrativo: validade, eficácia; atributos; extinção, desfazimento e sanatória; classificação, espécies e exteriorização; vinculação e discricionariedade.",
+    "edital_profundidade": 3
+  },
+  {
+    "id": "dadm.servicos",
+    "materia_id": "dadm",
+    "nome": "Serviços públicos e delegação",
+    "edital_literal": "7 Serviços Públicos: conceito, classificação, regulamentação e controle; forma, meios e requisitos; delegação: concessão, permissão, autorização.",
+    "edital_profundidade": 2
+  },
+  {
+    "id": "dadm.controle",
+    "materia_id": "dadm",
+    "nome": "Controle e responsabilidade civil do Estado",
+    "edital_literal": "8 Controle e responsabilização da administração: controle administrativo; controle judicial; controle legislativo; responsabilidade civil do Estado.",
+    "edital_profundidade": 2
+  },
+  {
+    "id": "dadm.improbidade",
+    "materia_id": "dadm",
+    "nome": "Improbidade administrativa (Lei 8.429/1992)",
+    "edital_literal": "Lei nº 8.429/1992 e suas alterações.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "dadm.processo",
+    "materia_id": "dadm",
+    "nome": "Processo administrativo (Lei 9.784/1999)",
+    "edital_literal": "9 Lei nº 9.784/1999 (Lei do Processo Administrativo).",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "info.internet",
+    "materia_id": "info",
+    "nome": "Internet, intranet, navegação e correio eletrônico",
+    "edital_literal": "1 Conceitos de Internet e intranet. 5 Noções básicas de ferramentas e aplicativos de navegação e correio eletrônico.",
+    "edital_profundidade": 2
+  },
+  {
+    "id": "info.ferramentas",
+    "materia_id": "info",
+    "nome": "Tecnologias, ferramentas e procedimentos de informática",
+    "edital_literal": "2 Conceitos básicos e modos de utilização de tecnologias, ferramentas, aplicativos e procedimentos de informática.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "info.libreoffice",
+    "materia_id": "info",
+    "nome": "LibreOffice: textos, planilhas e apresentações",
+    "edital_literal": "3 Conceitos e modos de utilização de aplicativos para a edição de textos, planilhas e apresentações com a suíte de escritório LibreOffice.",
+    "edital_profundidade": 2
+  },
+  {
+    "id": "info.windows",
+    "materia_id": "info",
+    "nome": "Windows 7 e 10",
+    "edital_literal": "4 Conceitos e modos de utilização de sistemas operacionais Windows 7 e 10.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "info.seguranca",
+    "materia_id": "info",
+    "nome": "Segurança: vírus, worms e derivados",
+    "edital_literal": "6 Noções básicas de segurança e proteção: vírus, worms e derivados.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "rlm.proposicoes",
+    "materia_id": "rlm",
+    "nome": "Proposições, conectivos e tabela-verdade",
+    "edital_literal": "1 Conceitos básicos de raciocínio lógico: proposições; valores lógicos das proposições; sentenças abertas; número de linhas da tabela-verdade; conectivos; proposições simples; proposições compostas.",
+    "edital_profundidade": 2
+  },
+  {
+    "id": "rlm.tautologia",
+    "materia_id": "rlm",
+    "nome": "Tautologia",
+    "edital_literal": "2 Tautologia.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "rlm.conjuntos",
+    "materia_id": "rlm",
+    "nome": "Operações com conjuntos",
+    "edital_literal": "3 Operação com conjuntos.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "rlm.porcentagem",
+    "materia_id": "rlm",
+    "nome": "Cálculos com porcentagens",
+    "edital_literal": "4 Cálculos com porcentagens.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "seg.origem_conceito",
+    "materia_id": "seg",
+    "nome": "Seguridade social: origem, evolução e conceito",
+    "edital_literal": "1 Seguridade Social. 1.1 Origem e evolução legislativa no Brasil. 1.2 Conceituação.",
+    "edital_profundidade": 2
+  },
+  {
+    "id": "seg.principios",
+    "materia_id": "seg",
+    "nome": "Organização e princípios constitucionais da seguridade",
+    "edital_literal": "1.3 Organização e princípios constitucionais.",
+    "edital_profundidade": 2
+  },
+  {
+    "id": "seg.legislacao",
+    "materia_id": "seg",
+    "nome": "Legislação previdenciária: fontes, aplicação e interpretação",
+    "edital_literal": "2 Legislação Previdenciária. 2.1 Conteúdo, fontes, autonomia. 2.2 Aplicação das normas previdenciárias. 2.2.1 Vigência, hierarquia, interpretação e integração.",
+    "edital_profundidade": 2
+  },
+  {
+    "id": "seg.empresa",
+    "materia_id": "seg",
+    "nome": "Empresa e empregador doméstico (conceito previdenciário)",
+    "edital_literal": "4 Empresa e empregador doméstico: conceito previdenciário.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "seg.financiamento",
+    "materia_id": "seg",
+    "nome": "Financiamento: receitas e contribuições sociais",
+    "edital_literal": "5 Financiamento da Seguridade Social. 5.1 Receitas da União. 5.2 Receitas das contribuições sociais: dos segurados, das empresas, do empregador doméstico, do produtor rural, do clube de futebol profissional, sobre a receita de concursos de prognósticos, receitas de outras fontes.",
+    "edital_profundidade": 3
+  },
+  {
+    "id": "seg.salario_contribuicao",
+    "materia_id": "seg",
+    "nome": "Salário de contribuição",
+    "edital_literal": "5.3 Salário de contribuição. 5.3.1 Conceito. 5.3.2 Parcelas integrantes e parcelas não integrantes. 5.3.3 Limites mínimo e máximo. 5.3.4 Contribuições inferiores ao salário mínimo e complementação de contribuições. 5.3.5 Reajustamento.",
+    "edital_profundidade": 3
+  },
+  {
+    "id": "seg.arrecadacao",
+    "materia_id": "seg",
+    "nome": "Arrecadação, recolhimento, prazos e acréscimos",
+    "edital_literal": "5.4 Arrecadação e recolhimento das contribuições destinadas à seguridade social. 5.4.1 Competência do INSS e da Secretaria da Receita Federal do Brasil. 5.4.2 Obrigações da empresa e demais contribuintes. 5.4.3 Prazo de recolhimento. 5.4.4 Recolhimento fora do prazo: juros, multa e atualização monetária.",
+    "edital_profundidade": 3
+  },
+  {
+    "id": "seg.decadencia_prescricao",
+    "materia_id": "seg",
+    "nome": "Decadência e prescrição",
+    "edital_literal": "6 Decadência e prescrição.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "seg.crimes",
+    "materia_id": "seg",
+    "nome": "Crimes contra a seguridade social",
+    "edital_literal": "7 Crimes contra a seguridade social.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "rgps.segurados_obrigatorios",
+    "materia_id": "rgps",
+    "nome": "Segurados obrigatórios: empregado, doméstico, CI, avulso e especial",
+    "edital_literal": "3 Regime Geral de Previdência Social. 3.1 Segurados obrigatórios. 3.3 Conceito, características e abrangência: empregado, empregado doméstico, contribuinte individual, trabalhador avulso e segurado especial.",
+    "edital_profundidade": 3
+  },
+  {
+    "id": "rgps.facultativo",
+    "materia_id": "rgps",
+    "nome": "Segurado facultativo e trabalhadores excluídos",
+    "edital_literal": "3.4 Segurado facultativo: conceito, características, filiação e inscrição. 3.5 Trabalhadores excluídos do Regime Geral.",
+    "edital_profundidade": 2
+  },
+  {
+    "id": "rgps.filiacao_inscricao",
+    "materia_id": "rgps",
+    "nome": "Filiação e inscrição",
+    "edital_literal": "3.2 Filiação e inscrição.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "rgps.qualidade_segurado",
+    "materia_id": "rgps",
+    "nome": "Manutenção, perda e restabelecimento da qualidade de segurado",
+    "edital_literal": "10 Manutenção, perda e restabelecimento da qualidade de segurado.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "rgps.dependentes",
+    "materia_id": "rgps",
+    "nome": "Beneficiários: segurados e dependentes",
+    "edital_literal": "9 Plano de Benefícios da Previdência Social: beneficiários.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "rgps.carencia",
+    "materia_id": "rgps",
+    "nome": "Períodos de carência",
+    "edital_literal": "9 Plano de Benefícios: períodos de carência.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "benef.salario_beneficio",
+    "materia_id": "benef",
+    "nome": "Salário de benefício, renda mensal e reajustamento",
+    "edital_literal": "9 Plano de Benefícios: salário de benefício, renda mensal do benefício, reajustamento do valor dos benefícios.",
+    "edital_profundidade": 2
+  },
+  {
+    "id": "benef.aposentadorias",
+    "materia_id": "benef",
+    "nome": "Aposentadorias e regras da EC 103/2019",
+    "edital_literal": "9 Plano de Benefícios: espécies de prestações, benefícios. 16 Emenda Constitucional nº 103/2019.",
+    "edital_profundidade": 3
+  },
+  {
+    "id": "benef.incapacidade",
+    "materia_id": "benef",
+    "nome": "Benefícios por incapacidade e auxílio-acidente",
+    "edital_literal": "9 Plano de Benefícios: benefícios, disposições específicas (incapacidade temporária e permanente, auxílio-acidente).",
+    "edital_profundidade": 2
+  },
+  {
+    "id": "benef.acidente_trabalho",
+    "materia_id": "benef",
+    "nome": "Acidente do trabalho e doenças ocupacionais",
+    "edital_literal": "9 Plano de Benefícios: disposições gerais e específicas (acidente do trabalho).",
+    "edital_profundidade": 2
+  },
+  {
+    "id": "benef.pensao_reclusao",
+    "materia_id": "benef",
+    "nome": "Pensão por morte e auxílio-reclusão",
+    "edital_literal": "9 Plano de Benefícios: benefícios aos dependentes.",
+    "edital_profundidade": 2
+  },
+  {
+    "id": "benef.maternidade_familia",
+    "materia_id": "benef",
+    "nome": "Salário-maternidade e salário-família",
+    "edital_literal": "9 Plano de Benefícios: salário-maternidade e salário-família.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "benef.disposicoes",
+    "materia_id": "benef",
+    "nome": "Disposições gerais dos benefícios (acumulação, revisão, pagamento)",
+    "edital_literal": "9 Plano de Benefícios: disposições gerais. 20 Decreto nº 3.048/1999.",
+    "edital_profundidade": 2
+  },
+  {
+    "id": "benef.servicos",
+    "materia_id": "benef",
+    "nome": "Serviço social e reabilitação profissional",
+    "edital_literal": "11 Serviços Previdenciários 11.1. Serviço social. 11.2 Reabilitação profissional.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "benef.lc142",
+    "materia_id": "benef",
+    "nome": "Aposentadoria da pessoa com deficiência (LC 142/2013)",
+    "edital_literal": "17 Lei Complementar nº 142/2013.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "assist.loas_bpc",
+    "materia_id": "assist",
+    "nome": "LOAS e BPC (Lei 8.742/1993 e Decreto 6.214/2007)",
+    "edital_literal": "14 Lei Orgânica da Assistência Social – LOAS. 14.1 Benefício de prestação continuada – BPC/LOAS. 14.3 Lei nº 8.742/1993. 14.5 Decreto nº 6.214/2007.",
+    "edital_profundidade": 3
+  },
+  {
+    "id": "assist.auxilio_inclusao",
+    "materia_id": "assist",
+    "nome": "Auxílio-inclusão (Lei 14.176/2021)",
+    "edital_literal": "14.2 Auxílio-Inclusão. 14.4 Lei nº 14.176/2021.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "assist.pensoes_especiais",
+    "materia_id": "assist",
+    "nome": "Pensões especiais (talidomida, seringueiros, ex-combatente, Caruaru, Césio 137, hanseníase, zika)",
+    "edital_literal": "12 Benefícios decorrentes de legislações especiais. 12.1 a 12.5, 12.7 e 12.8.",
+    "edital_profundidade": 3
+  },
+  {
+    "id": "assist.anistiado",
+    "materia_id": "assist",
+    "nome": "Aposentadoria e pensão excepcional ao anistiado político",
+    "edital_literal": "12.6. Aposentadoria e pensão excepcional ao anistiado político - Lei nº 10.559/2002.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "assist.seguro_defeso",
+    "materia_id": "assist",
+    "nome": "Seguro-defeso do pescador artesanal",
+    "edital_literal": "13 Seguro desemprego pescador artesanal – Seguro defeso – Lei nº 10.779/2003, Decreto nº 8.424/2015.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "gestao.recursos",
+    "materia_id": "gestao",
+    "nome": "Recurso das decisões administrativas",
+    "edital_literal": "8 Recurso das decisões administrativas.",
+    "edital_profundidade": 1
+  },
+  {
+    "id": "gestao.rpps_ctc",
+    "materia_id": "gestao",
+    "nome": "RPPS, CTC, contagem recíproca e compensação",
+    "edital_literal": "15. Regimes Próprios de Previdência Social. 15.1 Certidão de Tempo de Contribuição. 15.2 Contagem recíproca. 15.3 Compensação previdenciária. 15.4 Lei nº 9.796/1999. Decreto nº 10.188/2019.",
+    "edital_profundidade": 3
+  },
+  {
+    "id": "gestao.in128_cnis",
+    "materia_id": "gestao",
+    "nome": "IN PRES/INSS 128/2022 e CNIS",
+    "edital_literal": "21. Instrução Normativa PRES/INSS nº 128/2022.",
+    "edital_profundidade": 2
+  },
+  {
+    "id": "gestao.servidor_social",
+    "materia_id": "gestao",
+    "nome": "Servidor como agente de desenvolvimento social; saúde no serviço público",
+    "edital_literal": "22 O servidor público como agente de desenvolvimento social. 23 Saúde e qualidade de vida no serviço público.",
+    "edital_profundidade": 1
+  }
+]

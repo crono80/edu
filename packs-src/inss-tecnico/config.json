@@ -1,0 +1,193 @@
+{
+  "pack_version": "0.1.0",
+  "concurso": {
+    "id": "inss-tecnico-pre",
+    "nome": "INSS · Técnico do Seguro Social",
+    "orgao": "Instituto Nacional do Seguro Social",
+    "banca": "Cebraspe (provável)",
+    "cargo": "Técnico do Seguro Social",
+    "data_prova": "2027-07-18",
+    "data_prova_estimada": true,
+    "situacao": "pre_edital",
+    "fonte_edital": "https://cdn.cebraspe.org.br/concursos/inss_22/arquivos/ED_1_INSS_22_ABERTURA.PDF",
+    "curado_em": "2026-11-16"
+  },
+  "estrutura_prova": {
+    "total_questoes": 120,
+    "tipo": "certo_errado",
+    "duracao_minutos": 210,
+    "penalidade_erro": true,
+    "nota_corte_estimada": 0.5,
+    "nota_questoes_estimada": "distribuição por matéria estimada pelas provas de 2016 e 2022 (o edital fixa só 50 básicos + 70 específicos)",
+    "materias": [
+      {
+        "id": "port",
+        "nome": "Língua Portuguesa",
+        "questoes": 14,
+        "peso": 1,
+        "eliminatoria": false,
+        "min_acertos": null,
+        "tipo_default": "pratica"
+      },
+      {
+        "id": "etica",
+        "nome": "Ética no Serviço Público",
+        "questoes": 6,
+        "peso": 1,
+        "eliminatoria": false,
+        "min_acertos": null,
+        "tipo_default": "lei_seca"
+      },
+      {
+        "id": "dconst",
+        "nome": "Noções de Direito Constitucional",
+        "questoes": 8,
+        "peso": 1,
+        "eliminatoria": false,
+        "min_acertos": null,
+        "tipo_default": "lei_seca"
+      },
+      {
+        "id": "dadm",
+        "nome": "Noções de Direito Administrativo",
+        "questoes": 12,
+        "peso": 1,
+        "eliminatoria": false,
+        "min_acertos": null,
+        "tipo_default": "doutrina"
+      },
+      {
+        "id": "info",
+        "nome": "Noções de Informática",
+        "questoes": 5,
+        "peso": 1,
+        "eliminatoria": false,
+        "min_acertos": null,
+        "tipo_default": "pratica"
+      },
+      {
+        "id": "rlm",
+        "nome": "Raciocínio Lógico-Matemático",
+        "questoes": 5,
+        "peso": 1,
+        "eliminatoria": false,
+        "min_acertos": null,
+        "tipo_default": "calculo"
+      },
+      {
+        "id": "seg",
+        "nome": "Seguridade Social e Custeio",
+        "questoes": 30,
+        "peso": 1,
+        "eliminatoria": false,
+        "min_acertos": null,
+        "tipo_default": "lei_seca"
+      },
+      {
+        "id": "rgps",
+        "nome": "RGPS: Segurados e Beneficiários",
+        "questoes": 10,
+        "peso": 1,
+        "eliminatoria": false,
+        "min_acertos": null,
+        "tipo_default": "lei_seca"
+      },
+      {
+        "id": "benef",
+        "nome": "Benefícios e Serviços do RGPS",
+        "questoes": 8,
+        "peso": 1,
+        "eliminatoria": false,
+        "min_acertos": null,
+        "tipo_default": "lei_seca"
+      },
+      {
+        "id": "assist",
+        "nome": "Assistência Social e Benefícios Especiais",
+        "questoes": 15,
+        "peso": 1,
+        "eliminatoria": false,
+        "min_acertos": null,
+        "tipo_default": "lei_seca"
+      },
+      {
+        "id": "gestao",
+        "nome": "Processo e Gestão Previdenciária",
+        "questoes": 7,
+        "peso": 1,
+        "eliminatoria": false,
+        "min_acertos": null,
+        "tipo_default": "lei_seca"
+      }
+    ]
+  },
+  "edital": {
+    "pdf": "input/edital.pdf",
+    "url": "https://cdn.cebraspe.org.br/concursos/inss_22/arquivos/ED_1_INSS_22_ABERTURA.PDF",
+    "secao_inicio": "14.2.2 CONHECIMENTOS BÁSICOS",
+    "secao_fim": "QUADRO DE VAGAS"
+  },
+  "provas": [
+    {
+      "key": "inss-2022",
+      "tipo": "cargo",
+      "ano": 2022,
+      "formato": "certo_errado",
+      "total_questoes": 120,
+      "fonte": "https://cdn.cebraspe.org.br/concursos/inss_22/arquivos/760_INSS_CB1_01.PDF",
+      "partes": [
+        {
+          "caderno": "input/760_INSS_CB1_01.PDF",
+          "caderno_url": "https://cdn.cebraspe.org.br/concursos/inss_22/arquivos/760_INSS_CB1_01.PDF",
+          "gabarito": "input/Gab_Definitivo_760_INSS_CB1_01.PDF",
+          "gabarito_url": "https://cdn.cebraspe.org.br/concursos/inss_22/arquivos/Gab_Definitivo_760_INSS_CB1_01.PDF",
+          "inicio": 1,
+          "total": 50
+        },
+        {
+          "caderno": "input/760_INSS_001_01.PDF",
+          "caderno_url": "https://cdn.cebraspe.org.br/concursos/inss_22/arquivos/760_INSS_001_01.PDF",
+          "gabarito": "input/Gab_Definitivo_760_INSS_001_01.PDF",
+          "gabarito_url": "https://cdn.cebraspe.org.br/concursos/inss_22/arquivos/Gab_Definitivo_760_INSS_001_01.PDF",
+          "inicio": 51,
+          "total": 70
+        }
+      ]
+    },
+    {
+      "key": "inss-2016",
+      "tipo": "cargo",
+      "ano": 2016,
+      "formato": "certo_errado",
+      "total_questoes": 120,
+      "fonte": "https://cdn.cebraspe.org.br/concursos/INSS_2015/arquivos/234INSS_002_01_Caderno_ALGA.PDF",
+      "partes": [
+        {
+          "caderno": "input/234INSS_002_01_Caderno_ALGA.PDF",
+          "caderno_url": "https://cdn.cebraspe.org.br/concursos/INSS_2015/arquivos/234INSS_002_01_Caderno_ALGA.PDF",
+          "gabarito": "input/Gab_Definitivo_234INSS_002_01.PDF",
+          "gabarito_url": "https://cdn.cebraspe.org.br/concursos/inss_2015/arquivos/Gab_Definitivo_234INSS_002_01.PDF",
+          "inicio": 1,
+          "total": 120
+        }
+      ]
+    }
+  ],
+  "notas_banca": {
+    "estilo": [
+      "Cebraspe: itens certo/errado; cada erro anula um acerto",
+      "situações hipotéticas aplicando a lei ao caso concreto",
+      "deixar em branco é estratégia quando a confiança é baixa"
+    ],
+    "formato_questao": "certo ou errado, 120 itens (50 básicos + 70 específicos)",
+    "ratio_teoria_questoes_sugerido": null,
+    "recomendacoes_estudo": [
+      "lei seca de 8.212, 8.213 e Decreto 3.048",
+      "treinar itens certo/errado com nota líquida"
+    ]
+  },
+  "classificacao": {
+    "modelo": "manual",
+    "confianca_minima": 0.6
+  }
+}

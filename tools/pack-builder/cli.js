@@ -1,0 +1,266 @@
+#!/usr/bin/env node
+// Pack builder CLI. Workspace layout:
+//   <dir>/config.json            concurso, estrutura_prova (com aliases), provas, edital, notas_banca
+//   <dir>/input/*.pdf            edital, cadernos e gabaritos
+//   <dir>/work/*.txt             texto extraído
+//   <dir>/work/provas.json       questões parseadas + gabarito
+//   <dir>/work/edital.json       matérias/itens do edital
+//   <dir>/work/assuntos.json     rascunho de assuntos (edite à vontade)
+//   <dir>/work/classification.json  questão -> assunto (LLM ou manual)
+//   <dir>/overrides.json         ajustes por assunto (carga, tipo, prereq, volatil)
+//   -> packs/<id>.json + <dir>/review.md
+//
+// Commands: init | extract | parse | classify | assemble | all
+import { mkdir, readFile, writeFile, access } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { extractText } from "./lib/pdf.js";
+import { parseProva, mergeGabarito } from "./lib/parse-prova.js";
+import { parseProvaCE } from "./lib/parse-prova-ce.js";
+import { readWords, wordsToLines } from "./lib/bbox.js";
+import { parseGabarito } from "./lib/parse-gabarito.js";
+import { parseEdital, proposeAssuntos, sliceSection } from "./lib/parse-edital.js";
+import { assemblePack, renderReview } from "./lib/assemble.js";
+import { validatePack, formatIssues } from "../../engine/schema.js";
+
+const here = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(here, "..", "..");
+const [, , cmd, dirArg, ...rest] = process.argv;
+const flags = Object.fromEntries(rest.filter((a) => a.startsWith("--")).map((a) => a.slice(2).split("=")).map(([k, v]) => [k, v ?? true]));
+
+const exists = (p) => access(p).then(() => true, () => false);
+const readJSON = async (p, fallback) => ((await exists(p)) ? JSON.parse(await readFile(p, "utf8")) : fallback);
+const writeJSON = (p, data) => writeFile(p, JSON.stringify(data, null, 2) + "\n");
+const log = (...a) => console.log(...a);
+
+const CONFIG_TEMPLATE = {
+  pack_version: "0.1.0",
+  concurso: { id: "orgao-ano", nome: "Nome do concurso", orgao: "Órgão", banca: "BANCA", cargo: "Cargo", data_prova: "2027-01-31", fonte_edital: "https://…", curado_em: "2026-11-10" },
+  estrutura_prova: {
+    total_questoes: 60,
+    tipo: "multipla_escolha_5",
+    penalidade_erro: false,
+    nota_corte_estimada: 0.6,
+    materias: [
+      { id: "port", nome: "Língua Portuguesa", aliases: ["LÍNGUA PORTUGUESA", "PORTUGUÊS"], questoes: 10, peso: 1, eliminatoria: false, min_acertos: null, tipo_default: "pratica" },
+      { id: "dadm", nome: "Direito Administrativo", aliases: ["NOÇÕES DE DIREITO ADMINISTRATIVO"], questoes: 10, peso: 2, eliminatoria: false, min_acertos: null, tipo_default: "lei_seca" },
+    ],
+  },
+  edital: { pdf: "input/edital.pdf", secao_inicio: "TÉCNICO JUDICIÁRIO – ÁREA ADMINISTRATIVA", secao_fim: null },
+  provas: [
+    { key: "cargo-2022", tipo: "cargo", ano: 2022, caderno: "input/prova-2022.pdf", gabarito: "input/gabarito-2022.pdf", fonte: "https://…", total_questoes: 60 },
+    { key: "banca-outro-2025", tipo: "banca", concurso: "outro-2025", ano: 2025, caderno: "input/prova-outro-2025.pdf", gabarito: "input/gabarito-outro-2025.pdf", fonte: "https://…", total_questoes: 60 },
+  ],
+  notas_banca: { estilo: [], formato_questao: "assertiva única, 5 alternativas", ratio_teoria_questoes_sugerido: null, recomendacoes_estudo: [] },
+  classificacao: { modelo: "claude-opus-5-5", lote: 10, effort: "medium", confianca_minima: 0.6 },
+};
+
+async function loadWorkspace(dir) {
+  const root = path.resolve(dir);
+  const config = await readJSON(path.join(root, "config.json"), null);
+  if (!config) throw new Error(`config.json não encontrado em ${root} (rode: init)`);
+  const work = path.join(root, "work");
+  await mkdir(work, { recursive: true });
+  return { root, work, config };
+}
+
+async function cmdInit(dir) {
+  const root = path.resolve(dir);
+  await mkdir(path.join(root, "input"), { recursive: true });
+  await mkdir(path.join(root, "work"), { recursive: true });
+  const cfgPath = path.join(root, "config.json");
+  if (await exists(cfgPath)) throw new Error(`${cfgPath} já existe`);
+  await writeJSON(cfgPath, CONFIG_TEMPLATE);
+  await writeJSON(path.join(root, "overrides.json"), { assuntos: {} });
+  log(`Workspace criado em ${root}. Edite config.json e coloque os PDFs em input/.`);
+}
+
+const txtOf = (work, rel) => path.join(work, path.basename(rel).replace(/\.(pdf|txt)$/i, "") + ".txt");
+
+// a prova may come in parts (Cebraspe P1/P2 cadernos), each { caderno, gabarito, inicio, total }
+const partsOf = (p) => p.partes ?? [{ caderno: p.caderno, caderno_url: p.caderno_url, gabarito: p.gabarito, gabarito_url: p.gabarito_url, inicio: 1, total: p.total_questoes }];
+const linesOf = (work, rel) => path.join(work, path.basename(rel).replace(/\.(pdf|txt)$/i, "") + ".lines.json");
+
+async function cmdExtract(dir) {
+  const { root, work, config } = await loadWorkspace(dir);
+  const ceCadernos = new Set(config.provas.filter((p) => p.formato === "certo_errado").flatMap((p) => partsOf(p).map((x) => x.caderno)));
+  for (const rel of ceCadernos) {
+    const src = path.join(root, rel);
+    if (!(await exists(src))) continue;
+    const lines = wordsToLines(await readWords(src), { columns: 2 }).map(({ page, col, x0, words }) => ({ page, col, x0, text: words.map((w) => w.t).join(" "), words: words.map((w) => ({ t: w.t, x0: w.x0, x1: w.x1 })) }));
+    await writeJSON(linesOf(work, rel), lines);
+    log(`- ${rel}: ${lines.length} linhas (bbox, 2 colunas) -> ${path.relative(root, linesOf(work, rel))}`);
+  }
+  const files = [config.edital?.pdf, ...config.provas.flatMap((p) => partsOf(p).flatMap((x) => [p.formato === "certo_errado" ? null : x.caderno, x.gabarito]))].filter(Boolean);
+  for (const rel of files) {
+    const src = path.join(root, rel);
+    if (!(await exists(src))) {
+      log(`- ${rel}: ausente (pulado)`);
+      continue;
+    }
+    const out = txtOf(work, rel);
+    if (/\.txt$/i.test(rel)) {
+      await writeFile(out, await readFile(src, "utf8"));
+      log(`- ${rel}: copiado (texto)`);
+      continue;
+    }
+    const prova = config.provas.find((p) => p.caderno === rel);
+    const isGabarito = config.provas.some((p) => partsOf(p).some((x) => x.gabarito === rel)); // tables keep their rows only in layout mode
+    const { text, backend } = await extractText(src, { backend: flags.backend ?? "auto", columns: prova?.colunas ?? 1, layout: isGabarito });
+    await writeFile(out, text);
+    log(`- ${rel}: ${text.length} caracteres via ${backend} -> ${path.relative(root, out)}`);
+  }
+}
+
+async function cmdParse(dir) {
+  const { root, work, config } = await loadWorkspace(dir);
+  const materias = config.estrutura_prova.materias;
+  // sections the exam has but this cargo does not (their questions are kept out of the pack)
+  const parseMaterias = [...materias, ...(config.secoes_ignoradas?.length ? [{ id: "_fora", nome: "_fora", aliases: config.secoes_ignoradas }] : [])];
+  const provas = [];
+  for (const p of config.provas) {
+    if (p.formato === "certo_errado") {
+      const questoes = [];
+      const anomalias = [];
+      let gabTotal = 0;
+      for (const part of partsOf(p)) {
+        const lp = linesOf(work, part.caderno);
+        if (!(await exists(lp))) {
+          log(`- ${p.key}: linhas de ${part.caderno} ausentes (rode extract)`);
+          continue;
+        }
+        const parsed = parseProvaCE(await readJSON(lp, []), { inicio: part.inicio ?? 1, total: part.total });
+        let merged = { questoes: parsed.questoes.map((q) => ({ ...q, gabarito: null, anulada: false })) };
+        if (part.gabarito && (await exists(txtOf(work, part.gabarito)))) {
+          const gab = parseGabarito(await readFile(txtOf(work, part.gabarito), "utf8"));
+          gabTotal += gab.total;
+          merged = mergeGabarito(parsed.questoes, gab);
+        }
+        questoes.push(...merged.questoes);
+        anomalias.push(...parsed.anomalias);
+      }
+      provas.push({ key: p.key, tipo: p.tipo, ano: p.ano, concurso: p.concurso, fonte: p.fonte, total_questoes: p.total_questoes, formato: "certo_errado", questoes, anomalias, secoes: [], sem_gabarito: questoes.filter((q) => q.gabarito === null && !q.anulada).map((q) => q.numero) });
+      log(`- ${p.key}: ${questoes.length} itens certo/errado, gabarito ${gabTotal}, anuladas ${questoes.filter((q) => q.anulada).length}, anomalias ${anomalias.length}`);
+      continue;
+    }
+    const cadPath = txtOf(work, p.caderno);
+    if (!(await exists(cadPath))) {
+      log(`- ${p.key}: texto do caderno ausente (rode extract)`);
+      continue;
+    }
+    const parsed = parseProva(await readFile(cadPath, "utf8"), { materias: parseMaterias });
+    let merged = { questoes: parsed.questoes.map((q) => ({ ...q, gabarito: null, anulada: false })), semGabarito: [] };
+    let gab = null;
+    if (p.gabarito && (await exists(txtOf(work, p.gabarito)))) {
+      gab = parseGabarito(await readFile(txtOf(work, p.gabarito), "utf8"));
+      merged = mergeGabarito(parsed.questoes, gab);
+    }
+    provas.push({ key: p.key, tipo: p.tipo, ano: p.ano, concurso: p.concurso, fonte: p.fonte, total_questoes: p.total_questoes, questoes: merged.questoes, anomalias: parsed.anomalias, secoes: parsed.secoes, sem_gabarito: merged.semGabarito });
+    log(`- ${p.key}: ${parsed.questoes.length} questões (${parsed.questoes.filter((q) => q.completa).length} completas), ${parsed.secoes.length} seções, gabarito ${gab ? gab.total : 0}, anomalias ${parsed.anomalias.length}`);
+  }
+  await writeJSON(path.join(work, "provas.json"), provas);
+
+  if (config.edital?.pdf && (await exists(txtOf(work, config.edital.pdf)))) {
+    const full = await readFile(txtOf(work, config.edital.pdf), "utf8");
+    const slice = sliceSection(full, { inicio: config.edital.secao_inicio, fim: config.edital.secao_fim });
+    if (slice === null) log(`- edital: seção "${config.edital.secao_inicio}" não encontrada; usando o texto inteiro`);
+    const edital = parseEdital(slice ?? full, { materias });
+    await writeJSON(path.join(work, "edital.json"), edital);
+    const assuntosPath = path.join(work, "assuntos.json");
+    if ((await exists(assuntosPath)) && !flags.force) log(`- edital: assuntos.json já existe, mantido (use --force para regenerar)`);
+    else await writeJSON(assuntosPath, proposeAssuntos(edital));
+    for (const m of edital.materias) log(`- edital/${m.id}: ${m.itens.length} itens (${m.modo})`);
+    if (edital.semMateria.length) log(`- edital: ${edital.semMateria.length} linha(s) fora de qualquer matéria`);
+  } else log("- edital: texto ausente (pulado)");
+  log(`Saída em ${path.relative(process.cwd(), work)}/`);
+}
+
+async function cmdClassify(dir) {
+  const { work, config } = await loadWorkspace(dir);
+  const provas = await readJSON(path.join(work, "provas.json"), null);
+  const assuntos = await readJSON(path.join(work, "assuntos.json"), null);
+  if (!provas || !assuntos) throw new Error("rode parse antes de classify");
+  const outPath = path.join(work, "classification.json");
+  const existing = await readJSON(outPath, {});
+  const pendentes = provas.reduce((s, p) => s + p.questoes.filter((q) => !q.anulada && !(`${p.key}#${q.numero}` in existing)).length, 0);
+  log(`${pendentes} questão(ões) pendente(s) de classificação em ${assuntos.length} assuntos.`);
+  if (flags["dry-run"] || pendentes === 0) return;
+  const { classifyQuestions } = await import("./lib/classify.js");
+  const c = config.classificacao ?? {};
+  const { usage } = await classifyQuestions({
+    provas,
+    assuntos,
+    existing,
+    options: { model: flags.model ?? c.modelo, batchSize: Number(flags.lote ?? c.lote ?? 10), effort: flags.effort ?? c.effort ?? "medium" },
+    onBatch: async ({ out, prova, materia, feitas, total }) => {
+      await writeJSON(outPath, out);
+      log(`  ${prova}/${materia}: ${feitas}/${total}`);
+    },
+  });
+  log(`Lotes: ${usage.batches} · tokens entrada ${usage.input_tokens} · saída ${usage.output_tokens} · erros ${usage.erros.length}`);
+  for (const e of usage.erros) log(`  erro ${e.prova} q${e.de}-${e.ate}: ${e.erro}`);
+}
+
+async function cmdAssemble(dir) {
+  const { root, work, config } = await loadWorkspace(dir);
+  const provas = await readJSON(path.join(work, "provas.json"), []);
+  const assuntos = await readJSON(path.join(work, "assuntos.json"), null);
+  if (!assuntos) throw new Error("work/assuntos.json ausente (rode parse)");
+  const classification = await readJSON(path.join(work, "classification.json"), {});
+  const overrides = await readJSON(path.join(root, "overrides.json"), { assuntos: {} });
+  const extraItems = await readJSON(path.join(root, "itens_extra.json"), []);
+  const { pack, review } = assemblePack({ config, assuntos, provas, classification, overrides, extraItems, options: { confiancaMinima: config.classificacao?.confianca_minima ?? 0.6 } });
+  const v = validatePack(pack);
+  const outPath = flags.out ? path.resolve(String(flags.out)) : path.join(repoRoot, "packs", `${pack.concurso.id}.json`);
+  await writeJSON(outPath, pack);
+  await writeFile(path.join(root, "review.md"), renderReview(review, pack) + (v.ok ? "" : `\n## Erros de validação\n\n\`\`\`\n${formatIssues(v.errors)}\n\`\`\`\n`));
+  log(`Pack: ${path.relative(process.cwd(), outPath)} · válido: ${v.ok} (${v.errors.length} erro(s), ${v.warnings.length} aviso(s))`);
+  if (!v.ok) log(formatIssues(v.errors));
+  log(`Revisão: ${path.relative(process.cwd(), path.join(root, "review.md"))}`);
+}
+
+async function cmdFetch(dir) {
+  const { root, config } = await loadWorkspace(dir);
+  await mkdir(path.join(root, "input"), { recursive: true });
+  const jobs = [];
+  if (config.edital?.url) jobs.push([config.edital.pdf, config.edital.url]);
+  for (const p of config.provas) {
+    for (const x of partsOf(p)) {
+      if (x.caderno_url) jobs.push([x.caderno, x.caderno_url]);
+      if (x.gabarito_url) jobs.push([x.gabarito, x.gabarito_url]);
+    }
+  }
+  const { execFile: ef } = await import("node:child_process");
+  const run = (args) => new Promise((res, rej) => ef("curl", args, (e, out) => (e ? rej(e) : res(out))));
+  for (const [rel, url] of jobs) {
+    const dest = path.join(root, rel);
+    if ((await exists(dest)) && !flags.force) {
+      log(`- ${rel}: já existe`);
+      continue;
+    }
+    try {
+      const out = await run(["-sS", "-L", "--fail", "--max-time", "120", "-o", dest, "-w", "%{http_code} %{size_download}", url]);
+      log(`- ${rel}: ${out}`);
+    } catch (err) {
+      log(`- ${rel}: falhou (${String(err.message ?? err).split("\n")[0]})`);
+    }
+  }
+}
+
+const COMMANDS = { fetch: cmdFetch, init: cmdInit, extract: cmdExtract, parse: cmdParse, classify: cmdClassify, assemble: cmdAssemble };
+COMMANDS.all = async (dir) => {
+  await cmdFetch(dir);
+  await cmdExtract(dir);
+  await cmdParse(dir);
+  await cmdClassify(dir);
+  await cmdAssemble(dir);
+};
+
+if (!cmd || !COMMANDS[cmd] || !dirArg) {
+  console.log("uso: node tools/pack-builder/cli.js <init|fetch|extract|parse|classify|assemble|all> <workspace-dir> [--backend=pdftotext|pdfjs] [--force] [--dry-run] [--model=…] [--lote=10] [--effort=low|medium|high]");
+  process.exit(cmd ? 1 : 0);
+}
+COMMANDS[cmd](dirArg).catch((err) => {
+  console.error(`erro: ${err.message ?? err}`);
+  process.exit(1);
+});
