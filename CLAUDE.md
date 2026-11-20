@@ -143,10 +143,9 @@ nos dois jobs. O ambiente cloud não acessa `github.io`.
 
 ## Em aberto
 
-- **Dono:** ativar o Pages neste repositório (Settings → Pages → Source: GitHub Actions) e cadastrar
-  `https://crono80.github.io` nas origens autorizadas do cliente OAuth no Google Cloud. Depois do primeiro
-  deploy com `success`, desativar o site antigo (Settings → Pages em `thiago-harry/web`) e arquivar
-  aquele repositório.
+- **Dono:** cadastrar `https://crono80.github.io` nas origens autorizadas do cliente OAuth no Google
+  Cloud; desativar o site antigo (Settings → Pages em `thiago-harry/web`) e arquivar aquele repositório.
+  (Pages deste repositório ativo desde 20/11/2026, primeiro deploy com `success`.)
 - Domínio próprio; verificação do Google; checkout; preços finais; atualização do pack INSS quando o
   edital sair.
 - PDF: o comparativo ainda mostra "Cobertura com Xh de conteúdo" (%); alinhar ao tempo economizado se o
