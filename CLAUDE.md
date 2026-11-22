@@ -149,7 +149,9 @@ nos dois jobs. O ambiente cloud não acessa `github.io`.
 
 **Conteúdo e vendas**
 - E-mail público (app, vendas, política, Kiwify): `contato@cronograma80.com.br`. O e-mail pessoal do dono não
-  aparece em nada público. A política identifica o controlador só pelo e-mail (decisão do dono).
+  aparece em nada público.
+- **Fornecedor** (Decreto 7.962/2013, art. 2º): razão social, CNPJ e endereço no rodapé da home, de `/inss/` e
+  na política (como controlador). Página de concurso nova repete o rodapé.
 - Nada de depoimentos inventados nem de preço "de" que não foi praticado.
 - SEO de cada página de concurso: title/description únicos, canonical, Open Graph, JSON-LD Product/Offer
   (+ FAQPage espelhando o FAQ visível) e a seção indexável "O que mais cai" (resumo estático do dossiê).
@@ -175,13 +177,9 @@ nos dois jobs. O ambiente cloud não acessa `github.io`.
 
 ## Em aberto
 
-- Identificação no site (Decreto 7.962/2013, art. 2º): nome/CPF e endereço do fornecedor na página de vendas;
-  adiado pelo dono em 20/11.
 - Supabase está no Free (pausa após ~7 dias sem atividade): o workflow `keepalive.yml` mitiga; avaliar Pro
   com volume de vendas.
 - Atualização do pack INSS quando o edital sair.
-- PDF: o comparativo ainda mostra "Cobertura com Xh de conteúdo" (%); alinhar ao tempo economizado se o
-  dono pedir.
 
 Resolvido em 20/11/2026: domínio `cronograma80.com.br` no Pages com HTTPS; app Google "Em produção";
 Kiwify (Essencial e Completo, webhook, `KIWIFY_TOKEN`, `products`) e `CHECKOUT` preenchido; e-mail público
