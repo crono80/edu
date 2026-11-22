@@ -25,7 +25,9 @@ import {
   Coffee,
   FileDown,
   Lock,
+  LogIn,
   LogOut,
+  X,
   PencilLine,
   PlayCircle,
   Repeat,
@@ -144,6 +146,7 @@ function loadState() {
 /* ───────────────────────────── Peças de UI ───────────────────────────── */
 
 const APP_CSS = `
+.cg-login { background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(4px); }
 .cg-demo { background: var(--accent-soft); border: 2px solid var(--accent); color: var(--ink); }
 .cg-demo-col { background: var(--accent-soft); }
 .cg-tier { background: var(--sunken); color: var(--ink-2); }
@@ -1657,7 +1660,7 @@ function LockCard({ need, title, text, access }) {
           </p>
           <p className="text-sm font-bold">{title}</p>
           <p className="text-sm cg-ink2">{text}</p>
-          {signedOut ? <p className="mt-1 text-xs cg-muted">Já comprou? Entre com a conta Google do e-mail da compra (no topo da página).</p> : null}
+          {signedOut ? <p className="mt-1 text-xs cg-muted">Já comprou? <a className="cg-link font-semibold" href="#entrar">Entrar</a></p> : null}
         </div>
       </div>
       <a href={href} className={`${need === "completo" ? "cg-btn-primary" : "cg-btn-ghost"} inline-flex h-10 items-center rounded-lg px-4 text-sm font-bold`}>
@@ -1690,12 +1693,54 @@ function DemoCell({ v }) {
 }
 
 /** Big notice at the top of the page while there is no purchase: what the demo shows and what each plan adds. */
+const DEMO_KEY = "cpv:demo-banner";
+function readDemoOpen() {
+  try {
+    return window.localStorage.getItem(DEMO_KEY) !== "closed";
+  } catch {
+    return true;
+  }
+}
+
 function DemoBanner({ access }) {
+  const [open, setOpen] = useState(readDemoOpen);
+  const toggle = () => {
+    setOpen((o) => {
+      try {
+        window.localStorage.setItem(DEMO_KEY, o ? "closed" : "open");
+      } catch {
+        /* ignore */
+      }
+      return !o;
+    });
+  };
   if (access.status === "loading") return null;
+  if (!open)
+    return (
+      <section aria-label="Modo demonstração" className="cg-demo flex flex-wrap items-center justify-between gap-3 rounded-xl px-4 py-3">
+        <p className="min-w-0 text-sm">
+          <b>Modo demonstração:</b> recursos limitados.
+        </p>
+        <div className="flex flex-wrap items-center gap-2">
+          <button type="button" onClick={toggle} aria-expanded="false" className="cg-btn-ghost inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold">
+            O que cada plano libera
+            <ChevronDown className="h-4 w-4" aria-hidden="true" />
+          </button>
+          <a href={checkoutUrl("completo")} className="cg-btn-primary inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-bold">
+            <ShoppingCart className="h-4 w-4" aria-hidden="true" />
+            Comprar o Completo · R$ {PRICES.completo}
+          </a>
+        </div>
+      </section>
+    );
   return (
-    <section aria-labelledby="demo-title" className="cg-demo rounded-2xl p-4 md:p-6">
+    <section aria-labelledby="demo-title" className="cg-demo relative rounded-2xl p-4 md:p-6">
+      <button type="button" onClick={toggle} aria-expanded="true" aria-label="Recolher o quadro da demonstração" className="cg-btn-ghost absolute right-3 top-3 inline-flex h-9 items-center gap-1 rounded-lg px-2.5 text-xs font-semibold">
+        Recolher
+        <ChevronDown className="h-4 w-4 rotate-180" aria-hidden="true" />
+      </button>
       <p className="cg-eyebrow" style={{ color: "inherit" }}>Modo demonstração</p>
-      <h2 id="demo-title" className="mt-1 text-xl font-extrabold tracking-tight md:text-2xl">
+      <h2 id="demo-title" className="mt-1 pr-24 text-xl font-extrabold tracking-tight md:text-2xl">
         Você está vendo a versão de demonstração, com recursos limitados.
       </h2>
       <p className="mt-1 max-w-3xl text-sm md:text-base">
@@ -1703,23 +1748,23 @@ function DemoBanner({ access }) {
         A agenda completa, o nível e o PDF estão nos dois planos. Simulado, reorganização e Google Agenda estão só no Completo.
       </p>
       <div className="mt-4 grid gap-4 lg:grid-cols-5 lg:items-start">
-        <div className="cg-surface order-2 overflow-hidden rounded-xl border cg-line lg:order-1 lg:col-span-3">
+        <div className="cg-surface order-2 min-w-0 overflow-x-auto rounded-xl border cg-line lg:order-1 lg:col-span-3">
           <table className="w-full text-left text-xs sm:text-sm">
             <thead>
               <tr className="cg-sunken text-xs">
-                <th className="px-3 py-2 font-semibold">Recurso</th>
-                <th className="px-2 py-2 text-center font-semibold">Demo</th>
-                <th className="px-2 py-2 text-center font-semibold">Essencial<br /><span className="cg-num">R$ {PRICES.essencial}</span></th>
-                <th className="cg-demo-col px-2 py-2 text-center font-bold">Completo<br /><span className="cg-num">R$ {PRICES.completo}</span></th>
+                <th className="px-2.5 py-2 font-semibold sm:px-3">Recurso</th>
+                <th className="px-1.5 py-2 text-center font-semibold sm:px-2">Demo</th>
+                <th className="px-1.5 py-2 text-center font-semibold sm:px-2">Essencial<br /><span className="cg-num whitespace-nowrap">R$ {PRICES.essencial}</span></th>
+                <th className="cg-demo-col px-1.5 py-2 text-center font-bold sm:px-2">Completo<br /><span className="cg-num whitespace-nowrap">R$ {PRICES.completo}</span></th>
               </tr>
             </thead>
             <tbody>
               {DEMO_ROWS.map(([label, demo, ess, full]) => (
                 <tr key={label} className="border-t cg-line">
-                  <td className="px-3 py-2">{label}</td>
-                  <td className="px-2 py-2 text-center"><DemoCell v={demo} /></td>
-                  <td className="px-2 py-2 text-center"><DemoCell v={ess} /></td>
-                  <td className="cg-demo-col px-2 py-2 text-center"><DemoCell v={full} /></td>
+                  <td className="px-2.5 py-2 sm:px-3">{label}</td>
+                  <td className="px-1.5 py-2 sm:px-2 text-center"><DemoCell v={demo} /></td>
+                  <td className="px-1.5 py-2 sm:px-2 text-center"><DemoCell v={ess} /></td>
+                  <td className="cg-demo-col px-1.5 py-2 sm:px-2 text-center"><DemoCell v={full} /></td>
                 </tr>
               ))}
             </tbody>
@@ -1736,20 +1781,72 @@ function DemoBanner({ access }) {
           <p className="text-xs">
             Pagamento único, garantia de 7 dias. <a className="cg-link font-semibold" href={SALES_URL}>Comparar os planos</a>
           </p>
-          {access.status !== "signed" ? <p className="text-xs">Já comprou? Entre com a conta Google do e-mail da compra, no topo da página.</p> : null}
+          {access.status !== "signed" ? <p className="text-xs">Já comprou? <a className="cg-link font-semibold" href="#entrar">Entrar</a></p> : null}
         </div>
       </div>
     </section>
   );
 }
 
-function AccountBar({ access, onError }) {
+/** Login screen (#entrar): Google sign-in for those who already bought. Closes by itself once signed in. */
+function LoginScreen({ access, onError, onClose }) {
   const btnRef = useRef(null);
   useEffect(() => {
-    if (access.status === "anon") renderGoogleButton(btnRef.current, { onError }).catch((e) => onError?.(e.message));
+    if (access.status === "anon") renderGoogleButton(btnRef.current, { onError, size: "large", text: "continue_with", width: 280 }).catch((e) => onError?.(e.message));
   }, [access.status]);
+  useEffect(() => {
+    if (access.status === "signed") onClose();
+  }, [access.status]);
+  useEffect(() => {
+    const onKey = (e) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+  return (
+    <div role="dialog" aria-modal="true" aria-labelledby="login-title" className="cg-login fixed inset-0 z-50 overflow-y-auto">
+      <div className="cg-gutter mx-auto flex min-h-full max-w-md flex-col justify-center py-10">
+        <div className="cg-surface relative rounded-2xl border cg-line p-6 shadow-sm md:p-8">
+          <button type="button" onClick={onClose} aria-label="Fechar" className="cg-btn-ghost absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-lg">
+            <X className="h-4 w-4" aria-hidden="true" />
+          </button>
+          <span className="cg-brand grid h-10 w-10 place-items-center rounded-md" aria-hidden="true">
+            <CalendarCheck className="h-5 w-5" />
+          </span>
+          <h1 id="login-title" className="mt-4 text-2xl font-extrabold tracking-tight">Entrar</h1>
+          <p className="mt-1 text-sm cg-ink2">Use a conta Google do <b>mesmo e-mail da compra</b>. A liberação leva alguns minutos depois do pagamento aprovado.</p>
+          <div className="mt-5 flex min-h-11 justify-center">
+            {access.status === "loading" ? <p className="text-sm cg-muted">Carregando…</p> : <div ref={btnRef} aria-label="Continuar com Google" />}
+          </div>
+          <p className="mt-5 text-xs cg-muted">
+            Usamos só o seu nome e e-mail para conferir a compra. <a className="cg-link" href="../privacidade/">Política de privacidade</a>
+          </p>
+          <div className="mt-5 border-t cg-line pt-4 text-sm">
+            <p className="font-semibold">Ainda não comprou?</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <a href={SALES_URL} className="cg-btn-primary inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-bold">
+                <ShoppingCart className="h-4 w-4" aria-hidden="true" />
+                Ver os planos
+              </a>
+              <button type="button" onClick={onClose} className="cg-btn-ghost inline-flex h-9 items-center rounded-lg px-3 text-xs font-semibold">
+                Voltar para a demonstração
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AccountBar({ access }) {
   if (access.status === "loading") return null;
-  if (access.status === "anon") return <div ref={btnRef} className="flex h-9 items-center" aria-label="Entrar com Google" />;
+  if (access.status === "anon")
+    return (
+      <a href="#entrar" className="cg-btn-ghost inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-bold">
+        <LogIn className="h-4 w-4" aria-hidden="true" />
+        Entrar
+      </a>
+    );
   return (
     <div className="flex min-w-0 items-center gap-2 text-xs">
       <span className="hidden min-w-0 truncate cg-ink2 sm:inline" title={access.email ?? ""}>
@@ -1866,6 +1963,16 @@ export default function App() {
   const access = useAccess(pack.concurso.id);
   const can = capabilities(access.plan);
   const [loginError, setLoginError] = useState(null);
+  const [loginOpen, setLoginOpen] = useState(() => typeof window !== "undefined" && window.location.hash === "#entrar");
+  useEffect(() => {
+    const onHash = () => setLoginOpen(window.location.hash === "#entrar");
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
+  const closeLogin = () => {
+    if (window.location.hash === "#entrar") history.replaceState(null, "", window.location.pathname + window.location.search);
+    setLoginOpen(false);
+  };
   const [state, setState] = useState(loadState);
   const [expanded, setExpanded] = useState(() => new Set());
   const [week, setWeekState] = useState(null); // null = the week that contains today
@@ -2158,6 +2265,7 @@ export default function App() {
   return (
     <div className="cg-app min-h-screen">
       <style>{CSS + EXTRA_CSS + APP_CSS}</style>
+      {loginOpen && access.status !== "signed" ? <LoginScreen access={access} onError={setLoginError} onClose={closeLogin} /> : null}
 
       <header className="cg-header cg-surface border-b cg-line">
         <div className="cg-gutter cg-wrap flex items-center gap-4 py-3">
@@ -2200,7 +2308,7 @@ export default function App() {
                 Comprar
               </a>
             ) : null}
-            <AccountBar access={access} onError={setLoginError} />
+            <AccountBar access={access} />
           </div>
         </div>
       </header>

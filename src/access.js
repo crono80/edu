@@ -20,7 +20,7 @@ function randomNonce() {
 }
 
 /** Renders Google's "Sign in" button in `el`. Resolves when the button is on screen. */
-export async function renderGoogleButton(el, { onError } = {}) {
+export async function renderGoogleButton(el, { onError, size = "medium", text = "signin_with", width } = {}) {
   if (!supabase || !GOOGLE_CLIENT_ID || !el) return;
   const google = await loadGis();
   const raw = randomNonce();
@@ -34,7 +34,7 @@ export async function renderGoogleButton(el, { onError } = {}) {
     },
   });
   el.innerHTML = "";
-  google.accounts.id.renderButton(el, { type: "standard", theme: "outline", size: "medium", text: "signin_with", shape: "pill", locale: "pt-BR" });
+  google.accounts.id.renderButton(el, { type: "standard", theme: "outline", size, text, shape: "pill", locale: "pt-BR", ...(width ? { width } : {}) });
 }
 
 export async function signOut() {
