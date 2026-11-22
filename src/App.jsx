@@ -149,6 +149,7 @@ const APP_CSS = `
 .cg-login { background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(4px); }
 .cg-demo { background: var(--accent-soft); border: 2px solid var(--accent); color: var(--ink); }
 .cg-demo-col { background: var(--accent-soft); }
+.cg-demo-col-head { box-shadow: inset 0 3px 0 var(--accent); color: var(--accent-ink); }
 .cg-tier { background: var(--sunken); color: var(--ink-2); }
 .cg-demo-full { background: var(--good-soft); color: var(--good); }
 .cg-demo-limited { background: var(--warn-soft); color: var(--ink); border: 1px solid var(--warn-line); }
@@ -1715,60 +1716,59 @@ function DemoBanner({ access }) {
     });
   };
   if (access.status === "loading") return null;
-  if (!open)
-    return (
-      <section aria-label="Modo demonstração" className="cg-demo flex flex-wrap items-center justify-between gap-3 rounded-xl px-4 py-3">
-        <p className="min-w-0 text-sm">
-          <b>Modo demonstração:</b> recursos limitados.
-        </p>
-        <div className="flex flex-wrap items-center gap-2">
-          <button type="button" onClick={toggle} aria-expanded="false" className="cg-btn-ghost inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold">
-            O que cada plano libera
-            <ChevronDown className="h-4 w-4" aria-hidden="true" />
-          </button>
-          <a href={checkoutUrl("completo")} className="cg-btn-primary inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-bold">
-            <ShoppingCart className="h-4 w-4" aria-hidden="true" />
-            Comprar o Completo · R$ {PRICES.completo}
-          </a>
-        </div>
-      </section>
-    );
   return (
     <section aria-labelledby="demo-title" className="cg-demo relative rounded-2xl p-4 md:p-6">
-      <button type="button" onClick={toggle} aria-expanded="true" aria-label="Recolher o quadro da demonstração" className="cg-btn-ghost absolute right-3 top-3 inline-flex h-9 items-center gap-1 rounded-lg px-2.5 text-xs font-semibold">
-        Recolher
-        <ChevronDown className="h-4 w-4 rotate-180" aria-hidden="true" />
-      </button>
+      {open ? (
+        <button type="button" onClick={toggle} aria-expanded="true" aria-label="Recolher o quadro da demonstração" className="cg-btn-ghost absolute right-3 top-3 inline-flex h-9 items-center gap-1 rounded-lg px-2.5 text-xs font-semibold">
+          Recolher
+          <ChevronDown className="h-4 w-4 rotate-180" aria-hidden="true" />
+        </button>
+      ) : null}
       <p className="cg-eyebrow" style={{ color: "inherit" }}>Modo demonstração</p>
-      <h2 id="demo-title" className="mt-1 pr-24 text-xl font-extrabold tracking-tight md:text-2xl">
+      <h2 id="demo-title" className={`mt-1 text-lg font-extrabold tracking-tight md:text-2xl ${open ? "pr-24" : ""}`}>
         Você está vendo a versão de demonstração, com recursos limitados.
       </h2>
       <p className="mt-1 max-w-3xl text-sm md:text-base">
         Os números e a agenda usam os dados reais do concurso, mas a demonstração mostra só a primeira semana e não se ajusta ao seu nível.
         A agenda completa, o nível e o PDF estão nos dois planos. Simulado, reorganização e Google Agenda estão só no Completo.
       </p>
+      {open ? null : (
+        <button type="button" onClick={toggle} aria-expanded="false" className="cg-btn-ghost mt-3 inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold">
+          O que cada plano libera
+          <ChevronDown className="h-4 w-4" aria-hidden="true" />
+        </button>
+      )}
+      {open ? (
       <div className="mt-4 grid gap-4 lg:grid-cols-5 lg:items-start">
-        <div className="cg-surface order-2 min-w-0 overflow-x-auto rounded-xl border cg-line lg:order-1 lg:col-span-3">
-          <table className="w-full text-left text-xs sm:text-sm">
+        <div className="cg-surface order-2 w-full min-w-0 overflow-hidden rounded-xl border cg-line lg:order-1 lg:col-span-3">
+          <div className="overflow-x-auto">
+          <table className="w-full min-w-[280px] table-fixed text-left text-xs sm:text-sm">
+            <colgroup>
+              <col />
+              <col className="w-[22%] sm:w-[19%]" />
+              <col className="w-[22%] sm:w-[19%]" />
+              <col className="w-[22%] sm:w-[19%]" />
+            </colgroup>
             <thead>
               <tr className="cg-sunken text-xs">
-                <th className="px-2.5 py-2 font-semibold sm:px-3">Recurso</th>
-                <th className="px-1.5 py-2 text-center font-semibold sm:px-2">Demo</th>
-                <th className="px-1.5 py-2 text-center font-semibold sm:px-2">Essencial<br /><span className="cg-num whitespace-nowrap">R$ {PRICES.essencial}</span></th>
-                <th className="cg-demo-col px-1.5 py-2 text-center font-bold sm:px-2">Completo<br /><span className="cg-num whitespace-nowrap">R$ {PRICES.completo}</span></th>
+                <th className="px-2 py-2.5 font-semibold sm:px-3">Recurso</th>
+                <th className="px-1 py-2.5 text-center font-semibold">Demo</th>
+                <th className="px-1 py-2.5 text-center font-semibold">Essencial<br /><span className="cg-num whitespace-nowrap">R$ {PRICES.essencial}</span></th>
+                <th className="cg-demo-col cg-demo-col-head px-1 py-2.5 text-center font-bold">Completo<br /><span className="cg-num whitespace-nowrap">R$ {PRICES.completo}</span></th>
               </tr>
             </thead>
             <tbody>
               {DEMO_ROWS.map(([label, demo, ess, full]) => (
                 <tr key={label} className="border-t cg-line">
-                  <td className="px-2.5 py-2 sm:px-3">{label}</td>
-                  <td className="px-1.5 py-2 sm:px-2 text-center"><DemoCell v={demo} /></td>
-                  <td className="px-1.5 py-2 sm:px-2 text-center"><DemoCell v={ess} /></td>
-                  <td className="cg-demo-col px-1.5 py-2 sm:px-2 text-center"><DemoCell v={full} /></td>
+                  <td className="px-2 py-2 sm:px-3">{label}</td>
+                  <td className="px-1 py-2 text-center"><DemoCell v={demo} /></td>
+                  <td className="px-1 py-2 text-center"><DemoCell v={ess} /></td>
+                  <td className="cg-demo-col px-1 py-2 text-center"><DemoCell v={full} /></td>
                 </tr>
               ))}
             </tbody>
           </table>
+          </div>
         </div>
         <div className="order-1 flex flex-col gap-2 lg:order-2 lg:col-span-2">
           <a href={checkoutUrl("completo")} className="cg-btn-primary inline-flex h-12 items-center justify-center gap-2 rounded-xl px-5 text-base font-bold">
@@ -1784,6 +1784,7 @@ function DemoBanner({ access }) {
           {access.status !== "signed" ? <p className="text-xs">Já comprou? <a className="cg-link font-semibold" href="#entrar">Entrar</a></p> : null}
         </div>
       </div>
+      ) : null}
     </section>
   );
 }
