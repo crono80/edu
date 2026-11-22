@@ -151,8 +151,8 @@ nos dois jobs. O ambiente cloud não acessa `github.io`.
 - E-mail público (app, vendas, política, Kiwify): `contato@cronograma80.com.br`. O e-mail pessoal do dono não
   aparece em nada público.
 - **Fornecedor** (Decreto 7.962/2013, art. 2º): rodapé enxuto por decisão do dono (22/11/2026): "Cronogramas80",
-  CNPJ, e-mail e link "Dados do fornecedor" → `/privacidade/#fornecedor`, onde ficam razão social e endereço
-  completo. Página de concurso nova repete o rodapé.
+  CNPJ e e-mail, sem link (o dono sabe que isso fica aquém do art. 2º). Razão social e endereço completo
+  continuam só na política (`/privacidade/#fornecedor`). Página de concurso nova repete o rodapé.
 - Nada de depoimentos inventados nem de preço "de" que não foi praticado.
 - SEO de cada página de concurso: title/description únicos, canonical, Open Graph, JSON-LD Product/Offer
   (+ FAQPage espelhando o FAQ visível) e a seção indexável "O que mais cai" (resumo estático do dossiê).
