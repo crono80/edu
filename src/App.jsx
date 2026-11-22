@@ -148,7 +148,9 @@ function loadState() {
 const APP_CSS = `
 .cg-login { background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(4px); }
 .cg-demo { background: var(--accent-soft); border: 2px solid var(--accent); color: var(--ink); }
-.cg-demo-col { background: var(--accent-soft); }
+.cg-demo-col { background: color-mix(in srgb, var(--accent) 12%, var(--surface)); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .cg-demo-col { background: color-mix(in srgb, var(--accent) 26%, var(--surface)); } }
+:root[data-theme="dark"] .cg-demo-col { background: color-mix(in srgb, var(--accent) 26%, var(--surface)); }
 .cg-demo-col-head { box-shadow: inset 0 3px 0 var(--accent); color: var(--accent-ink); }
 .cg-tier { background: var(--sunken); color: var(--ink-2); }
 .cg-demo-full { background: var(--good-soft); color: var(--good); }
