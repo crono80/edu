@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Página não encontrada · Cronograma Personalizado para Você</title>
+<meta name="robots" content="noindex" />
+<script>
+  // Endereços antigos (crono80.github.io/edu/...) chegam aqui como /edu/...: leva para a rota nova.
+  // O GitHub Pages não emite 301; o redirect é no navegador. Caminho absoluto: o 404 é servido em qualquer URL.
+  (function () {
+    var p = location.pathname;
+    if (!/^\/edu(\/|$)/.test(p)) return;
+    p = p.replace(/^\/edu/, "") || "/";
+    if (/^\/vendas(\/|$)/.test(p)) p = "/inss/";
+    else if (p === "/" && location.search.indexOf("concurso=") !== -1) p = "/app/";
+    location.replace(p + location.search + location.hash);
+  })();
+</script>
+<style>
+  body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: #f4f4f9; color: #15132b; }
+  main { max-width: 560px; margin: 0 auto; padding: 64px 16px; }
+  a { color: #4338ca; font-weight: 600; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Página não encontrada</h1>
+  <p>O endereço pode ter mudado. Veja o <a href="/inss/">cronograma do INSS</a> ou <a href="/app/">entre no app</a>.</p>
+</main>
+</body>
+</html>

@@ -16,5 +16,5 @@ export const CHECKOUT = {
   completo: "https://pay.kiwify.com.br/edjvkE2",
   upgrade: "", // Essencial -> Completo, paying the difference
 };
-export const SALES_URL = "./vendas/#planos";
+export const SALES_URL = "../inss/#planos";
 export const SUPPORT_EMAIL = "contato@cronograma80.com.br"; // público: aparece no app, na página de vendas e na política

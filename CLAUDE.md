@@ -10,11 +10,16 @@ sobre um cronograma genérico (ordem do edital, mesma carga para todos).
 
 - **Concurso:** INSS · Técnico do Seguro Social, pré-edital (pack `inss-tecnico-pre`, único no catálogo).
   O catálogo aceita outros packs; o seletor de concurso no topo só aparece com dois ou mais.
-- **Endereço:** https://crono80.github.io/edu/ (MVP) · `/edu/vendas/` (página de vendas). Domínio próprio
+- **Rotas** em https://cronograma80.com.br: `/` (home estática, lista os concursos) · `/inss/` (página de vendas
+  do INSS) · `/app/` (app logado, único `noindex`) · `/privacidade/` · `/vendas/` (redirect para `/inss/`) ·
+  `404.html` (leva `/edu/...` antigo para a rota nova). Concurso novo = `public/<concurso>/` + sitemap + card na
+  home. GitHub Pages não emite 301: redirects são meta refresh + `location.replace` + canonical (decidido em
+  22/11/2026; Cloudflare Pages descartado). Domínio próprio
   `cronograma80.com.br` (Registro.br, DNS com A/AAAA do GitHub Pages e `www` → `crono80.github.io`; verificado
   na organização). O projeto veio de `thiago-harry/web` (arquivado; o site antigo só redireciona para cá).
 - **Venda (decidida em 20/11/2026):** pagamento único na Kiwify, garantia de 7 dias (CDC art. 49), acesso até a
-  data da prova, atualização do pack quando o edital sair (mesmo cargo) nos dois planos. Sem preço "de".
+  data da prova, atualização do pack quando o edital sair (mesmo cargo) nos dois planos. Preço de lançamento até 31/12/2026, depois Essencial R$ 49 e Completo R$ 119
+  (decidido em 22/11/2026, no lugar de "de/por": o dono sobe o preço na Kiwify na data ou tira o aviso).
   - **Essencial R$ 37:** agenda completa, nível declarado por matéria, PDF (o aluno gera uma vez por carga:
     Normal, Hard, Super hard).
   - **Completo R$ 97:** tudo do Essencial + simulado de nivelamento, progresso (✓), "Reorganizar agenda",
@@ -45,7 +50,10 @@ sobre um cronograma genérico (ordem do edital, mesma carga para todos).
 | `packs-src/<concurso>/` | Fontes curadas: `config.json`, `overrides.json` (cargas, tipos, pré-requisitos, materiais), `work/assuntos.json`, `work/classification.json`, `review.md` |
 | `tools/pack-builder/` | CLI offline: `init → extract → parse → classify → assemble` gera `packs/<id>.json` (detalhes no README da pasta) |
 | `tools/engine-report.js` | Tabela de prioridades + primeiras semanas do pack sintético |
-| `public/vendas/` | Página de vendas estática (HTML com CSS inline + `img/*.webp`); o Vite copia `public/` para `dist/` |
+| `app/index.html` | Entrada do app (Vite multi-page: `build.rollupOptions.input`) |
+| `public/index.html` | Home estática indexável |
+| `public/robots.txt`, `public/sitemap.xml`, `public/404.html` | SEO e redirects de rotas antigas |
+| `public/inss/` | Página de vendas estática (HTML com CSS inline + `img/*.webp`); o Vite copia `public/` para `dist/` |
 | `tools/vendas-shots.cjs` | Recaptura as telas do MVP usadas na página de vendas e atualiza `width`/`height` dos `<img>` |
 
 Fora do git: `packs-src/*/input/` (PDFs de edital e provas), `work/*.lines.json`, `dist/`. O texto
@@ -55,15 +63,15 @@ extraído do edital e dos gabaritos do INSS (`work/*.txt`) está versionado.
 
 ```bash
 npm ci                    # dependências (Node 22)
-npm run dev               # http://localhost:5173
+npm run dev               # http://localhost:5173/app/
 npm run build             # dist/
-npm run preview           # serve dist/ em http://localhost:4173 (página de vendas em /vendas/)
+npm run preview           # serve dist/ em http://localhost:4173 (home em /, app em /app/, vendas em /inss/)
 npm test                  # engine (24) + pack builder (10) + app (11)
 npm run test:engine       # node --test engine/engine.test.js
 npm run test:builder      # node --test tools/pack-builder/test/builder.test.js (precisa de pdftotext)
 npm run test:app          # TZ=UTC node --test src/plan.test.js src/access.test.js
 npm run report:engine     # tabela de prioridades + primeiras semanas
-npm run shots:vendas      # refaz public/vendas/img/*.webp (precisa de npm run build + npm run preview rodando)
+npm run shots:vendas      # refaz public/inss/img/*.webp (precisa de npm run build + npm run preview rodando)
 node tools/pack-builder/cli.js assemble packs-src/inss-tecnico   # regenera o pack depois de editar packs-src
 ```
 
@@ -143,7 +151,10 @@ nos dois jobs. O ambiente cloud não acessa `github.io`.
 - E-mail público (app, vendas, política, Kiwify): `contato@cronograma80.com.br`. O e-mail pessoal do dono não
   aparece em nada público. A política identifica o controlador só pelo e-mail (decisão do dono).
 - Nada de depoimentos inventados nem de preço "de" que não foi praticado.
-- A página de vendas está indexável (noindex removido no lançamento).
+- SEO de cada página de concurso: title/description únicos, canonical, Open Graph, JSON-LD Product/Offer
+  (+ FAQPage espelhando o FAQ visível) e a seção indexável "O que mais cai" (resumo estático do dossiê).
+  Se o pack mudar, atualize essa seção à mão.
+- Páginas públicas indexáveis; só `/app/` tem `noindex`.
 - Avisos obrigatórios: pré-edital, sem afiliação com INSS ou Cebraspe, sem garantia de aprovação.
 - Números da página de vendas vêm de telas reais do MVP (hoje fixo em 17/11/2026, Português forte,
   Seguridade fraca, após "Reajustar" → 13h/sem). Se o engine ou as cores mudarem, rode `npm run shots:vendas`.

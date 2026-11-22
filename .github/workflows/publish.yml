@@ -1,7 +1,7 @@
 name: Publish to GitHub Pages
 
 # On every push to main that touches the site: tests the engine and the product layer, builds the
-# MVP (dist/, with the sales page in /vendas/) and deploys it with GitHub Pages.
+# MVP (dist/: app in /app/, static pages from public/) and deploys it with GitHub Pages.
 # Requires Settings → Pages → Build and deployment → Source: "GitHub Actions" (repository owner).
 on:
   push:
@@ -11,7 +11,7 @@ on:
       - "packs/**"
       - "src/**"
       - "public/**"
-      - "index.html"
+      - "app/**"
       - "vite.config.js"
       - "package.json"
       - "package-lock.json"

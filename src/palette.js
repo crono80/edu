@@ -1,5 +1,5 @@
 // Paleta "Índigo e âmbar": fonte única das cores do MVP (temas claro e escuro), do PDF e das matérias.
-// A página de vendas (public/vendas/index.html) é HTML estático e repete os valores do tema claro.
+// A página de vendas (public/inss/index.html) é HTML estático e repete os valores do tema claro.
 // Contraste conferido (WCAG AA): texto ≥ 4,5:1, linhas de gráfico e contornos ≥ 3:1.
 
 const light = {

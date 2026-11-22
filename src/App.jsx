@@ -1772,7 +1772,7 @@ function MethodNotes() {
             ·{" "}
           </>
         ) : null}
-        <a className="cg-link" href="./privacidade/">
+        <a className="cg-link" href="../privacidade/">
           Política de privacidade
         </a>
       </p>
