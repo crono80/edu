@@ -5,7 +5,7 @@
 create table if not exists public.products (
   provider   text not null default 'kiwify',
   product_id text not null,
-  plan       text not null check (plan in ('essencial', 'completo')),
+  plan       text not null check (plan in ('essencial', 'completo', 'upgrade')),
   concurso   text not null,
   label      text,
   primary key (provider, product_id)
@@ -20,7 +20,7 @@ create table if not exists public.purchases (
   product_id text,
   email      text not null,
   name       text,
-  plan       text check (plan in ('essencial', 'completo')),
+  plan       text check (plan in ('essencial', 'completo', 'upgrade')),
   concurso   text,
   status     text not null check (status in ('approved', 'refunded', 'chargeback')),
   event      text,
@@ -30,6 +30,13 @@ create table if not exists public.purchases (
 );
 create index if not exists purchases_email_idx on public.purchases (lower(email));
 alter table public.purchases enable row level security;
+
+-- 'upgrade' (Essencial -> Completo pela diferença) só vale junto com um Essencial aprovado; ver my_plan().
+-- Bancos criados antes de 22/11/2026: troca o check para aceitar 'upgrade'.
+alter table public.products drop constraint if exists products_plan_check;
+alter table public.products add constraint products_plan_check check (plan in ('essencial', 'completo', 'upgrade'));
+alter table public.purchases drop constraint if exists purchases_plan_check;
+alter table public.purchases add constraint purchases_plan_check check (plan in ('essencial', 'completo', 'upgrade'));
 
 -- O usuário logado (Google, e-mail verificado) vê só as próprias compras.
 drop policy if exists purchases_select_own on public.purchases;
@@ -46,6 +53,8 @@ set search_path = public
 as $$
   select case
     when bool_or(plan = 'completo') then 'completo'
+    -- upgrade sem Essencial não libera nada (o link do upgrade é público)
+    when bool_or(plan = 'upgrade') and bool_or(plan = 'essencial') then 'completo'
     when bool_or(plan = 'essencial') then 'essencial'
   end
   from public.purchases

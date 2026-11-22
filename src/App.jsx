@@ -12,6 +12,9 @@
  */
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
+  Check,
+  Minus,
+  ShoppingCart,
   BookOpen,
   CalendarCheck,
   CalendarPlus,
@@ -36,7 +39,7 @@ import { CATALOG, selectEntry } from "./packs.js";
 import { CSS, EXTRA_CSS } from "./theme.js";
 import { SUBJECT_HEX as HEX } from "./palette.js";
 import * as plan from "./plan.js";
-import { CHECKOUT, GOOGLE_CLIENT_ID, GOOGLE_SYNC_DAYS, SALES_URL, SUPPORT_EMAIL } from "./config.js";
+import { CHECKOUT, GOOGLE_CLIENT_ID, GOOGLE_SYNC_DAYS, PRICES, SALES_URL, SUPPORT_EMAIL } from "./config.js";
 import * as gcal from "./gcal.js";
 import { renderGoogleButton, signOut, useAccess } from "./access.js";
 import { allowedLeveling, capabilities } from "./access-rules.js";
@@ -141,6 +144,12 @@ function loadState() {
 /* ───────────────────────────── Peças de UI ───────────────────────────── */
 
 const APP_CSS = `
+.cg-demo { background: var(--accent-soft); border: 2px solid var(--accent); color: var(--ink); }
+.cg-demo-col { background: var(--accent-soft); }
+.cg-tier { background: var(--sunken); color: var(--ink-2); }
+.cg-demo-full { background: var(--good-soft); color: var(--good); }
+.cg-demo-limited { background: var(--warn-soft); color: var(--ink); border: 1px solid var(--warn-line); }
+.cg-demo-locked { background: var(--sunken); color: var(--ink-2); border: 1px dashed var(--line); }
 .cg-alt[data-state="right"] { background: var(--good-soft); border-color: var(--good); }
 .cg-alt[data-state="right"] .cg-alt-letter { background: var(--good); color: var(--surface); }
 .cg-alt[data-state="wrong"] { border-color: var(--hi); }
@@ -223,11 +232,14 @@ function Segmented({ label, options, value, onChange }) {
   );
 }
 
-function SectionHead({ step, title, desc, right }) {
+function SectionHead({ step, title, desc, right, badge = null }) {
   return (
     <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
       <div className="min-w-0 max-w-2xl">
-        <p className="cg-eyebrow">{step}</p>
+        <p className="flex flex-wrap items-center gap-2">
+          <span className="cg-eyebrow">{step}</span>
+          {badge}
+        </p>
         <h2 className="mt-1 text-xl font-extrabold tracking-tight md:text-2xl">{title}</h2>
         {desc ? <p className="mt-1 text-sm cg-ink2">{desc}</p> : null}
       </div>
@@ -1430,7 +1442,7 @@ function DayColumn({ d, edited, onAdjust, onReset, isDone, onToggle }) {
   );
 }
 
-function SchedulePanel({ weeks, week, setWeek, result, examISO, dates, onSimTop, exportBar, coverageBar, dayProps, progressPanel, progressTop, intro, limit = null, lockNote = null, progressOn = true }) {
+function SchedulePanel({ weeks, week, setWeek, result, examISO, dates, onSimTop, exportBar, coverageBar, dayProps, progressPanel, progressTop, intro, limit = null, lockNote = null, progressOn = true, badge = null }) {
   if (!weeks.length) return null;
   const last = Math.min(limit ?? weeks.length, weeks.length);
   const w = weeks[Math.min(week, last) - 1];
@@ -1441,6 +1453,7 @@ function SchedulePanel({ weeks, week, setWeek, result, examISO, dates, onSimTop,
     <section id="cronograma" className="cg-anchor flex flex-col gap-4">
       <SectionHead
         step="2 · Mão na massa"
+        badge={badge}
         title="Sua agenda, semana a semana"
         desc={
           progressOn
@@ -1639,6 +1652,9 @@ function LockCard({ need, title, text, access }) {
       <div className="flex min-w-0 max-w-3xl items-start gap-2.5">
         <Lock className="mt-0.5 h-4 w-4 shrink-0 cg-ink2" aria-hidden="true" />
         <div className="min-w-0">
+          <p className="cg-tier mb-1 inline-block rounded px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wide">
+            {need === "completo" ? "Só no plano Completo" : "Nos planos Essencial e Completo"}
+          </p>
           <p className="text-sm font-bold">{title}</p>
           <p className="text-sm cg-ink2">{text}</p>
           {signedOut ? <p className="mt-1 text-xs cg-muted">Já comprou? Entre com a conta Google do e-mail da compra (no topo da página).</p> : null}
@@ -1648,6 +1664,82 @@ function LockCard({ need, title, text, access }) {
         {cta}
       </a>
     </div>
+  );
+}
+
+/** Demo badge for a section head: what the demo shows of it. */
+function DemoBadge({ kind }) {
+  const label = { full: "Demo: completo", limited: "Demo: limitado", locked: "Bloqueado na demo" }[kind];
+  return <span className={`cg-demo-badge cg-demo-${kind} rounded-md px-2 py-0.5 text-[11px] font-bold`}>{label}</span>;
+}
+
+const DEMO_ROWS = [
+  ["Vantagem, top 80% e dossiê da prova", "full", "full", "full"],
+  ["Agenda com horários", "Semana 1", "Até a prova", "Até a prova"],
+  ["Ajustar ao seu nível por matéria", "no", "full", "full"],
+  ["PDF da agenda", "no", "full", "full"],
+  ["Simulado de nivelamento", "no", "no", "full"],
+  ["Marcar o que estudou e reorganizar", "no", "no", "full"],
+  ["Google Agenda e .ics", "no", "no", "full"],
+];
+
+function DemoCell({ v }) {
+  if (v === "full") return <Check className="mx-auto h-4 w-4 cg-good" aria-label="incluído" />;
+  if (v === "no") return <Minus className="mx-auto h-4 w-4 cg-muted" aria-label="não incluído" />;
+  return <span className="text-xs font-semibold">{v}</span>;
+}
+
+/** Big notice at the top of the page while there is no purchase: what the demo shows and what each plan adds. */
+function DemoBanner({ access }) {
+  if (access.status === "loading") return null;
+  return (
+    <section aria-labelledby="demo-title" className="cg-demo rounded-2xl p-4 md:p-6">
+      <p className="cg-eyebrow" style={{ color: "inherit" }}>Modo demonstração</p>
+      <h2 id="demo-title" className="mt-1 text-xl font-extrabold tracking-tight md:text-2xl">
+        Você está vendo a versão de demonstração, com recursos limitados.
+      </h2>
+      <p className="mt-1 max-w-3xl text-sm md:text-base">
+        Os números e a agenda usam os dados reais do concurso, mas a demonstração mostra só a primeira semana e não se ajusta ao seu nível.
+        A agenda completa, o nível e o PDF estão nos dois planos. Simulado, reorganização e Google Agenda estão só no Completo.
+      </p>
+      <div className="mt-4 grid gap-4 lg:grid-cols-5 lg:items-start">
+        <div className="cg-surface order-2 overflow-hidden rounded-xl border cg-line lg:order-1 lg:col-span-3">
+          <table className="w-full text-left text-xs sm:text-sm">
+            <thead>
+              <tr className="cg-sunken text-xs">
+                <th className="px-3 py-2 font-semibold">Recurso</th>
+                <th className="px-2 py-2 text-center font-semibold">Demo</th>
+                <th className="px-2 py-2 text-center font-semibold">Essencial<br /><span className="cg-num">R$ {PRICES.essencial}</span></th>
+                <th className="cg-demo-col px-2 py-2 text-center font-bold">Completo<br /><span className="cg-num">R$ {PRICES.completo}</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              {DEMO_ROWS.map(([label, demo, ess, full]) => (
+                <tr key={label} className="border-t cg-line">
+                  <td className="px-3 py-2">{label}</td>
+                  <td className="px-2 py-2 text-center"><DemoCell v={demo} /></td>
+                  <td className="px-2 py-2 text-center"><DemoCell v={ess} /></td>
+                  <td className="cg-demo-col px-2 py-2 text-center"><DemoCell v={full} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="order-1 flex flex-col gap-2 lg:order-2 lg:col-span-2">
+          <a href={checkoutUrl("completo")} className="cg-btn-primary inline-flex h-12 items-center justify-center gap-2 rounded-xl px-5 text-base font-bold">
+            <ShoppingCart className="h-5 w-5" aria-hidden="true" />
+            Comprar o Completo · R$ {PRICES.completo}
+          </a>
+          <a href={checkoutUrl("essencial")} className="cg-btn-ghost inline-flex h-11 items-center justify-center rounded-xl px-5 text-sm font-bold">
+            Comprar o Essencial · R$ {PRICES.essencial}
+          </a>
+          <p className="text-xs">
+            Pagamento único, garantia de 7 dias. <a className="cg-link font-semibold" href={SALES_URL}>Comparar os planos</a>
+          </p>
+          {access.status !== "signed" ? <p className="text-xs">Já comprou? Entre com a conta Google do e-mail da compra, no topo da página.</p> : null}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -1697,18 +1789,6 @@ function AccessNotice({ access, loginError }) {
             </>
           ) : null}
           . A liberação leva alguns minutos depois do pagamento aprovado.
-        </p>
-        <a href={SALES_URL} className="cg-btn-primary inline-flex h-9 items-center rounded-lg px-3 text-xs font-bold">
-          Ver os planos
-        </a>
-      </div>
-    );
-  }
-  if (access.status === "anon") {
-    return (
-      <div role="status" className="cg-sunken flex flex-wrap items-center justify-between gap-3 rounded-lg px-4 py-3 text-sm">
-        <p className="min-w-0 max-w-3xl">
-          <b>Demonstração grátis:</b> veja a vantagem, o top 80%, o dossiê e a primeira semana da agenda. Para a agenda completa, o seu nível e o PDF, escolha um plano. Já comprou? Entre com o Google no topo.
         </p>
         <a href={SALES_URL} className="cg-btn-primary inline-flex h-9 items-center rounded-lg px-3 text-xs font-bold">
           Ver os planos
@@ -2085,7 +2165,7 @@ export default function App() {
             <span className="cg-brand grid h-9 w-9 shrink-0 place-items-center rounded-md" aria-hidden="true">
               <CalendarCheck className="h-5 w-5" />
             </span>
-            <p className="min-w-0 truncate text-sm font-extrabold tracking-tight md:text-base">{APP_NAME}</p>
+            <p className="hidden min-w-0 truncate text-sm font-extrabold tracking-tight sm:block md:text-base">{APP_NAME}</p>
           </div>
           {CATALOG.length > 1 && (
           <label className="ml-auto flex items-center gap-2 text-xs font-semibold cg-ink2 md:ml-4">
@@ -2113,7 +2193,13 @@ export default function App() {
               </a>
             ))}
           </nav>
-          <div className="ml-auto flex shrink-0 items-center md:ml-2">
+          <div className="ml-auto flex shrink-0 items-center gap-2 md:ml-2">
+            {!can.plan && access.status !== "loading" ? (
+              <a href={SALES_URL} className="cg-btn-primary inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-bold">
+                <ShoppingCart className="h-4 w-4" aria-hidden="true" />
+                Comprar
+              </a>
+            ) : null}
             <AccountBar access={access} onError={setLoginError} />
           </div>
         </div>
@@ -2121,6 +2207,7 @@ export default function App() {
 
       <main className="cg-gutter cg-wrap flex flex-col gap-10 py-5 md:py-6">
         <AccessNotice access={access} loginError={loginError} />
+        {can.plan ? null : <DemoBanner access={access} />}
         <ComparePanel />
 
 
@@ -2152,6 +2239,7 @@ export default function App() {
         <section id="prazo" className="cg-anchor flex flex-col gap-4">
           <SectionHead
             step="1 · Seu tempo"
+            badge={can.plan ? null : <DemoBadge kind="full" />}
             title={suggestion ? "Carga sugerida e seus ajustes" : "Seu tempo até a prova"}
             desc="Partimos da carga que cobre o top 80% até a prova. Mude as horas de cada dia ou a data: a cobertura do top 80% e a agenda se recalculam na hora."
           />
@@ -2192,18 +2280,19 @@ export default function App() {
             progressPanel={
               can.progress ? (
                 <ProgressPanel info={progressInfo} onReorganize={reorganize} />
-              ) : can.fullAgenda ? (
+              ) : (
                 <LockCard
                   need="completo"
                   access={access}
                   title="Atrasou? Reorganize a agenda"
                   text="No Completo você marca o que estudou e a agenda redistribui o que falta de hoje até a prova, quantas vezes precisar, e atualiza o Google Agenda."
                 />
-              ) : null
+              )
             }
             progressTop={can.progress && overdue.n > 0}
             progressOn={can.progress}
             limit={weekLimit}
+            badge={can.plan ? null : <DemoBadge kind="limited" />}
             lockNote={
               can.fullAgenda ? null : (
                 <LockCard
@@ -2265,7 +2354,12 @@ export default function App() {
                     />
                   )}
                 </div>
-              ) : null
+              ) : (
+                <div className="flex flex-col gap-3">
+                  <LockCard need="essencial" access={access} title="PDF da agenda para imprimir" text="Nos dois planos, você gera o PDF da agenda completa nas cargas Normal, Hard e Super hard." />
+                  <LockCard need="completo" access={access} title="Agenda no Google, atualizada sozinha" text="No Completo, a agenda vai para o Google Agenda e o .ics, e acompanha cada reorganização." />
+                </div>
+              )
             }
           />
         ) : (
@@ -2281,6 +2375,7 @@ export default function App() {
         <section id="nivelamento" className="cg-anchor flex flex-col gap-4" ref={quizRef}>
           <SectionHead
             step="3 · Seu nível"
+            badge={can.plan ? null : <DemoBadge kind="locked" />}
             title="Seu ponto de partida"
             desc={
               can.quiz
@@ -2335,6 +2430,7 @@ export default function App() {
         <section id="top80" className="cg-anchor flex flex-col gap-4">
           <SectionHead
             step="Painel"
+            badge={can.plan ? null : <DemoBadge kind="full" />}
             title="Top 80% da prova"
             desc={`Os ${par.topCount} assuntos com melhor retorno (pontos esperados por hora de estudo no seu nível) somam 80% da prova. A agenda cobre esses primeiro.`}
             right={
@@ -2348,7 +2444,7 @@ export default function App() {
         </section>
 
         <section id="dossie" className="cg-anchor flex flex-col gap-4">
-          <SectionHead step="Dossiê" title="O que mais cai nesta prova" desc={META.dossieDesc} />
+          <SectionHead step="Dossiê" badge={can.plan ? null : <DemoBadge kind="full" />} title="O que mais cai nesta prova" desc={META.dossieDesc} />
           <DossierCards />
           <DossierTable topSet={par.top} baseFor={par.baseFor} expanded={expanded} onToggle={toggleExpand} />
         </section>

@@ -142,6 +142,9 @@ nos dois jobs. O ambiente cloud não acessa `github.io`.
 - Kiwify → webhook (`compra_aprovada`, `compra_reembolsada`, `chargeback`) → Edge Function `kiwify-webhook`
   (JWT desligado; segredo `KIWIFY_TOKEN` no Supabase) → `purchases`. Reembolso e chargeback são finais.
 - Produto novo na Kiwify só libera acesso depois de mapeado em `products` (product_id → plano + concurso).
+- **Upgrade** Essencial → Completo: produto Kiwify mapeado com `plan = 'upgrade'`; `my_plan()` só devolve
+  `completo` se houver também um Essencial aprovado (o link do upgrade é público). Botão "Passar para o
+  Completo" usa `CHECKOUT.upgrade`.
 - O app chama `my_plan(concurso)`; RLS deixa cada usuário ver só as compras do próprio e-mail (Google).
   Login por e-mail/senha desligado no Supabase de propósito (ninguém cria conta com o e-mail de outro).
 - O bloqueio é no navegador: o pack continua no JS público. Se aparecer cópia, servir o pack por endpoint.
@@ -185,4 +188,4 @@ nos dois jobs. O ambiente cloud não acessa `github.io`.
 Resolvido em 20/11/2026: domínio `cronograma80.com.br` no Pages com HTTPS; app Google "Em produção";
 Kiwify (Essencial e Completo, webhook, `KIWIFY_TOKEN`, `products`) e `CHECKOUT` preenchido; e-mail público
 `contato@cronograma80.com.br` (iCloud); teste de compra real (aprovação libera, reembolso revoga).
-Upgrade Essencial → Completo ainda não existe (`CHECKOUT.upgrade` vazio, sem menção na página de vendas).
+Upgrade Essencial → Completo criado em 22/11/2026 (R$ 60, produto Kiwify `064e6620-e641-11f1-8587-35b29347523e`); só aparece no app, para quem tem o Essencial.
