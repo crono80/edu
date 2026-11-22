@@ -16,5 +16,7 @@ export const CHECKOUT = {
   completo: "https://pay.kiwify.com.br/edjvkE2",
   upgrade: "", // Essencial -> Completo, paying the difference
 };
+// Preços exibidos no app (devem bater com a Kiwify). Lançamento até 31/12/2026; depois 49 / 119.
+export const PRICES = { essencial: 37, completo: 97 };
 export const SALES_URL = "../inss/#planos";
 export const SUPPORT_EMAIL = "contato@cronograma80.com.br"; // público: aparece no app, na página de vendas e na política
