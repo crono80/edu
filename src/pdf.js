@@ -159,16 +159,20 @@ export async function exportPdf({ appName, pack, weeks, materias, info, top, cmp
     ...hooks,
   });
 
-  // Generic vs personalized
-  y = section("Genérico × personalizado", "Pontos esperados cobertos pelas horas de conteúdo até a prova.", 24);
+  // Generic vs personalized: time saved to reach 80% of the exam (same message as the app's "Vantagem")
+  const saved = cmp.gen80 ? Math.max(0, cmp.gen80 - cmp.pers80) : 0;
+  const weeksSaved = cmp.dateTop && cmp.dateGen ? Math.max(0, Math.round((Date.parse(cmp.dateGen) - Date.parse(cmp.dateTop)) / (7 * 86400000))) : 0;
+  const when = (iso) => (iso ? fmtDMY(iso) : "mais de 3 anos");
+  const savedNote = saved >= 1 ? `${fmtH(saved)} a menos${weeksSaved > 0 ? `, cerca de ${weeksSaved} semana${weeksSaved === 1 ? "" : "s"} antes` : ""}` : "tempo parecido";
+  y = section("Genérico × personalizado", t(`Tempo economizado para dominar 80% da prova: ${savedNote}.`), 24);
   autoTable(doc, {
     startY: y,
     margin,
     theme: "grid",
     head: [["", "Cronograma genérico", "Seu cronograma"].map(t)],
     body: [
-      [t(`Cobertura com ${fmtH(info.contentH)} de conteúdo`), fmtPct(cmp.genAt), fmtPct(cmp.persAt)],
-      ["Horas para chegar a 80%", cmp.gen80 ? fmtH(cmp.gen80) : "-", cmp.pers80 ? fmtH(cmp.pers80) : "-"],
+      ["Horas para dominar 80% da prova", cmp.gen80 ? fmtH(cmp.gen80) : "-", fmtH(cmp.pers80)],
+      [t(`Data em que chega a 80% (${fmtH(info.weeklyH)}/semana)`), when(cmp.dateGen), when(cmp.dateTop)],
     ],
     styles: { fontSize: 8.8, cellPadding: 1.8, lineColor: C.line, lineWidth: 0.2, textColor: C.ink },
     headStyles: { fillColor: C.sunken, textColor: C.ink2, fontStyle: "bold", fontSize: 8 },

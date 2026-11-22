@@ -2012,7 +2012,7 @@ export default function App() {
         materias: materiasInfo,
         info: { examISO, simulated: state.simulate, estimated: EXAM_ESTIMATED, unidade: U, modeLabel, weeklyH: weekly, rawH: cap.raw, contentH: cap.content, scopeLabel, startISO: TODAY, todayISO: TODAY, coverage: cov.cov, manual },
         top: par.items.filter((x) => x.inTop).map((x, i) => ({ rank: i + 1, materia_id: x.assunto.materia_id, nome: x.assunto.nome, nivel: BASE_SCORES.byId[x.id].nivel, pts: x.pts, horas: x.horas })),
-        cmp: nums,
+        cmp: { ...nums, dateTop: dates.top, dateGen: dates.gen },
         aluno: state.aluno,
       });
       setFile("pdf", { url: plan.downloadBlob(filename, blob), filename, blob });
