@@ -14,7 +14,7 @@ export const SUPABASE_KEY = "sb_publishable_Rh633khUQRIwJYI7FZ8fTA_yGZ-Qq4w";
 export const CHECKOUT = {
   essencial: "https://pay.kiwify.com.br/hZt9oc1",
   completo: "https://pay.kiwify.com.br/edjvkE2",
-  upgrade: "", // Essencial -> Completo, paying the difference
+  upgrade: "https://pay.kiwify.com.br/659C77P", // Essencial -> Completo pela diferença (R$ 60); produto com plan = 'upgrade'
 };
 // Preços exibidos no app (devem bater com a Kiwify). Lançamento até 31/12/2026; depois 49 / 119.
 export const PRICES = { essencial: 37, completo: 97 };
