@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Recaptura as telas do MVP usadas na página de vendas (public/vendas/img/*.webp) e atualiza
-// width/height dos <img> em public/vendas/index.html.
+// Recaptura as telas do MVP usadas na página de vendas (public/inss/img/*.webp) e atualiza
+// width/height dos <img> em public/inss/index.html.
 //
 // Uso:
 //   npm run build && npm run preview        # em outro terminal (porta 4173)
@@ -15,9 +15,9 @@ const fs = require("fs");
 const path = require("path");
 
 const BASE = (process.argv[2] || "http://localhost:4173").replace(/\/$/, "");
-const APP_URL = `${BASE}/?concurso=inss-tecnico-pre`;
-const OUT = path.join(__dirname, "..", "public", "vendas", "img");
-const HTML = path.join(__dirname, "..", "public", "vendas", "index.html");
+const APP_URL = `${BASE}/app/?concurso=inss-tecnico-pre`;
+const OUT = path.join(__dirname, "..", "public", "inss", "img");
+const HTML = path.join(__dirname, "..", "public", "inss", "index.html");
 const TZ = "America/Sao_Paulo";
 const DAY1 = new Date("2026-11-17T10:00:00-03:00");
 const DAY3 = new Date("2026-11-19T10:00:00-03:00");
