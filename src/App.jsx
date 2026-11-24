@@ -44,6 +44,7 @@ import * as plan from "./plan.js";
 import { CHECKOUT, GOOGLE_CLIENT_ID, GOOGLE_SYNC_DAYS, PRICES, SALES_URL, SUPPORT_EMAIL } from "./config.js";
 import * as gcal from "./gcal.js";
 import { renderGoogleButton, signOut, useAccess } from "./access.js";
+import { track, useCloudState } from "./sync.js";
 import { allowedLeveling, capabilities } from "./access-rules.js";
 
 /* ───────────────────────────── Dados fixos ───────────────────────────── */
@@ -99,6 +100,7 @@ const ACT_KEYS = Object.keys(ACT);
 const DEFAULTS = {
   strengths: {},
   quiz: null, // { attempt, answers: {id: idx}, done, idx }
+  quizStats: {}, // finished attempts summed by assunto: { [id]: { apresentados, respondidas, acertos, erros } }
   mode: "hard",
   hours: { ...plan.MODES.hard.hours },
   inicio: "19:00",
@@ -129,14 +131,16 @@ function itemSource(it) {
   return { label: META.fonteItem(it) };
 }
 
+function normalizeState(raw) {
+  const s = { ...DEFAULTS, ...(raw && typeof raw === "object" ? raw : {}) };
+  if (s.simDate && s.simDate <= TODAY) s.simDate = null;
+  return s;
+}
+
 function loadState() {
   try {
     const raw = localStorage.getItem(STORE_KEY);
-    if (raw) {
-      const s = { ...DEFAULTS, ...JSON.parse(raw) };
-      if (s.simDate && s.simDate <= TODAY) s.simDate = null;
-      return s;
-    }
+    if (raw) return normalizeState(JSON.parse(raw));
   } catch {
     /* storage unavailable */
   }
@@ -1989,13 +1993,8 @@ export default function App() {
     });
   const quizRef = useRef(null);
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORE_KEY, JSON.stringify(state));
-    } catch {
-      /* storage unavailable */
-    }
-  }, [state]);
+  // localStorage always; Supabase (student_state) when signed in
+  useCloudState({ userId: access.userId, concurso: pack.concurso.id, storeKey: STORE_KEY, state, replaceState: (raw) => setState(normalizeState(raw)) });
 
   const set = (patch) => setState((s) => ({ ...s, ...patch }));
 
@@ -2115,15 +2114,18 @@ export default function App() {
   // studied blocks
   const logged = log;
   const isDone = (key) => Boolean(logged[key] && !logged[key].consolidated);
-  const toggleDone = (key, d, b) =>
+  const toggleDone = (key, d, b) => {
+    track(isDone(key) ? "progress_uncheck" : "progress_check", { key, data: d.data, assunto_id: b.assunto?.id ?? null, materia_id: b.materia_id ?? null, atividade: b.atividade, minutos: b.minutos });
     setState((s) => {
       const log = { ...(s.log ?? {}) };
       if (log[key] && !log[key].consolidated) delete log[key];
       else log[key] = { data: d.data, assunto_id: b.assunto?.id ?? null, materia_id: b.materia_id ?? null, atividade: b.atividade, minutos: b.minutos, inicio: b.start, fim: b.end, consolidated: false };
       return { ...s, log };
     });
+  };
   const consolidate = (s) => Object.fromEntries(Object.entries(s.log ?? {}).map(([k, e]) => [k, { ...e, consolidated: true }]));
   const reorganize = () => {
+    track("reorganize", { plan_start: TODAY, studied_blocks: Object.keys(state.log ?? {}).length });
     setState((s) => ({ ...s, log: consolidate(s), planStart: TODAY }));
     requestAnimationFrame(() => document.getElementById("cronograma")?.scrollIntoView({ block: "start" }));
   };
@@ -2181,7 +2183,14 @@ export default function App() {
     },
     onAnswer: (id, i) => setState((s) => ({ ...s, quiz: { ...s.quiz, answers: { ...s.quiz.answers, [id]: i } } })),
     onGo: (idx) => setState((s) => ({ ...s, quiz: { ...s.quiz, idx } })),
-    onFinish: () => setState((s) => ({ ...s, quiz: { ...s.quiz, done: true, idx: 0 } })),
+    onFinish: () => {
+      const answers = state.quiz?.answers ?? {};
+      const porAssunto = plan.quizAssuntoStats(quizItems ?? [], answers);
+      const total = plan.scoreQuiz(quizItems ?? [], answers).total;
+      track("quiz_finished", { attempt: state.quiz?.attempt ?? null, total, por_assunto: porAssunto });
+      for (const e of plan.quizAnswerEvents(quizItems ?? [], answers, state.quiz?.attempt ?? null)) track("quiz_answer", e);
+      setState((s) => ({ ...s, quiz: { ...s.quiz, done: true, idx: 0 }, quizStats: plan.addQuizStats(s.quizStats, porAssunto) }));
+    },
     onReset: () => set({ quiz: null }),
   };
 
@@ -2206,6 +2215,7 @@ export default function App() {
         aluno: state.aluno,
       });
       setFile("pdf", { url: plan.downloadBlob(filename, blob), filename, blob });
+      track("pdf", { mode, weekly, scope: state.scope });
     } catch (err) {
       console.error(err);
       setExportError("Não foi possível gerar o PDF. Tente novamente.");
@@ -2236,6 +2246,7 @@ export default function App() {
         onProgress: (feitos, total) => setGsync({ fase: "rodando", feitos, total, msg: `Sincronizando ${feitos}/${total}…` }),
       });
       set({ gcal: { calendarId: r.calendarId, ultima: new Date().toISOString() } });
+      track("gcal_sync", { inserted: r.inserted, updated: r.updated, removed: r.removed });
       const alcance = GOOGLE_SYNC_DAYS ? `as próximas ${Math.round(GOOGLE_SYNC_DAYS / 7)} semanas` : `a agenda até a prova (${fmtDMY(examISO)})`;
       setGsync({ fase: "ok", msg: `Google Agenda atualizado: ${r.inserted} novos, ${r.updated} alterados, ${r.removed} removidos. Inclui ${alcance} e o que você já estudou.` });
     } catch (err) {
@@ -2251,6 +2262,7 @@ export default function App() {
     const filename = `cronograma-${pack.concurso.id}-${TODAY}.ics`;
     const blob = new Blob([text], { type: "text/calendar;charset=utf-8" });
     setFile("ics", { url: plan.downloadBlob(filename, blob), filename, blob, eventos });
+    track("ics", { eventos, scope: state.scope });
   };
 
   const nav = [
@@ -2507,14 +2519,15 @@ export default function App() {
               <StrengthGrid
                 strengths={state.strengths}
                 quizByMateria={can.quiz ? quizByMateria : null}
-                onSet={(id, v) =>
+                onSet={(id, v) => {
+                  track("self_level_set", { materia_id: id, nivel: v || null });
                   setState((s) => {
                     const next = { ...s.strengths };
                     if (v) next[id] = v;
                     else delete next[id];
                     return { ...s, strengths: next };
-                  })
-                }
+                  });
+                }}
               />
               {can.quiz ? (
                 <QuizPanel quiz={state.quiz} items={quizItems} score={quizScore} {...quizActions} />

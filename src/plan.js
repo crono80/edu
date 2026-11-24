@@ -614,3 +614,40 @@ export function downloadBlob(filename, blob) {
   a.remove();
   return url;
 }
+
+/**
+ * Leveling quiz by assunto: { [assunto_id]: { apresentados, respondidas, acertos, erros } }.
+ * Every sampled item counts as presented; unanswered items (em branco) are presented but not answered.
+ */
+export function quizAssuntoStats(itens, respostas = {}) {
+  const out = {};
+  for (const it of itens) {
+    const slot = (out[it.assunto_id] ??= { apresentados: 0, respondidas: 0, acertos: 0, erros: 0 });
+    slot.apresentados += 1;
+    const r = respostas[it.id];
+    if (!Number.isInteger(r)) continue;
+    slot.respondidas += 1;
+    if (r === it.gabarito) slot.acertos += 1;
+    else slot.erros += 1;
+  }
+  return out;
+}
+
+/** Adds one quiz attempt (quizAssuntoStats) to the running totals. Pure. */
+export function addQuizStats(total = {}, attempt = {}) {
+  const out = { ...total };
+  for (const [id, a] of Object.entries(attempt)) {
+    const t = out[id] ?? { apresentados: 0, respondidas: 0, acertos: 0, erros: 0 };
+    out[id] = { apresentados: t.apresentados + a.apresentados, respondidas: t.respondidas + a.respondidas, acertos: t.acertos + a.acertos, erros: t.erros + a.erros };
+  }
+  return out;
+}
+
+/** One quiz_answer event payload per presented item. */
+export function quizAnswerEvents(itens, respostas = {}, attempt = null) {
+  return itens.map((it) => {
+    const r = respostas[it.id];
+    const blank = !Number.isInteger(r);
+    return { item_id: it.id, assunto_id: it.assunto_id, resposta: blank ? null : r, correta: !blank && r === it.gabarito, em_branco: blank, attempt };
+  });
+}

@@ -39,9 +39,12 @@ sobre um cronograma genérico (ordem do edital, mesma carga para todos).
 | `src/packs.js` | Catálogo de concursos: pack + textos específicos (dossiê, unidade "itens"/"questões") |
 | `src/config.js` | `GOOGLE_CLIENT_ID`, `SUPABASE_URL`/`SUPABASE_KEY` (publishable), `CHECKOUT` (links da Kiwify), `SALES_URL`, `SUPPORT_EMAIL`; nada secreto |
 | `src/access.js` | Login Google (botão GIS → `signInWithIdToken` no Supabase) e `useAccess()` → plano via RPC `my_plan` |
+| `src/sync.js` | Progresso no Supabase: `useCloudState` (localStorage + `student_state` com debounce de 3 s) e `track()` (eventos em `student_events`) |
+| `src/sync-rules.js` | Regras puras do sync (`resolveOnLogin`, tabela ausente), testadas em `src/sync.test.js` |
 | `src/access-rules.js` | **O que cada plano libera** (`capabilities`), puro e testado em `src/access.test.js` |
 | `src/gis.js` | Carrega o Google Identity Services uma vez (login e Google Agenda) |
-| `supabase/schema.sql` | Tabelas `products` (produto Kiwify → plano/concurso) e `purchases`, RLS, função `my_plan()` |
+| `supabase/schema.sql` | Tabelas `products` (produto Kiwify → plano/concurso), `purchases`, `student_state`, `student_events`, RLS, função `my_plan()` |
+| `supabase/migrations/` | Migrações idempotentes, aplicadas à mão no SQL Editor (o `schema.sql` repete o resultado) |
 | `supabase/functions/kiwify-webhook/` | Edge Function do webhook da Kiwify (assinatura HMAC-SHA1 em `?signature=`) |
 | `src/palette.js` | **Fonte única das cores** (temas claro e escuro, cores das matérias); `theme.js` e `pdf.js` leem daqui |
 | `src/plan.test.js` | Testes da camada de produto (`.ics`, fuso, ids do Google, pré-requisitos) |
@@ -66,10 +69,10 @@ npm ci                    # dependências (Node 22)
 npm run dev               # http://localhost:5173/app/
 npm run build             # dist/
 npm run preview           # serve dist/ em http://localhost:4173 (home em /, app em /app/, vendas em /inss/)
-npm test                  # engine (24) + pack builder (10) + app (11)
+npm test                  # engine (24) + pack builder (10) + app (17)
 npm run test:engine       # node --test engine/engine.test.js
 npm run test:builder      # node --test tools/pack-builder/test/builder.test.js (precisa de pdftotext)
-npm run test:app          # TZ=UTC node --test src/plan.test.js src/access.test.js
+npm run test:app          # TZ=UTC node --test src/plan.test.js src/access.test.js src/sync.test.js
 npm run report:engine     # tabela de prioridades + primeiras semanas
 npm run shots:vendas      # refaz public/inss/img/*.webp (precisa de npm run build + npm run preview rodando)
 node tools/pack-builder/cli.js assemble packs-src/inss-tecnico   # regenera o pack depois de editar packs-src
@@ -125,7 +128,13 @@ nos dois jobs. O ambiente cloud não acessa `github.io`.
 - Ordem da página: Como funciona → Vantagem → Seu tempo → Agenda → Nível + simulado → Top 80% → Dossiê.
 - **Vantagem** mostra tempo, não itens: horas a menos para dominar 80% da prova, semanas de antecedência
   e as datas em que cada cronograma chega a 80% (`plan.dateToCover`), com a diferença marcada no gráfico.
-- Estado no `localStorage` (`cpv:<packId>:v1`); concurso por `?concurso=<id>`, depois `cpv:concurso`,
+- Estado no `localStorage` (`cpv:<packId>:v1`, com `cpv:<packId>:v1:sync` = `{ userId, updatedAt }`) e, com login,
+  em `student_state` (decidido em 24/11/2026, inclusive para contas de teste). Grava 3 s depois da última mudança;
+  no login vence o `updated_at` mais recente; estado local sem nada no servidor sobe; cópia local de outra conta
+  nunca sobe. Sem as tabelas, o app segue só no `localStorage`, sem erro na tela. Eventos (`track()`):
+  `progress_check`/`uncheck`, `reorganize`, `quiz_finished`, `quiz_answer` (um por questão), `self_level_set`,
+  `pdf`, `ics`, `gcal_sync`. O simulado soma por assunto apresentadas, respondidas, acertos e erros (`quizStats`).
+- Concurso por `?concurso=<id>`, depois `cpv:concurso`,
   depois o padrão (INSS). O `localStorage` é por origem: o progresso salvo no site antigo não passa para o novo.
 - **Fuso:** sempre horário de Brasília (`America/Sao_Paulo`). O `.ics` grava UTC calculado a partir de
   −03:00 fixo, com `X-WR-TIMEZONE:America/Sao_Paulo`.
@@ -180,6 +189,8 @@ nos dois jobs. O ambiente cloud não acessa `github.io`.
 - `npm run preview` não pega um build novo com segurança: reinicie o servidor depois de `npm run build`.
 
 ## Em aberto
+
+- Aplicar `supabase/migrations/2026-11-24-student-progress.sql` no SQL Editor (até lá o app roda só no `localStorage`).
 
 - Supabase está no Free (pausa após ~7 dias sem atividade): o workflow `keepalive.yml` mitiga; avaliar Pro
   com volume de vendas.
