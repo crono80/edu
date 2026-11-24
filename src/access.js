@@ -47,13 +47,13 @@ export async function signOut() {
 }
 
 /**
- * { status: "loading" | "anon" | "signed", email, plan: null | "essencial" | "completo", error }
+ * { status: "loading" | "anon" | "signed", email, userId, plan: null | "essencial" | "completo", error }
  * In local development, ?plano=demo|essencial|completo forces the plan (never in the published build).
  */
 export function useAccess(concursoId) {
   const forced = typeof window === "undefined" ? undefined : devPlanOverride(window.location.search, import.meta.env.DEV);
   const [access, setAccess] = useState(() =>
-    forced !== undefined ? { status: "signed", email: "dev@local", plan: forced, error: null } : { status: supabase ? "loading" : "anon", email: null, plan: null, error: null }
+    forced !== undefined ? { status: "signed", email: "dev@local", userId: null, plan: forced, error: null } : { status: supabase ? "loading" : "anon", email: null, userId: null, plan: null, error: null }
   );
 
   useEffect(() => {
@@ -61,12 +61,13 @@ export function useAccess(concursoId) {
     let alive = true;
     const load = async (session) => {
       if (!alive) return;
-      if (!session) return setAccess({ status: "anon", email: null, plan: null, error: null });
+      if (!session) return setAccess({ status: "anon", email: null, userId: null, plan: null, error: null });
       const email = session.user?.email ?? null;
-      setAccess((a) => ({ ...a, status: "signed", email }));
+      const userId = session.user?.id ?? null;
+      setAccess((a) => ({ ...a, status: "signed", email, userId }));
       const { data, error } = await supabase.rpc("my_plan", { p_concurso: concursoId });
       if (!alive) return;
-      setAccess({ status: "signed", email, plan: error ? null : (data ?? null), error: error ? "Não foi possível verificar sua compra agora. Recarregue a página." : null });
+      setAccess({ status: "signed", email, userId, plan: error ? null : (data ?? null), error: error ? "Não foi possível verificar sua compra agora. Recarregue a página." : null });
     };
     supabase.auth.getSession().then(({ data }) => load(data.session));
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
